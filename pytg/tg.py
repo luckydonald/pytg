@@ -22,7 +22,7 @@ def dialog_list(target):
                 else:
                     user, cmduser, uid = None, None, m.group('user')
                 unread = m.group('unread')
-                arg = {'type': 'dialog_list', 'uid': uid, 'user': user, 'cmduser': cmduser, 'unread': unread}
+                arg = {'type': 'dialog_list_user', 'uid': uid, 'user': user, 'cmduser': cmduser, 'unread': unread}
                 target.send(arg)
                 continue
             m = unread_chat.search(clear_prompt(remove_color(line)).strip())
@@ -33,7 +33,7 @@ def dialog_list(target):
                 else:
                     group, cmdgroup, gid = None, None, m.group('group')
                 unread = m.group('unread')
-                arg = {'type': 'dialog_list', 'gid': gid, 'group': group, 'cmdgroup': cmdgroup, 'unread': unread}
+                arg = {'type': 'dialog_list_group', 'gid': gid, 'group': group, 'cmdgroup': cmdgroup, 'unread': unread}
                 target.send(arg)
     except GeneratorExit:
         pass
