@@ -1,6 +1,6 @@
 ## PyTG
 
-A Python module that wraps around [Telegram messenger CLI](https://github.com/vysheng/tg).
+A Python package that wraps around [Telegram messenger CLI](https://github.com/vysheng/tg).
 
 ### Installation
 
