@@ -35,12 +35,8 @@ def dialog_list(target):
                 unread = m.group('unread')
                 arg = {'type': 'dialog_list', 'gid': gid, 'group': group, 'cmdgroup': cmdgroup, 'unread': unread}
                 target.send(arg)
-                #sys.stdout.write('User info -> User: %s, Unread: %s\n' % (user, unread))
-                #sys.stdout.flush()
     except GeneratorExit:
         pass
-        #sys.stdout.write('dialog_info_user coroutine exit cleanly\n')
-        #sys.stdout.flush()
 
 @coroutine
 def chat_info(target):
@@ -87,8 +83,6 @@ def chat_info(target):
                 target.send(arg)
     except GeneratorExit:
         pass
-        #sys.stdout.write('chat_info coroutine exit cleanly\n')
-        #sys.stdout.flush()
 
 @coroutine
 def message(target):
@@ -124,8 +118,6 @@ def message(target):
                 target.send(arg)
     except GeneratorExit:
         pass
-        #sys.stdout.write('group_post coroutine exit cleanly\n')
-        #sys.stdout.flush()
 
 @coroutine
 def user_status(target):
@@ -147,5 +139,3 @@ def user_status(target):
                 target.send(arg)
     except GeneratorExit:
         pass
-        #sys.stdout.write('group_post coroutine exit cleanly\n')
-        #sys.stdout.flush()
