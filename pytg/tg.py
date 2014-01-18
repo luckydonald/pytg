@@ -111,12 +111,14 @@ def message(target):
                 if tmpchat:
                     if '#' in tmpchat:
                         arg['group'], arg['gid'] = tmpchat.split('#')
+                        arg['cmdgroup'] = arg['group'].replace(' ', '_')
                     else:
-                        arg['group'], arg['gid'] = None, tmpchat
+                        arg['group'], arg['cmdgroup'], arg['gid'] = None, None, tmpchat
                 if '#' in tmpuser:
                     arg['user'], arg['uid'] = tmpuser.split('#')
+                    arg['cmduser'] = arg['user'].replace(' ', '_')
                 else:
-                    arg['user'], arg['uid'] = None, tmpuser
+                    arg['user'], arg['cmduser'], arg['uid'] = None, None, tmpuser
                 if arg['peer'] == 'user':
                     arg['ownmsg'] = True if m.group('dir') == '«««' else False
                 target.send(arg)

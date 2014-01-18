@@ -69,7 +69,7 @@ class Telegram(object):
         self._proc.terminate()
 
     def msg(self, peer, message):
-        self.tgin.write(' '.join('msg', peer, message) + '\n')
+        self.tgin.write(' '.join(['msg', peer, message]) + '\n')
         self.tgin.flush()
 
     def dialog_list(self):
@@ -77,17 +77,17 @@ class Telegram(object):
         self.tgin.flush()
 
     def chat_info(self, chat):
-        self.tgin.write(''.join('chat_info ', chat, '\n'))
+        self.tgin.write(''.join(['chat_info ', chat, '\n']))
         self.tgin.flush()
 
     def user_info(self, user):
-        self.tgin.write(''.join('user_info ', user, '\n'))
+        self.tgin.write(''.join(['user_info ', user, '\n']))
         self.tgin.flush()
 
     def mark_read(self, peer):
-        self.tgin.write(''.join('mark_read ', peer, '\n'))
+        self.tgin.write(''.join(['mark_read ', peer, '\n']))
         self.tgin.flush()
 
     def chat_with_peer(self, peer):
-        self.tgin.write(''.join('chat_with_peer ', peer, '\n'))
+        self.tgin.write(''.join(['chat_with_peer ', peer, '\n']))
         self.tgin.flush()
