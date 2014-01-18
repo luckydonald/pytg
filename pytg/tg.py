@@ -115,6 +115,19 @@ def message(target):
                     arg['user'], arg['cmduser'], arg['uid'] = None, None, tmpuser
                 if arg['peer'] == 'user':
                     arg['ownmsg'] = True if m.group('dir') == '«««' else False
+                if m.group('media'):
+                    if 'photo' in m.group('media'):
+                        pass
+                    elif 'video' in m.group('media'):
+                        pass
+                    elif 'audio' in m.group('media'):
+                        pass
+                    elif 'document' in m.group('media'):
+                        pass
+                    elif 'geo' in m.group('media'):
+                        pass
+                    elif 'contact' in m.group('media'):
+                        pass
                 target.send(arg)
     except GeneratorExit:
         pass
