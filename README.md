@@ -41,7 +41,7 @@ Now you are ready to install PyTG
 
 Clone GitHub Repository
 
-    $ git clone https://github.com/vysheng/tg.git && cd tg
+    $ git clone https://github.com/efaisal/pytg.git && cd pytg && python setup.py install
         
 or download and extract zip
 
