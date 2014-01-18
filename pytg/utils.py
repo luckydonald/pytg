@@ -32,8 +32,6 @@ def start_pipeline(target):
             target.send(item)
     except GeneratorExit:
         pass
-        #sys.stdout.write('start_pipeline coroutine exit cleanly\n')
-        #sys.stdout.flush()
 
 @coroutine
 def broadcast(targets):
@@ -49,5 +47,3 @@ def broadcast(targets):
                 target.send(item)
     except GeneratorExit:
         pass
-        #sys.stdout.write('broadcast coroutine exit cleanly\n')
-        #sys.stdout.flush()
