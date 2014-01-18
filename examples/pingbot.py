@@ -25,7 +25,6 @@ def command_parser(chat_group, tg):
     try:
         while True:
             msg = (yield)
-            print msg
             # Only process if the group name match
             if msg['group'] == chat_group:
                 cmd = msg['message'].strip().split(' ')
