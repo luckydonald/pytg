@@ -13,6 +13,7 @@ class Telegram(object):
     _pipeline, _callables = None, []
     _buffer, _banner_found = '', False
     _ignore = ['...\n']
+    ready = False
 
     def __init__(self, telegram, pubkey_file):
         self._tg = telegram
@@ -45,6 +46,7 @@ class Telegram(object):
             self.tgin.write('set msg_num 1\n')
             self.tgin.flush()
             self._buffer = ''
+            self.ready = True
         if self._banner_found and c == '\n':
             if '{print_message}' in self._buffer:
                 if '{end_print_message}' in self._buffer:
