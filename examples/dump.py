@@ -42,9 +42,10 @@ if __name__ == '__main__':
 
     # Start telegram cli
     tg.start()
-    while True:
-        # Keep on polling so that messages will pass through our pipeline
-        tg.poll()
-
-    # Quit gracefully
-    tg.quit()
+    try:
+        while True:
+            # Keep on polling so that messages will pass through our pipeline
+            tg.poll()
+    except KeyboardInterrupt:
+        # Quit gracefully
+        tg.quit()
