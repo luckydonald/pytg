@@ -3,6 +3,7 @@ import sys
 import os
 import subprocess
 import fcntl
+import struct
 from utils import start_pipeline
 
 class TelegramError(Exception):
@@ -93,3 +94,20 @@ class Telegram(object):
     def chat_with_peer(self, peer):
         self.tgin.write(''.join(['chat_with_peer ', peer, '\n']))
         self.tgin.flush()
+
+    def contact_list(self):
+        self.tgin.write('contact_list\n')
+        self.tgin.flush()
+
+    def whoami(self):
+        if 'HOME' in os.environ:
+            authfile = os.path.join(os.environ['HOME'], '.telegram', 'auth')
+            if os.path.exists(authfile):
+                with open(authfile, 'rb') as fh:
+                    fh.seek(-4, 2)
+                    myid = struct.unpack('<I', fh.read(4))[0]
+                return str(myid)
+            else:
+                raise TelegramError("You have not registered telegram client")
+        else:
+            raise TelegramError("Undefined 'HOME' environment variable")
