@@ -43,6 +43,7 @@ def chat_info(target):
     if type(target) is not GeneratorType:
         raise TypeError('target must be GeneratorType')
     try:
+        arg = {}
         while True:
             line = (yield)
             if '{print_message}' in line or '{end_print_message}' in line or \
@@ -60,7 +61,7 @@ def chat_info(target):
                 target.send(arg)
                 continue
             m = chat_info_body.search(clear_prompt(remove_color(line)).strip())
-            if m:
+            if m and len(arg) > 0:
                 if m.group('uid'):
                     user, uid = m.group('user'), m.group('uid')
                     cmduser = user.replace(' ', '_')
@@ -81,6 +82,39 @@ def chat_info(target):
                     'timestamp': timestamp
                 }
                 target.send(arg)
+                arg = {}
+    except GeneratorExit:
+        pass
+
+@coroutine
+def user_info(target):
+    if type(target) is not GeneratorType:
+        raise TypeError('target must be GeneratorType')
+    try:
+        header_found = False
+        while True:
+            line = (yield)
+            if '{print_message}' in line or '{end_print_message}' in line or \
+               '{user_status}' in line or 'unread' in line:
+                continue
+            m = user_info_header.search(clear_prompt(remove_color(line)).strip())
+            if m:
+                header_found = True
+                continue
+            m = user_info_peerid.search(clear_prompt(remove_color(line)).strip())
+            if m and header_found:
+                arg = {'type': 'user_info', 'uid': m.group('peerid')}
+                continue
+            m = user_info_realname.search(clear_prompt(remove_color(line)).strip())
+            if m and header_found:
+                arg['user'] = m.group('realname')
+                arg['cmduser'] = arg['user'].replace(' ', '_')
+                continue
+            m = user_info_phone.search(clear_prompt(remove_color(line)).strip())
+            if m and header_found:
+                arg['phone'] = m.group('phone')
+                target.send(arg)
+                header_found = False
     except GeneratorExit:
         pass
 
@@ -141,13 +175,32 @@ def user_status(target):
             line = (yield)
             if '{user_status}' not in line:
                 continue
-            m = user_status.search(clear_prompt(remove_color(line)).strip())
+            m = user_status_data.search(clear_prompt(remove_color(line)).strip())
             if m:
                 user, uid, status = m.group('user'), m.group('uid'), m.group('status')
                 if not uid:
                     uid, user = user, None
                 arg = {
-                    'type': 'user_status', 'uid': uid, 'user': user
+                    'type': 'user_status', 'uid': uid, 'user': user, 'status': status
+                }
+                target.send(arg)
+    except GeneratorExit:
+        pass
+
+@coroutine
+def contact_list(target):
+    try:
+        while True:
+            line = (yield)
+            if '{print_message}' in line or '{end_print_message}' in line or \
+               '{user_status}' in line or 'unread' in line:
+                continue
+            m = contact_list_data.search(clear_prompt(remove_color(line)).strip())
+            if m:
+                arg = {
+                    'type': 'contact_list', 'uid': m.group('uid'),
+                    'user': m.group('user'), 'cmduser': m.group('cmduser'),
+                    'phone': m.group('phone')
                 }
                 target.send(arg)
     except GeneratorExit:
