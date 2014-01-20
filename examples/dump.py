@@ -10,6 +10,7 @@ import pytg
 from pytg.utils import coroutine, broadcast
 from pytg.tg import (
     dialog_list, chat_info, message, user_status,
+    user_info, contact_list
 )
 
 @coroutine
@@ -27,6 +28,14 @@ if __name__ == '__main__':
     pubkey = 'tg.pub'
     tg = pytg.Telegram(telegram, pubkey)
 
+    # Get own id (integer represented as string datatype)
+    myid = tg.whoami()
+
+    # Variables that represents some states whether we're send some commands
+    # to telegram
+    has_send_contact_list = False
+    has_send_user_info = False
+
     # Create processing pipeline
     # All messages will be process and finally pushed to dump_msg
     d = dump_msg()
@@ -35,6 +44,8 @@ if __name__ == '__main__':
         user_status(d),
         dialog_list(d),
         chat_info(d),
+        user_info(d),
+        contact_list(d),
     ])
 
     # Register our processing pipeline
@@ -46,6 +57,12 @@ if __name__ == '__main__':
         while True:
             # Keep on polling so that messages will pass through our pipeline
             tg.poll()
+            if tg.ready and not has_send_contact_list:
+                tg.contact_list()
+                has_send_contact_list = True
+            if tg.ready and not has_send_user_info:
+                tg.user_info('user#' + myid)
+                has_send_user_info = True
     except KeyboardInterrupt:
         # Quit gracefully
         tg.quit()
