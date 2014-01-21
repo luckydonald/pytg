@@ -10,7 +10,7 @@ import pytg
 from pytg.utils import coroutine, broadcast
 from pytg.tg import (
     dialog_list, chat_info, message, user_status,
-    user_info, contact_list
+    user_info, contact_list, service_message,
 )
 
 @coroutine
@@ -46,6 +46,7 @@ if __name__ == '__main__':
         chat_info(d),
         user_info(d),
         contact_list(d),
+        service_message(d),
     ])
 
     # Register our processing pipeline
