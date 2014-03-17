@@ -1,2 +1,4 @@
 *.py[cod]
+*.so
 build/
+compile/
