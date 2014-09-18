@@ -83,6 +83,10 @@ class Telegram(object):
         self.tgin.write(' '.join(['send_video', peer, path]) + '\n')
         self.tgin.flush()
 
+    def send_document(self, peer, path):
+        self.tgin.write(' '.join(['send_document', peer, path]) + '\n')
+        self.tgin.flush()
+
     def send_text(self, peer, path):
         self.tgin.write(' '.join(['send_text', peer, path]) + '\n')
         self.tgin.flush()
