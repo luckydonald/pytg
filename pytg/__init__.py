@@ -63,6 +63,12 @@ class Telegram(object):
         if len(self._buffer) > 0:
             self._pipeline.send(self._buffer)
         self._pipeline.close()
+        
+    def safe_quit(self):
+        self._proc.communicate('safe_quit\n')
+        if len(self._buffer) > 0:
+            self._pipeline.send(self._buffer)
+        self._pipeline.close()
 
     def force_quit(self):
         try:
