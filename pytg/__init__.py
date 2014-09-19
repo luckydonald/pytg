@@ -101,6 +101,14 @@ class Telegram(object):
         self.tgin.write(' '.join(['send_text', peer, path]) + '\n')
         self.tgin.flush()
 
+    def status_online(self):
+        self.tgin.write('status_online\n')
+        self.tgin.flush()
+
+    def status_offline(self):
+        self.tgin.write('status_offline\n')
+        self.tgin.flush()
+
     def dialog_list(self):
         self.tgin.write('dialog_list\n')
         self.tgin.flush()
