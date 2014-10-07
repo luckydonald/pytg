@@ -8,12 +8,12 @@ PyTG requires a patched copy of Telegram messenger CLI to make message parsing f
 
 Clone GitHub Repository
 
-    $ git clone https://github.com/efaisal/tg.git && cd tg
+    $ git clone https://bitbucket.org/luckydonald/tg-for-pytg2.git && cd tg-for-pytg2
         
-or download and extract zip
+or download and extract zip **//TODO**
 
-    $ wget https://github.com/efaisal/tg/archive/master.zip -O tg.zip
-    $ tar xzf tg.zip && cd tg
+    $ wget 404.zip -O tg-for-pytg2.zip 
+    $ tar xzf tg-for-pytg2.zip && cd tg-for-pytg2
 
 Then, run
 
@@ -29,22 +29,21 @@ Next, run
 
     $ make
 
-Telegram messenger CLI has its own dependencies. See https://github.com/efaisal/tg for details.
+Telegram messenger CLI has its own dependencies. See [luckydonald/tg-for-pytg2](https://bitbucket.org/luckydonald/tg-for-pytg2) for details.
 
 Once you build successfully, try to run
 
-    $ ./telegram
+    $ ./bin/telegram-cli
 
 Register your client, if required. Please note that PyTG does not support client registration yet.
 
-Now you are ready to install PyTG
+Now you are ready to install PyTG2
 
-Clone GitHub Repository
+Clone PyTG 2 Repository
 
-    $ git clone https://github.com/efaisal/pytg.git && cd pytg && python setup.py install
+    $ git clone https://bitbucket.org/luckydonald/pytg2.git && cd pytg2 && sudo python setup.py install
         
-or download and extract zip
+or download and extract zip **TODO**
 
-    $ wget https://github.com/efaisal/pytg/archive/master.zip -O pytg.zip
-    $ tar xzf pytg.zip && cd pytg && python setup.py install
-
+    $ wget .zip -O pytg2.zip
+    $ tar xzf pytg2.zip && cd pytg2 && python setup.py install
