@@ -13,7 +13,7 @@ class Telegram(object):
     _proc, tgin = None, None
     _pipeline, _callables = None, []
     _buffer, _banner_found = '', False
-    _ignore = ['...\n']
+    _ignore = ['> \n','>\n']
     ready = False
 
     def __init__(self, telegram, pubkey_file):
@@ -27,7 +27,7 @@ class Telegram(object):
         self._callables.append([func, args, kwargs])
 
     def start(self):
-        proc = subprocess.Popen([self._tg, '-k', self._pub], stdin=subprocess.PIPE, stdout=subprocess.PIPE)
+        proc = subprocess.Popen([self._tg, '-R', '-k', self._pub], stdin=subprocess.PIPE, stdout=subprocess.PIPE)
         self._proc, self.tgin = proc, proc.stdin
         fd = proc.stdout.fileno()
         fl = fcntl.fcntl(fd, fcntl.F_GETFL)
@@ -63,7 +63,7 @@ class Telegram(object):
         if len(self._buffer) > 0:
             self._pipeline.send(self._buffer)
         self._pipeline.close()
-        
+
     def safe_quit(self):
         self._proc.communicate('safe_quit\n')
         if len(self._buffer) > 0:
@@ -88,7 +88,7 @@ class Telegram(object):
     def send_document(self, peer, path):
         self.tgin.write(' '.join(['send_document', peer, path]) + '\n')
         self.tgin.flush()
-        
+
     def send_photo(self, peer, path):
         self.tgin.write(' '.join(['send_photo', peer, path]) + '\n')
         self.tgin.flush()
