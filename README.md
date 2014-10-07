@@ -41,4 +41,8 @@ Clone PyTG 2 Repository
       
 ### 3. Eat a cookie.
 Thats optional.  
-You're Done! 
+You're Done!
+
+### 4. Look at the examples
+See some example scripts to start with.
+They are in the [examples folder](https://bitbucket.org/luckydonald/pytg2/src)
