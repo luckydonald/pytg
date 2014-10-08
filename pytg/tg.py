@@ -189,8 +189,8 @@ def message(target):
                     arg['cmduser'] = arg['user'].replace(' ', '_')
                 else:
                     arg['user'], arg['cmduser'], arg['uid'] = None, None, tmpuser
-                if arg['peer'] == 'user':
-                    arg['ownmsg'] = True if m.group('dir') == '«««' else False
+                # if arg['peer'] == 'user': 
+                arg['ownmsg'] = True if m.group('dir') in  ['«««','<<<'] else False
                 if m.group('media'):
                     if 'photo' in m.group('media'):
                         tmp = m.group('media').split(' ', 1)
