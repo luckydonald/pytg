@@ -1,6 +1,7 @@
-# **PyTG** #
+# **PyTG2** #
 
-A Python package that wraps around [Telegram messenger CLI](https://github.com/vysheng/tg).
+A Python package that wraps around (a patched version of) the  [Telegram messenger CLI](https://github.com/vysheng/tg).
+The original version does not support some required features.
 
 ## **Installation**
 You have to install the patched telegram cli and pytg2.
@@ -13,8 +14,8 @@ Clone PyTG 2 Repository
 
     $ git clone https://bitbucket.org/luckydonald/pytg2.git && cd pytg2 && sudo python setup.py install
       
-### 2. Install Patched Telegram CLI  
-PyTG requires a patched copy of Telegram messenger CLI to make message parsing feasible. To install the patched Telegram messenger CLI:
+### 2. Install Patched Telegram CLI
+PyTG requires a [patched version](https://bitbucket.org/luckydonald/tg-for-pytg2) of Telegram messenger CLI to make message parsing feasible. To install the patched Telegram messenger CLI ([luckydonald/tg-for-pytg2](https://bitbucket.org/luckydonald/tg-for-pytg2)):
 
 Clone GitHub Repository
 
@@ -49,4 +50,3 @@ You're Done with the installation!
 ### 4. Look at the examples
 See some example scripts to start with.
 They are in the [examples folder](https://bitbucket.org/luckydonald/pytg2/src)
-
