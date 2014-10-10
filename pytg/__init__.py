@@ -31,7 +31,7 @@ class Telegram(object):
 			# Ignore the SIGINT signal by setting the handler
 			# to the standard signal handler SIG_IGN.
 			signal.signal(signal.SIGINT, signal.SIG_IGN)
-		proc = subprocess.Popen([self._tg, '-R', '-k', '-N', '-W', self._pub], stdin=subprocess.PIPE, stdout=subprocess.PIPE, preexec_fn = preexec_function)
+		proc = subprocess.Popen([self._tg, '-R', '-N', '-W', '-k', self._pub], stdin=subprocess.PIPE, stdout=subprocess.PIPE, preexec_fn = preexec_function)
 		self._proc, self.tgin = proc, proc.stdin
 		fd = proc.stdout.fileno()
 		fl = fcntl.fcntl(fd, fcntl.F_GETFL)
