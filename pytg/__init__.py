@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-import sys
 import os
 import subprocess
 import fcntl
@@ -277,7 +276,8 @@ class Telegram(object):
 
 
 
-	def whoami(self):
+	@staticmethod
+	def whoami():
 		if 'HOME' in os.environ:
 			authfile = os.path.join(os.environ['HOME'], '.telegram', 'auth')
 			if os.path.exists(authfile):

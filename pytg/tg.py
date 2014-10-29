@@ -244,12 +244,12 @@ def service_message(target):
 					'message': m.group('message'), 'action': m.group('action'),
 					}
 				if m.group('gid'):
-					arg['group'], arg['gid'] = m.group('group'), arg('gid')
+					arg['group'], arg['gid'] = m.group('group'), m.group('gid')
 					arg['cmdgroup'] = arg['group'].replace(' ', '_')
 				else:
 					arg['group'], arg['cmdgroup'], arg['gid'] = None, None, m.group('group')
 				if m.group('uid'):
-					arg['user'], arg['uid'] = m.group('user'), arg('uid')
+					arg['user'], arg['uid'] = m.group('user'), m.group('uid')
 					arg['cmduser'] = arg['user'].replace(' ', '_')
 				else:
 					arg['user'], arg['cmduser'], arg['uid'] = None, None, m.group('user')

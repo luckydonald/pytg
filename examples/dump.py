@@ -4,8 +4,6 @@
 An example to dump all parsed messages from telegram cli to stdout
 """
 
-import sys
-from datetime import datetime, timedelta
 import pytg
 from pytg.utils import coroutine, broadcast
 from pytg.tg import (

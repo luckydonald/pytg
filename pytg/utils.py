@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
+from __future__ import generators
 from types import GeneratorType
-
 
 def coroutine(func):
 	"""
@@ -12,7 +12,10 @@ def coroutine(func):
 
 	def start(*args, **kwargs):
 		cr = func(*args, **kwargs)
-		cr.next()
+		try:
+			next(cr)
+		except NameError: # not defined, python 2
+			cr.next()
 		return cr
 
 	return start
