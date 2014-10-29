@@ -1,8 +1,14 @@
 # -*- coding: utf-8 -*-
 from types import GeneratorType
 from datetime import datetime
-from utils import *
-from regex import *
+try: # python 2.7
+    from utils import *
+except ImportError: # python 3
+    from .utils import *
+try: # python 2.7
+    from regex import *
+except ImportError: # python 3
+    from .regex import *
 
 @coroutine
 def dialog_list(target):

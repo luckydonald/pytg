@@ -4,7 +4,10 @@ import os
 import subprocess
 import fcntl
 import struct
-from utils import start_pipeline
+try: # python 2.7
+	from utils import start_pipeline
+except ImportError: # python 3
+	from .utils import start_pipeline
 
 class TelegramError(Exception):
 	pass

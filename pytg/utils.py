@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from types import ListType, GeneratorType
+from types import GeneratorType
 
 
 def coroutine(func):
@@ -60,7 +60,7 @@ def start_pipeline(target):
 
 @coroutine
 def broadcast(targets):
-	if type(targets) is not ListType:
+	if type(targets) is not list: # is this python 2 safe?
 		raise TypeError('targets must be ListType')
 	for t in targets:
 		if type(t) is not GeneratorType:
