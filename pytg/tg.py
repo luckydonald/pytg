@@ -11,6 +11,7 @@ def dialog_list(target):
     try:
         while True:
             line = (yield)
+            # this next line will let the regex search inside multi-line messages?
             if '{print_message}' in line or '{end_print_message}' in line or \
                '{user_status}' in line or '{service_message}' in line:
                 continue

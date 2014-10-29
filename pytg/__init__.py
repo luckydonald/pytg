@@ -143,6 +143,16 @@ class Telegram(object):
 		self.tgin.write(' '.join(['chat_del_user', chat, user]) + '\n')
 		self.tgin.flush()
 
+# create_group_chat <user> <chat topic> - creates a groupchat with user, use chat_add_user to add more users
+	def create_group_chat(self,user,chat_topic):
+		"""
+		creates a groupchat with user, use chat_add_user to add more users
+		:param user: first user to add.
+		:param chat_topic: name of the chat.  #TODO: Can this contain spaces, does it need quotes?
+		"""
+
+		self.tgin.write(' '.join(['create_group_chat', user, chat_topic]) + '\n') #TODO: Can chat_topic contain spaces, does it need quotes?
+		self.tgin.flush()
 
 	def user_info(self, user):
 		self.tgin.write(''.join(['user_info ', user, '\n']))
@@ -214,65 +224,65 @@ class Telegram(object):
 		self.tgin.flush()
 
 	# load_photo <msg-id>     Downloads file to downloads dirs. Prints file name after download end
-	def load_photo(self, peer, msg_id):
+	def load_photo(self, msg_id):
 		"""
 		Downloads file to downloads dirs.
 		"""
-		self.tgin.write(' '.join(['load_photo', peer, msg_id,'\n']))
+		self.tgin.write(' '.join(['load_photo', msg_id,'\n']))
 		self.tgin.flush()
 
 	# load_video <msg-id>     Downloads file to downloads dirs. Prints file name after download end
-	def load_video(self, peer, msg_id):
+	def load_video(self, msg_id):
 		"""
 		Downloads file to downloads dirs.
 		"""
-		self.tgin.write(' '.join(['load_video', peer, msg_id,'\n']))
+		self.tgin.write(' '.join(['load_video', msg_id,'\n']))
 		self.tgin.flush()
 
 
 	# load_audio <msg-id>     Downloads file to downloads dirs. Prints file name after download end
-	def load_audio(self, peer, msg_id):
+	def load_audio(self, msg_id):
 		"""
 		Downloads file to downloads dirs.
 		"""
-		self.tgin.write(' '.join(['load_audio', peer, msg_id,'\n']))
+		self.tgin.write(' '.join(['load_audio', msg_id,'\n']))
 		self.tgin.flush()
 
 	# load_document <msg-id>  Downloads file to downloads dirs. Prints file name after download end
-	def load_document(self, peer, msg_id):
+	def load_document(self, msg_id):
 		"""
 		Downloads file to downloads dirs.
 		"""
-		self.tgin.write(' '.join(['load_document', peer, msg_id,'\n']))
+		self.tgin.write(' '.join(['load_document', msg_id,'\n']))
 		self.tgin.flush()
 
 	# load_video_thumb <msg-id>       Downloads file to downloads dirs. Prints file name after download end
-	def load_video_thumb(self, peer, msg_id):
+	def load_video_thumb(self, msg_id):
 		"""
 		Downloads file to downloads dirs.
 		"""
-		self.tgin.write(' '.join(['load_video_thumb', peer, msg_id,'\n']))
+		self.tgin.write(' '.join(['load_video_thumb', msg_id,'\n']))
 		self.tgin.flush()
 
 	# load_document_thumb <msg-id>    Downloads file to downloads dirs. Prints file name after download end
-	def load_document_thumb(self, peer, msg_id):
+	def load_document_thumb(self, msg_id):
 		"""
 		Downloads file to downloads dirs.
 		"""
-		self.tgin.write(' '.join(['load_document_thumb', peer, msg_id,'\n']))
+		self.tgin.write(' '.join(['load_document_thumb', msg_id,'\n']))
 		self.tgin.flush()
 
 
 
-def whoami(self):
-	if 'HOME' in os.environ:
-		authfile = os.path.join(os.environ['HOME'], '.telegram', 'auth')
-		if os.path.exists(authfile):
-			with open(authfile, 'rb') as fh:
-				fh.seek(-4, 2)
-				myid = struct.unpack('<I', fh.read(4))[0]
-			return str(myid)
+	def whoami(self):
+		if 'HOME' in os.environ:
+			authfile = os.path.join(os.environ['HOME'], '.telegram', 'auth')
+			if os.path.exists(authfile):
+				with open(authfile, 'rb') as fh:
+					fh.seek(-4, 2)
+					myid = struct.unpack('<I', fh.read(4))[0]
+				return str(myid)
+			else:
+				raise TelegramError("You have not registered telegram client")
 		else:
-			raise TelegramError("You have not registered telegram client")
-	else:
-		raise TelegramError("Undefined 'HOME' environment variable")
+			raise TelegramError("Undefined 'HOME' environment variable")
