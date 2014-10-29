@@ -13,7 +13,7 @@ except ImportError:
    from distutils.command.build_py import build_py
 
 setup(
-    name = 'pytg2',
+    name = 'pytg',
     description = 'Telegram messenger CLI wrapper 2',
     long_description = long_description,
     url = 'https://bitbucket.org/luckydonald/pytg2',
