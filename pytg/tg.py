@@ -1,19 +1,17 @@
 # -*- coding: utf-8 -*-
+from __future__ import generators
 from types import GeneratorType
 from datetime import datetime
-try: # python 2.7
-	from utils import coroutine, clear_prompt, remove_color
-	#from utils import *
-except ImportError: # python 3
-	from .utils import coroutine, clear_prompt,remove_color
-#from .utils import *
-try: # python 2.7
-	from regex import *
-except ImportError: # python 3
-	from .regex import *
+from .utils import coroutine, clear_prompt, remove_color
+from .regex import unread_user,unread_chat,chat_info_header,chat_info_body,user_info_realname,user_info_peerid,user_info_header,user_info_phone,print_message_data,contact_list_data,user_status_data,service_message_data
 
 @coroutine
 def dialog_list(target):
+	"""
+	Get the dialog list.
+	:param target:
+	:raise TypeError:
+	"""
 	if type(target) is not GeneratorType:
 		raise TypeError('target must be GeneratorType')
 	try:
