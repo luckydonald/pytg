@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
-import sys
 from __future__ import unicode_literals
-import codecs
+import sys
 
 if sys.version < '3': # python 2.7
     text_type = unicode
@@ -28,17 +27,7 @@ def to_unicode(x):
         #return codecs.unicode_escape_decode(x)[0]
         if x == b'\\':
             return "\\"
-        try:
-            return x.decode("utf-8")
-        except Exception as e:
-            print (x)
-            print (e)
-        try:
-            return x.decode("unicode_escape")
-        except Exception as e:
-            print (x)
-            print (e)
-        return u''
+        return x.decode("utf-8")
     else:
         return x
 

@@ -23,24 +23,24 @@ def dialog_list(target):
 				continue
 			m = unread_user.search(clear_prompt(remove_color(line)).strip())
 			if m:
-				if m.group('uid'):
-					user, uid = m.group('user'), m.group('uid')
-					cmduser = user.replace(' ', '_')
+				if m.group('userid'):
+					user, userid = m.group('user'), m.group('userid')
+					usercmd = user.replace(' ', '_')
 				else:
-					user, cmduser, uid = None, None, m.group('user')
+					user, usercmd, userid = None, None, m.group('user')
 				unread = m.group('unread')
-				arg = {'type': 'dialog_list_user', 'uid': uid, 'user': user, 'cmduser': cmduser, 'unread': unread}
+				arg = {'type': 'dialog_list_user', 'userid': userid, 'user': user, 'usercmd': usercmd, 'unread': unread}
 				target.send(arg)
 				continue
 			m = unread_chat.search(clear_prompt(remove_color(line)).strip())
 			if m:
-				if m.group('gid'):
-					group, gid = m.group('group'), m.group('gid')
-					cmdgroup = group.replace(' ', '_')
+				if m.group('groupid'):
+					group, groupid = m.group('group'), m.group('groupid')
+					groupcmd = group.replace(' ', '_')
 				else:
-					group, cmdgroup, gid = None, None, m.group('group')
+					group, groupcmd, groupid = None, None, m.group('group')
 				unread = m.group('unread')
-				arg = {'type': 'dialog_list_group', 'gid': gid, 'group': group, 'cmdgroup': cmdgroup, 'unread': unread}
+				arg = {'type': 'dialog_list_group', 'groupid': groupid, 'group': group, 'groupcmd': groupcmd, 'unread': unread}
 				target.send(arg)
 	except GeneratorExit:
 		pass
@@ -58,34 +58,34 @@ def chat_info(target):
 				continue
 			m = chat_info_header.search(clear_prompt(remove_color(line)).strip())
 			if m:
-				if m.group('gid'):
-					group, gid = m.group('group'), m.group('gid')
-					cmdgroup = group.replace(' ', '_')
+				if m.group('groupid'):
+					group, groupid = m.group('group'), m.group('groupid')
+					groupcmd = group.replace(' ', '_')
 				else:
-					group, cmdgroup, gid = None, None, m.group('group')
+					group, groupcmd, groupid = None, None, m.group('group')
 				arg = {'type': 'chat_info', 'group': group,
-				       'cmdgroup': cmdgroup, 'gid': gid}
+				       'groupcmd': groupcmd, 'groupid': groupid}
 				target.send(arg)
 				continue
 			m = chat_info_body.search(clear_prompt(remove_color(line)).strip())
 			if m and len(arg) > 0:
-				if m.group('uid'):
-					user, uid = m.group('user'), m.group('uid')
-					cmduser = user.replace(' ', '_')
+				if m.group('userid'):
+					user, userid = m.group('user'), m.group('userid')
+					usercmd = user.replace(' ', '_')
 				else:
-					user, usercmd, uid = None, None, m.group('user')
-				if m.group('iuid'):
-					iuser, iuid = m.group('iuser'), m.group('iuid')
+					user, usercmd, userid = None, None, m.group('user')
+				if m.group('iuserid'):
+					iuser, iuserid = m.group('iuser'), m.group('iuserid')
 					cmdiuser = iuser.replace(' ', '_')
 				else:
-					iuser, cmdiuser, iuid = None, None, m.group('iuser')
+					iuser, cmdiuser, iuserid = None, None, m.group('iuser')
 				timestamp = datetime(int(m.group('yr')), int(m.group('mth')),
 				                     int(m.group('day')), int(m.group('hr')),
 				                     int(m.group('min')), int(m.group('sec')))
 				arg = {
-					'type': 'chat_info_member', 'group': group, 'gid': gid,
-					'user': user, 'cmduser': cmduser, 'uid': uid,
-					'iuser': iuser, 'cmdiuser': cmdiuser, 'iuid': uid,
+					'type': 'chat_info_member', 'group': group, 'groupid': groupid,
+					'user': user, 'usercmd': usercmd, 'userid': userid,
+					'iuser': iuser, 'cmdiuser': cmdiuser, 'iuserid': userid,
 					'timestamp': timestamp
 				}
 				target.send(arg)
@@ -111,12 +111,12 @@ def user_info(target):
 				continue
 			m = user_info_peerid.search(clear_prompt(remove_color(line)).strip())
 			if m and header_found:
-				arg = {'type': 'user_info', 'uid': m.group('peerid')}
+				arg = {'type': 'user_info', 'userid': m.group('peerid')}
 				continue
 			m = user_info_realname.search(clear_prompt(remove_color(line)).strip())
 			if m and header_found:
 				arg['user'] = m.group('realname')
-				arg['cmduser'] = arg['user'].replace(' ', '_')
+				arg['usercmd'] = arg['user'].replace(' ', '_')
 				continue
 			m = user_info_phone.search(clear_prompt(remove_color(line)).strip())
 			if m and header_found:
@@ -137,11 +137,11 @@ def user_status(target):
 				continue
 			m = user_status_data.search(clear_prompt(remove_color(line)).strip())
 			if m:
-				user, uid, status = m.group('user'), m.group('uid'), m.group('status')
-				if not uid:
-					uid, user = user, None
+				user, userid, status = m.group('user'), m.group('userid'), m.group('status')
+				if not userid:
+					userid, user = user, None
 				arg = {
-					'type': 'user_status', 'uid': uid, 'user': user, 'status': status
+					'type': 'user_status', 'userid': userid, 'user': user, 'status': status
 				}
 				target.send(arg)
 	except GeneratorExit:
@@ -159,8 +159,8 @@ def contact_list(target):
 			m = contact_list_data.search(clear_prompt(remove_color(line)).strip())
 			if m:
 				arg = {
-					'type': 'contact_list', 'uid': m.group('uid'),
-					'user': m.group('user'), 'cmduser': m.group('cmduser'),
+					'type': 'contact_list', 'userid': m.group('userid'),
+					'user': m.group('user'), 'usercmd': m.group('usercmd'),
 					'phone': m.group('phone')
 				}
 				target.send(arg)
@@ -176,26 +176,18 @@ def message(target):
 			line = (yield)
 			if '{print_message}' not in line or '{end_print_message}' not in line:
 				continue
-			m = print_message_data.search(clear_prompt(remove_color(line)).strip())
+			m = print_message_data.search(clear_prompt(remove_color(line)).strip()) # http://regex101.com/r/aZ1pU3/2
 			if m:
 				arg = {
 					'type': 'message', 'msgid': m.group('msgid'),
 					'timestamp': m.group('timestamp'),
 					'message': m.group('message'), 'media': None
 				}
-				tmpchat, tmpuser = m.group('chat'), m.group('user')
-				arg['peer'] = 'group' if tmpchat else 'user'
-				if tmpchat:
-					if '#' in tmpchat:
-						arg['group'], arg['gid'] = tmpchat.split('#')
-						arg['cmdgroup'] = arg['group'].replace(' ', '_')
-					else:
-						arg['group'], arg['cmdgroup'], arg['gid'] = None, None, tmpchat
-				if '#' in tmpuser:
-					arg['user'], arg['uid'] = tmpuser.split('#')
-					arg['cmduser'] = arg['user'].replace(' ', '_')
-				else:
-					arg['user'], arg['cmduser'], arg['uid'] = None, None, tmpuser
+				arg['peer'] = 'group' if (m.group('chatid')) else 'user'
+				arg['group'], arg['groupid'] = m.group('chat'),m.group('chatid')
+				arg['groupcmd'] = arg['group'].replace(' ', '_') if arg['group'] else None
+				arg['user'], arg['userid'] =  m.group('user'),  m.group('userid')
+				arg['usercmd'] = arg['user'].replace(' ', '_') if arg['user'] else None
 				# if arg['peer'] == 'user':
 				arg['ownmsg'] = True if m.group('dir') in  ['«««','<<<'] else False
 				if m.group('media'):
@@ -222,6 +214,8 @@ def message(target):
 					elif 'geo' in m.group('media'):
 						arg['media'] = {'type': 'geo', 'link': m.group('geolink')}
 				target.send(arg)
+			else:
+				print("not accepted:>" + line)
 	except GeneratorExit:
 		pass
 
@@ -241,24 +235,24 @@ def service_message(target):
 					'timestamp': m.group('timestamp'),
 					'message': m.group('message'), 'action': m.group('action'),
 					}
-				if m.group('gid'):
-					arg['group'], arg['gid'] = m.group('group'), m.group('gid')
-					arg['cmdgroup'] = arg['group'].replace(' ', '_')
+				if m.group('groupid'):
+					arg['group'], arg['groupid'] = m.group('group'), m.group('groupid')
+					arg['groupcmd'] = arg['group'].replace(' ', '_')
 				else:
-					arg['group'], arg['cmdgroup'], arg['gid'] = None, None, m.group('group')
-				if m.group('uid'):
-					arg['user'], arg['uid'] = m.group('user'), m.group('uid')
-					arg['cmduser'] = arg['user'].replace(' ', '_')
+					arg['group'], arg['groupcmd'], arg['groupid'] = None, None, m.group('group')
+				if m.group('userid'):
+					arg['user'], arg['userid'] = m.group('user'), m.group('userid')
+					arg['usercmd'] = arg['user'].replace(' ', '_')
 				else:
-					arg['user'], arg['cmduser'], arg['uid'] = None, None, m.group('user')
+					arg['user'], arg['usercmd'], arg['userid'] = None, None, m.group('user')
 				if arg['action'] == 'changed title to':
 					arg['actionarg'] = m.group('arg')
 				else:
 					tmp = m.group('arg').split('#')
 					if len(tmp) == 2:
-						arg['actionarg'] = {'user': None, 'uid': tmp[1]}
+						arg['actionarg'] = {'user': None, 'userid': tmp[1]}
 					else:
-						arg['actionarg'] = {'user': tmp[1], 'uid': tmp[2]}
+						arg['actionarg'] = {'user': tmp[1], 'userid': tmp[2]}
 				target.send(arg)
 	except GeneratorExit:
 		pass

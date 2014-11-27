@@ -39,12 +39,13 @@ class Telegram(object):
 
 	def start(self):
 		def preexec_function():
-			import signal
 			def on_abort(signal, stackframe):
 				print("SIGINT ignored!")
 				return False
 			# Ignore the SIGINT signal by setting the handler
 			# to the standard signal handler SIG_IGN.
+			# Does this even work ?!?
+			import signal
 			signal.signal(signal.SIGINT,on_abort)
 		proc = subprocess.Popen([self._tg, '-R', '-N', '-W', '-k', self._pub], stdin=subprocess.PIPE, stdout=subprocess.PIPE, preexec_fn = preexec_function)
 		self._proc, self.tgin = proc, proc.stdin
@@ -57,41 +58,35 @@ class Telegram(object):
 			raise TelegramError('telegram not running')
 		try:
 			c = self._proc.stdout.read(1) # allways is a byte string.
-		except TypeError as e:
+		except TypeError:
 			return # yeah. Nothing to do here,
 		if c is None:
 			return # yeah. Nothing to do here,
 
 		try:
-			if(self._debug_output_file):
+			if self._debug_output_file:
 				with open(self._debug_output_file, "ab") as text_file:
 					text_file.write(c)
-		except Exception as e:
+		except Exception:
 			raise # probably file io
 
 		if len(self._buffer_char) > 0:  # already begun with an imcomplete character.
+			self._buffer_char += c  # add this part to it.
 			try:
 				u_c = u(self._buffer_char)
-				print("\nU_C 1")
 			except UnicodeDecodeError:  # added character to char buffer, but is no complete character.
-				self._buffer_char += c       # add this part to it.
-				print("\nADD TO CHAR")
 				return  # better luck next time.
 			else:       # hey, it did work!
 				self._buffer_char = b('')  # reset chraracter buffer
-				print("\nRESET CHAR")
 		else: # no incomplete character.
 			try:
 				u_c = u(c)  #try to parse current char
-				print("\nU_C 2")
 			except UnicodeDecodeError:  # is not a whole char.
 				assert (len(self._buffer_char) == 0)
-				self._buffer_char += c  # begin with adding incomplete character parts
-				print("\nNEW CHAR")
+				self._buffer_char = c  # begin with adding incomplete character parts
 				return  # better luck/part next time.
 			else:  #is normal complete char
 				pass  # wooho?
-		print(u_c, end="", flush=True)
 		self._buffer = "".join([self._buffer,u_c])
 		if not self._banner_found and c == b'\n' and 'conditions' in self._buffer:
 			self._banner_found = True
@@ -100,11 +95,11 @@ class Telegram(object):
 		if self._banner_found and c == b'\n':
 			if '{print_message}' in self._buffer:
 				if '{end_print_message}' in self._buffer:
-					self._pipeline.send(self._buffer)
+					self._pipeline.send(n(self._buffer))
 					self._buffer = ''
 			else:
 				if self._buffer not in self._ignore:
-					self._pipeline.send(self._buffer)
+					self._pipeline.send(n(self._buffer))
 				self._buffer = ''
 
 	def quit(self):

@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 
 from distutils.core import setup
-from distutils.extension import Extension
 
 long_description = """A Python module that wraps around Telegram messenger CLI, Version 2, forked and updated from https://github.com/efaisal/pytg"""
 
@@ -18,7 +17,7 @@ setup(
     long_description = long_description,
     url = 'https://bitbucket.org/luckydonald/pytg2',
     cmdclass = {'build_py': build_py},
-    version = '0.2',
+    version = '0.2.1',
     author = 'luckydonald (forked from E A Faisal)',
     author_email = 'luckydonald@flutterb.at',
     license = 'MIT',

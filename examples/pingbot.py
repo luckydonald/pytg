@@ -6,7 +6,6 @@ specified chat group with flood control. The bot will exit when receive quit
 command from a specified user id.
 """
 
-import sys
 from datetime import datetime, timedelta
 import pytg
 from pytg.utils import coroutine, broadcast
@@ -65,7 +64,7 @@ if __name__ == '__main__':
         # Keep on polling so that messages will pass through our pipeline
         tg.poll()
 
-        if QUIT == True:
+        if QUIT:
             break
 
     # Quit gracefully
