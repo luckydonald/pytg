@@ -20,6 +20,7 @@ class Telegram(object):
 	_proc, tgin,_encoding = None, None, None
 	_pipeline, _callables = None, []
 	_buffer, _banner_found = n(''), False
+	_buffer_char = b('')
 	_ignore = ['> \n','>\n']
 	ready = False
 
@@ -57,18 +58,41 @@ class Telegram(object):
 		try:
 			c = self._proc.stdout.read(1) # allways is a byte string.
 		except TypeError as e:
-			c = b''
+			return # yeah. Nothing to do here,
 		if c is None:
-			c = b''
-		else:
+			return # yeah. Nothing to do here,
+
+		try:
+			if(self._debug_output_file):
+				with open(self._debug_output_file, "ab") as text_file:
+					text_file.write(c)
+		except Exception as e:
+			raise # probably file io
+
+		if len(self._buffer_char) > 0:  # already begun with an imcomplete character.
 			try:
-				if(self._debug_output_file):
-					with open(self._debug_output_file, "ab") as text_file:
-						text_file.write(c)
-					#text_file.stdout.write(c)
-			except Exception as e:
-				raise
-		self._buffer = "".join([self._buffer,u(c)])
+				u_c = u(self._buffer_char)
+				print("\nU_C 1")
+			except UnicodeDecodeError:  # added character to char buffer, but is no complete character.
+				self._buffer_char += c       # add this part to it.
+				print("\nADD TO CHAR")
+				return  # better luck next time.
+			else:       # hey, it did work!
+				self._buffer_char = b('')  # reset chraracter buffer
+				print("\nRESET CHAR")
+		else: # no incomplete character.
+			try:
+				u_c = u(c)  #try to parse current char
+				print("\nU_C 2")
+			except UnicodeDecodeError:  # is not a whole char.
+				assert (len(self._buffer_char) == 0)
+				self._buffer_char += c  # begin with adding incomplete character parts
+				print("\nNEW CHAR")
+				return  # better luck/part next time.
+			else:  #is normal complete char
+				pass  # wooho?
+		print(u_c, end="", flush=True)
+		self._buffer = "".join([self._buffer,u_c])
 		if not self._banner_found and c == b'\n' and 'conditions' in self._buffer:
 			self._banner_found = True
 			self._buffer = ''
