@@ -1,5 +1,5 @@
 # **PyTG2** #
-(Python 2.7 and 3)
+(Python 3, and untested  2.7)
 
 A Python package that wraps around (a patched version of) the  [Telegram messenger CLI](https://github.com/vysheng/tg).
 The original version does not support some required features.
