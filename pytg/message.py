@@ -4,59 +4,54 @@ __author__ = 'luckydonald'
 import sys # py version check.
 
 
-class PeerPrintable(type):
+class Printable(type):
 	def __repr__(self):
 		return self.__str__().join(["'","'"])
 	def __str__(self):
 			return self.__str__()
 class Peer(object):
-	class PeerPrintable(type):
-		def __repr__(self):
-			return self.__str__().join(["'","'"])
-		def __str__(self):
-			return self.__str__()
-	PeerPrintable = PeerPrintable #hacking to get it visible from next classes...
+
 	if sys.version < '3': # python 2.7
 		class PeerType(object):
-			__metaclass__ = PeerPrintable
+			__metaclass__ = Printable
 			@classmethod
 			def __str__(cls):
 				return "unknown chat type"
 			prefix = None
 		class Group(PeerType):
-			__metaclass__ = PeerPrintable
+			__metaclass__ = Printable
 			@classmethod
 			def __str__(self):
 				return "group chat"
 			prefix = "chat"
 		class User(PeerType):
-			__metaclass__ = PeerPrintable
+			__metaclass__ = Printable
 			@classmethod
 			def __str__(self):
 				return "user chat"
 			prefix = "chat"
 		class Secret(PeerType):
-			__metaclass__ = PeerPrintable
+			__metaclass__ = Printable
 			def to_string(self):
 				return "secret user chat"
 			__str__ = to_string
 	else: # python 3
-		class PeerType(object, metaclass=PeerPrintable):
+		class PeerType(object, metaclass=Printable):
 			@classmethod
 			def __str__(cls):
 				return "unknown chat type"
 			prefix = None
-		class Group(PeerType, metaclass=PeerPrintable):
+		class Group(PeerType, metaclass=Printable):
 			@classmethod
 			def __str__(self):
 				return "group chat"
 			prefix = "chat"
-		class User(PeerType, metaclass=PeerPrintable):
+		class User(PeerType, metaclass=Printable):
 			@classmethod
 			def __str__(self):
 				return "user chat"
 			prefix = "chat"
-		class Secret(PeerType, metaclass=PeerPrintable):
+		class Secret(PeerType, metaclass=Printable):
 			def to_string(self):
 				return "secret user chat"
 			__str__ = to_string
@@ -95,6 +90,7 @@ class Peer(object):
 		return "#".join([self.type.prefix,self.name,str(self.id)])
 	def __repr__(self):
 		return self.__str__().join(["'","'"])
+
 
 # test = Peer(Peer.GROUP, "1145512", "Ponies!!!")
 
