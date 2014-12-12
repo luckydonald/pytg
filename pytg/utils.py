@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 from __future__ import generators
 from types import GeneratorType
-
+from .errors import CharacterNotAllowed
+from . import encoding
 def coroutine(func):
 	"""
 	Skips to the first yield when the generator is created.
@@ -36,6 +37,22 @@ def remove_color(txt):
 	for c in colors:
 		txt = txt.replace(c, '')
 	return txt
+
+def escape(string):
+	return string.replace("'","\\'").join(["'","'"])
+
+def string_or_empty(object):  #TODO: is this py2/3 unicode safe?
+	if isinstance(object, str):
+		return object
+	else:
+		return ""
+def has_no_spaces(string):
+	if " " in string:
+		raise CharacterNotAllowed("Found a space character in '{0}'".format(string))
+
+def has_no_newlines(string):
+	if "\n" in string:
+		raise CharacterNotAllowed("Found a new line character in '{0}'".format(string))
 
 
 def clear_prompt(txt):

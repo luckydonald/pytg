@@ -178,13 +178,9 @@ def message(target):
 				continue
 			m = print_message_data.search(clear_prompt(remove_color(line)).strip()) # http://regex101.com/r/aZ1pU3/2
 			if m:
-				arg = {
-					'type': 'message', 'msgid': m.group('msgid'),
-					'timestamp': m.group('timestamp'),
-					'message': m.group('message'), 'media': None
-				}
-				arg['peer'] = 'group' if (m.group('chatid')) else 'user'
-				arg['group'], arg['groupid'] = m.group('chat'),m.group('chatid')
+				arg = {'type': 'message', 'msgid': m.group('msgid'), 'timestamp': m.group('timestamp'),
+				       'message': m.group('message'), 'media': None, 'peer': 'group' if (m.group('chatid')) else 'user',
+				       'group': m.group('chat'), 'groupid': m.group('chatid')}
 				arg['groupcmd'] = arg['group'].replace(' ', '_') if arg['group'] else None
 				arg['user'], arg['userid'] =  m.group('user'),  m.group('userid')
 				arg['usercmd'] = arg['user'].replace(' ', '_') if arg['user'] else None
@@ -215,7 +211,7 @@ def message(target):
 						arg['media'] = {'type': 'geo', 'link': m.group('geolink')}
 				target.send(arg)
 			else:
-				print("not accepted:>" + line)
+				print("Pytg2 Warning: Message with invalid format: " + line)
 	except GeneratorExit:
 		pass
 

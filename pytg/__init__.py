@@ -7,13 +7,12 @@ import os
 import subprocess
 import fcntl
 import struct
-from .utils import start_pipeline
+from .utils import start_pipeline, escape, string_or_empty
 from . import encoding
 from .encoding import to_unicode as u
 from .encoding import to_binary as b
 from .encoding import to_native as n
-class TelegramError(Exception):
-	pass
+from .errors import TelegramError
 
 class Telegram(object):
 	_debug_output_file = None
@@ -88,6 +87,7 @@ class Telegram(object):
 			else:  #is normal complete char
 				pass  # wooho?
 		self._buffer = "".join([self._buffer,u_c])
+
 		if not self._banner_found and c == b'\n' and 'conditions' in self._buffer:
 			self._banner_found = True
 			self._buffer = ''
@@ -101,6 +101,8 @@ class Telegram(object):
 				if self._buffer not in self._ignore:
 					self._pipeline.send(n(self._buffer))
 				self._buffer = ''
+
+
 
 	def quit(self):
 		self._proc.communicate(b('quit\n'))
@@ -123,7 +125,35 @@ class Telegram(object):
 
 
 	def msg(self, peer, message):
-		self.tgin.write(b(' '.join(['msg', peer, message]) + '\n'))
+		"""
+		Will send a message to the given peer.
+		:param peer: the peer name, spaces ' ' needs to be replaced with '_', and '#' in names with '@'
+		but you can also send to the id of chats, chat#123 for group chats and user#123 for user.
+		:param message: message to send. Escaped characters, like '\n' or '\t' will result in an linefeed, tab etc.,
+		 escape backslashes like '\\t' to send them as text.
+		"""
+		self.tgin.write(b(' '.join(['msg', peer, escape(message), '\n'])))
+		self.tgin.flush()
+
+	#broadcast <user>+ <text>	Sends text to several users at once
+	def broadcast(self, message, user, *args):
+		"""
+		This sends the message to multible senders, most time.
+		WARNING: misstyping one of the User might result in unexpected results,
+		such as appending the provided user to the message and not sending to all receivers,
+		braking of linefeeds, etc.
+		DO NOT USE!!! use msg() instead!
+		You could for example use a for loop.
+		For the sake of completeness, it is still included, but will print an warnig every time used.
+
+		:param message: The message.
+		:param user: CORRECTLY spelled first user. (else it will become the message!)
+		:param *args: more CORRECTLY spelled more users. (else it will become the message!)
+		"""
+		print("\nWARNING: It is not recommanded to use the broadcast method! If you misstype ANY given user will break "
+		      "the Telegram commad, randomly append the given user names to the message text, and also not send to all "
+		      "users!!!")
+		self.tgin.write(b(' '.join(['broadcast', user, ' '.join(args), escape(message)]) + '\n'))
 		self.tgin.flush()
 
 	def send_audio(self, peer, path):
@@ -154,6 +184,29 @@ class Telegram(object):
 		self.tgin.write(b(' '.join(['send_text', peer, path]) + '\n'))
 		self.tgin.flush()
 
+	def send_typing(self, peer):
+		"""
+		Sends "is typing..." event to peer.
+		From my experience this status will just last for a few seconds, and has to be repeated, to last.
+		:param peer: The peer where to 'type'.
+		:return:
+		"""
+		self.tgin.write(b(' '.join(['send_typing', peer]) + '\n'))
+		self.tgin.flush()
+
+	def send_typing_abort(self, peer):
+		"""
+		Sends "is typing..." event to peer.
+		Not sure what is difference from send_typing and send_typing_abort ...
+		From my experience this does exactly the same as send_typing(), and the status will last for a few seconds,
+		and has to be repeated, to last.
+		:param peer: The peer where to 'type'.
+		:return:
+		"""
+		self.tgin.write(b(' '.join(['send_typing', peer]) + '\n'))
+		self.tgin.flush()
+
+
 	def status_online(self):
 		self.tgin.write(b('status_online\n'))
 		self.tgin.flush()
@@ -162,6 +215,35 @@ class Telegram(object):
 		self.tgin.write(b('status_offline\n'))
 		self.tgin.flush()
 
+	def set_profile_name(self, first_name, last_name=None):
+		"""
+		Sets profile name.
+		:param first_name: String.
+		:param last_name: String, can be None
+		"""
+		last_name = "" if not last_name else last_name
+		self.tgin.write(b(' '.join(['set_profile_name', escape(first_name), escape(last_name),'\n'])))
+		self.tgin.flush()
+
+	def set_username(self, username):
+		"""
+		Sets a username.
+		Also seen as @username
+		Can be searched globaly from all Telegram users,
+		and can be accessed with http://telegram.me/username
+		:param first_name: String.
+		:param last_name: String, can be None
+		"""
+		self.tgin.write(b(' '.join(['set_username', escape(username),'\n'])))
+		self.tgin.flush()
+
+	def set_profile_photo(self, path):
+		"""
+		Sets profile photo. Photo will be cropped to square
+		:param path: File path to the image.
+		"""
+		self.tgin.write(b(' '.join(['set_profile_photo', path]) + '\n'))
+		self.tgin.flush()
 
 	def dialog_list(self):
 		self.tgin.write(b('dialog_list\n'))
@@ -169,6 +251,22 @@ class Telegram(object):
 
 	def chat_info(self, chat):
 		self.tgin.write(b(''.join(['chat_info ', chat, '\n'])))
+		self.tgin.flush()
+
+	# create_group_chat <user> <chat topic> - creates a groupchat with user, use chat_add_user to add more users
+	# changed to
+	# create_group_chat <name> <user>+	Creates group chat with users
+	def create_group_chat(self,chat_topic,user,*args):
+		"""
+		creates a groupchat with user, use chat_add_user to add more users
+		create_group_chat("testgroup","user1","user2","user3")
+		:param chat_topic: name of the chat.  You should not include newline '\n' because
+		the bot can't read that as the linebreaks brakes the parsed line in to 2 lines which will be parsed sepreatly.
+		:param user: first user to add, you can add more, just pass more strings. For syntax see msg()
+		:param args: arguments with the more users parameters.
+		"""
+		# TODO: Make sure no newline is in chat_topic.
+		self.tgin.write(b(' '.join(['create_group_chat', escape(chat_topic), user, ' '.join(args)]) + '\n'))
 		self.tgin.flush()
 
 	def chat_add_user(self, chat, user, msgs_to_forward="100"):
@@ -185,15 +283,29 @@ class Telegram(object):
 		self.tgin.write(b(' '.join(['chat_del_user', chat, user]) + '\n'))
 		self.tgin.flush()
 
-# create_group_chat <user> <chat topic> - creates a groupchat with user, use chat_add_user to add more users
-	def create_group_chat(self,user,chat_topic):
+	def chat_set_photo(self, chat, path):
 		"""
-		creates a groupchat with user, use chat_add_user to add more users
-		:param user: first user to add.
-		:param chat_topic: name of the chat.  #TODO: Can this contain spaces, does it need quotes?
+		Sets chat photo. Photo will be cropped to square
 		"""
+		self.tgin.write(b(' '.join(['chat_set_photo', chat, path]) + '\n'))
+		self.tgin.flush()
 
-		self.tgin.write(b(' '.join(['create_group_chat', user, chat_topic]) + '\n')) #TODO: Can chat_topic contain spaces, does it need quotes?
+	def chat_set_name(self, chat, new_name):
+		"""
+		Alias for rename_chat because the default names are confusing.
+		"""
+		self.rename_chat(chat, new_name)
+
+	# rename_chat <chat> <new name>	Renames chat
+	def rename_chat(self, chat, new_name):
+		"""
+		Renames chat
+		:param chat:  the chat
+		:param new_name: new name, please do not include linebreaks, it will break the parsing of messages!
+		(and also most clients display)
+		"""
+		# TODO: Make sure no newline is in chat_topic.
+		self.tgin.write(b(' '.join(['rename_chat', chat, escape(new_name)]) + '\n'))
 		self.tgin.flush()
 
 	def user_info(self, user):
@@ -229,21 +341,6 @@ class Telegram(object):
 		self.tgin.write(b(''.join([raw,'\n'])))
 		self.tgin.flush()
 
-
-	def chat_set_photo(self, chat, path):
-		"""
-		Sets chat photo. Photo will be cropped to square
-		"""
-		self.tgin.write(b(' '.join(['chat_set_photo', chat, path]) + '\n'))
-		self.tgin.flush()
-
-	def set_profile_photo(self, path):
-		"""
-		Sets profile photo. Photo will be cropped to square
-		"""
-		self.tgin.write(b(' '.join(['set_profile_photo', path]) + '\n'))
-		self.tgin.flush()
-
 	def export_card(self):
 		"""
 		Prints card that can be imported by another user with import_card method
@@ -261,7 +358,8 @@ class Telegram(object):
 
 	def main_session(self):
 		"""
-		Sends updates to this connection (or terminal). Useful only with listening socket
+		Sends updates to this connection (or terminal). Useful only with listening socket.
+		(Not sure what that does anyway?)
 		"""
 		self.tgin.write(b('main_session\n'))
 		self.tgin.flush()
@@ -315,12 +413,31 @@ class Telegram(object):
 		self.tgin.write(b(' '.join(['load_document_thumb', msg_id,'\n'])))
 		self.tgin.flush()
 
+	#search [peer] [limit] [from] [to] [offset] pattern	Search for pattern in messages from date from to date to (unixtime) in messages with peer (if peer not present, in all messages)
+	def search(self,pattern, peer=None, limit=None, from_unixtime=None, to_unixtime=None, offset=None):
+		"""
+		search for it.
+
+		Note: Result from Telegram will be parsed and processed like normal incoming messages!
+
+		:param pattern:
+		:param peer:
+		:param limit:
+		:param from_unixtime:
+		:param to_unixtime:
+		:param offset:
+		:return:
+		"""
+		self.tgin.write(b(' '.join(['search', string_or_empty(peer), string_or_empty(limit), string_or_empty(from_unixtime), string_or_empty(to_unixtime), string_or_empty(offset), escape(pattern), '\n'])))
+		self.tgin.flush()
+		string_or_empty()
+		pass
 
 
 	@staticmethod
 	def whoami():
 		if 'HOME' in os.environ:
-			authfile = os.path.join(os.environ['HOME'], '.telegram', 'auth')
+			authfile = os.path.join(os.environ['HOME'], '.telegram-cli', 'auth')
 			if os.path.exists(authfile):
 				with open(authfile, 'rb') as fh:
 					fh.seek(-4, 2)
