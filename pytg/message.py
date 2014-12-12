@@ -1,6 +1,8 @@
 __author__ = 'luckydonald'
 
 
+import sys # py version check.
+
 
 class PeerPrintable(type):
 	def __repr__(self):
@@ -14,29 +16,51 @@ class Peer(object):
 		def __str__(self):
 			return self.__str__()
 	PeerPrintable = PeerPrintable #hacking to get it visible from next classes...
-	class PeerType(object):
-		__metaclass__ = PeerPrintable
-		@classmethod
-		def __str__(cls):
-			return "unknown chat type"
-		prefix = None
-	class Group(PeerType):
-		__metaclass__ = PeerPrintable
-		@classmethod
-		def __str__(self):
-			return "group chat"
-		prefix = "chat"
-	class User(PeerType):
-		__metaclass__ = PeerPrintable
-		@classmethod
-		def __str__(self):
-			return "user chat"
-		prefix = "chat"
-	class Secret(PeerType):
-		__metaclass__ = PeerPrintable
-		def to_string(self):
-			return "secret user chat"
-		__str__ = to_string
+	if sys.version < '3': # python 2.7
+		class PeerType(object):
+			__metaclass__ = PeerPrintable
+			@classmethod
+			def __str__(cls):
+				return "unknown chat type"
+			prefix = None
+		class Group(PeerType):
+			__metaclass__ = PeerPrintable
+			@classmethod
+			def __str__(self):
+				return "group chat"
+			prefix = "chat"
+		class User(PeerType):
+			__metaclass__ = PeerPrintable
+			@classmethod
+			def __str__(self):
+				return "user chat"
+			prefix = "chat"
+		class Secret(PeerType):
+			__metaclass__ = PeerPrintable
+			def to_string(self):
+				return "secret user chat"
+			__str__ = to_string
+	else: # python 3
+		class PeerType(object, metaclass=PeerPrintable):
+			@classmethod
+			def __str__(cls):
+				return "unknown chat type"
+			prefix = None
+		class Group(PeerType, metaclass=PeerPrintable):
+			@classmethod
+			def __str__(self):
+				return "group chat"
+			prefix = "chat"
+		class User(PeerType, metaclass=PeerPrintable):
+			@classmethod
+			def __str__(self):
+				return "user chat"
+			prefix = "chat"
+		class Secret(PeerType, metaclass=PeerPrintable):
+			def to_string(self):
+				return "secret user chat"
+			__str__ = to_string
+
 	GROUP = Group
 	USER = User
 	SECRET = Secret
