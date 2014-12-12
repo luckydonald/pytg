@@ -7,6 +7,7 @@ import os
 import subprocess
 import fcntl
 import struct
+import platform
 from .utils import start_pipeline, escape, string_or_empty
 from . import encoding
 from .encoding import to_unicode as u
@@ -45,10 +46,13 @@ class Telegram(object):
 			# to the standard signal handler SIG_IGN.
 			# Does this even work ?!?
 			import signal
-			signal.signal(signal.SIGINT,on_abort)
+			signal.signal(signal.SIGINT, on_abort)
 		proc = subprocess.Popen([self._tg, '-R', '-N', '-W', '-k', self._pub], stdin=subprocess.PIPE, stdout=subprocess.PIPE, preexec_fn = preexec_function)
 		self._proc, self.tgin = proc, proc.stdin
 		fd = proc.stdout.fileno()
+		if platform.system() == "Darwin": # is Mac OS ?
+			import sys                    # then do workaround for mac os bug...
+			fd = sys.__stdout__.fileno()  # see https://github.com/cobrateam/splinter/issues/257#issuecomment-38732807
 		fl = fcntl.fcntl(fd, fcntl.F_GETFL)
 		fcntl.fcntl(fd, fcntl.F_SETFL, fl | os.O_NONBLOCK)
 
@@ -441,7 +445,7 @@ class Telegram(object):
 			if os.path.exists(authfile):
 				with open(authfile, 'rb') as fh:
 					fh.seek(-4, 2)
-					myid = struct.unpack('<I', fh.read(4))[0]
+					myid = struct.unpack(n('<I'), fh.read(4))[0]
 				return str(myid)
 			else:
 				raise TelegramError("You have not registered telegram client")

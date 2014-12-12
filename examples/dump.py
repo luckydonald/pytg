@@ -21,9 +21,10 @@ def dump_msg():
         pass
 
 if __name__ == '__main__':
+    telegram = 'tg-for-pytg2/bin/telegram-cli'
+    pubkey = 'tg-for-pytg2/server.pub'
+
     # Instantiate Telegram class
-    telegram = './telegram'
-    pubkey = 'tg.pub'
     tg = pytg.Telegram(telegram, pubkey)
 
     # Get own id (integer represented as string datatype)

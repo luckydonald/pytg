@@ -2,7 +2,6 @@
 from __future__ import generators
 from types import GeneratorType
 from .errors import CharacterNotAllowed
-from . import encoding
 def coroutine(func):
 	"""
 	Skips to the first yield when the generator is created.
@@ -93,29 +92,21 @@ def broadcast(targets):
 	except GeneratorExit:
 		pass
 
-class toObject(dict):
-	# stout("processing" + str(object))
+import re
+unallowed_in_variable_name = re.compile('[\W]+')
+class to_object(dict):
 	def __init__(self, d,  **kwargs):
-		super(toObject, self).__init__(self, d,  **kwargs)
+		super(to_object, self).__init__(d,  **kwargs)
 		if not isinstance(d, dict):
 			raise TypeError("is no dict.")
 		self._dict = d
 		for a, b in d.items():
 			if isinstance(b, (list, tuple)): # add all list elements
-				setattr(self, a, [toObject(x) if isinstance(x, (dict,list,tuple)) else x for x in b])
+				setattr(self, a, [to_object(x) if isinstance(x, (dict,list,tuple)) else x for x in b])
 			elif isinstance(b, dict):# add list recursivly
-				setattr(self, a, toObject(b))
-			elif str(a).isdigit(): #add single numeric-element
+				setattr(self, a, to_object(b))
+			elif str(a)[0].isdigit(): #add single numeric-element
 				setattr(self, a, str(b))
-				setattr(self, "_" + str(a), b) #to access  a = {'1':'foo'}  with toObject(a)._1
+				setattr(self, "_" + unallowed_in_variable_name.sub('_', a), b) #to access  a = {'1':'foo'}  with to_object(a)._1
 			else: #add single element
-				setattr(self, a, b)
-
-
-	def toString(self):
-		return "{" + ', '.join((("'%s': %s" % (i,getattr(self, i, "None"),)) for i in dir(self) if not i.startswith('__') and not (i.startswith("_") and i[1:].isdigit()) and not callable(getattr(self,i)))) + "}"
-	__str__ = toString # user output
-	__repr__ = toString # debug output
-
-	def __getattr__(self, name):
-		return super(toObject, self).__getattribute__(name)
+				setattr(self, unallowed_in_variable_name.sub('_', a), b) # a = {'foo-2.4;"':'foo'} becomes to_object(a).foo_2_4_

@@ -2,8 +2,10 @@
 from __future__ import generators
 from types import GeneratorType
 from datetime import datetime
-from .utils import coroutine, clear_prompt, remove_color
+from .utils import coroutine, clear_prompt, remove_color, to_object
 from .regex import unread_user,unread_chat,chat_info_header,chat_info_body,user_info_realname,user_info_peerid,user_info_header,user_info_phone,print_message_data,contact_list_data,user_status_data,service_message_data
+from .message import Peer
+
 
 @coroutine
 def dialog_list(target):
@@ -179,11 +181,14 @@ def message(target):
 			m = print_message_data.search(clear_prompt(remove_color(line)).strip()) # http://regex101.com/r/aZ1pU3/2
 			if m:
 				arg = {'type': 'message', 'msgid': m.group('msgid'), 'timestamp': m.group('timestamp'),
-				       'message': m.group('message'), 'media': None, 'peer': 'group' if (m.group('chatid')) else 'user',
-				       'group': m.group('chat'), 'groupid': m.group('chatid')}
-				arg['groupcmd'] = arg['group'].replace(' ', '_') if arg['group'] else None
-				arg['user'], arg['userid'] =  m.group('user'),  m.group('userid')
-				arg['usercmd'] = arg['user'].replace(' ', '_') if arg['user'] else None
+				       'message': m.group('message'), 'media': None, 'peer': Peer.GROUP if (m.group('chatid')) else Peer.USER,
+				       'groupname': m.group('chat'), 'groupid': m.group('chatid')}
+				arg['groupcmd'] = arg['groupname'].replace(' ', '_') if arg['groupname'] else None
+				arg['username'], arg['userid'] =  m.group('user'),  m.group('userid')
+				arg['usercmd'] = arg['username'].replace(' ', '_') if arg['username'] else None
+				arg['user'] = Peer(Peer.USER, arg['userid'], arg['username'])
+				arg['group'] = Peer(Peer.GROUP, arg['groupid'], arg['groupname']) if arg['groupname'] and arg['groupid'] else None
+				arg['reply'] = arg['group'] if (m.group('chatid')) else arg['user']
 				# if arg['peer'] == 'user':
 				arg['ownmsg'] = True if m.group('dir') in  ['«««','<<<'] else False
 				if m.group('media'):
@@ -209,7 +214,7 @@ def message(target):
 							pass
 					elif 'geo' in m.group('media'):
 						arg['media'] = {'type': 'geo', 'link': m.group('geolink')}
-				target.send(arg)
+				target.send(to_object(arg))
 			else:
 				print("Pytg2 Warning: Message with invalid format: " + line)
 	except GeneratorExit:

@@ -1,15 +1,91 @@
 __author__ = 'luckydonald'
 
-try:
-	from enum import Enum
-except ImportError:
-	from __builtin__ import object as Enum #wow this is hacky!
+
+
+class PeerPrintable(type):
+	def __repr__(self):
+		return self.__str__().join(["'","'"])
+	def __str__(self):
+			return self.__str__()
+class Peer(object):
+	class PeerPrintable(type):
+		def __repr__(self):
+			return self.__str__().join(["'","'"])
+		def __str__(self):
+			return self.__str__()
+	PeerPrintable = PeerPrintable #hacking to get it visible from next classes...
+	class PeerType(object):
+		__metaclass__ = PeerPrintable
+		@classmethod
+		def __str__(cls):
+			return "unknown chat type"
+		prefix = None
+	class Group(PeerType):
+		__metaclass__ = PeerPrintable
+		@classmethod
+		def __str__(self):
+			return "group chat"
+		prefix = "chat"
+	class User(PeerType):
+		__metaclass__ = PeerPrintable
+		@classmethod
+		def __str__(self):
+			return "user chat"
+		prefix = "chat"
+	class Secret(PeerType):
+		__metaclass__ = PeerPrintable
+		def to_string(self):
+			return "secret user chat"
+		__str__ = to_string
+	GROUP = Group
+	USER = User
+	SECRET = Secret
+	#
+	# now the object:
+	type = None
+	cmd = None
+	name = None
+	id = None
+	namecmd = None
+	#
+	def __init__(self, type, id, name):
+		if not issubclass(type, Peer.PeerType):
+			raise TypeError("Type need to be a Peer.PeerType")
+		#end if
+		if type == Peer.Group:
+			self.cmd = "chat#" + id
+		elif type == Peer.User:
+			self.cmd = "user#" + id
+		else:
+			raise TypeError("Peer type {0} unsupported {0}.".format(type,Peer.GROUP))
+		#end if
+		self.type = type
+		try:
+			self.id = int(id)
+		except Exception:
+			raise
+		#end try
+		self.name = name
+		self.namecmd = name.replace(" ","_").replace("#","@")
+	def __str__(self):
+		return "#".join([self.type.prefix,self.name,str(self.id)])
+	def __repr__(self):
+		return self.__str__().join(["'","'"])
+
+# test = Peer(Peer.GROUP, "1145512", "Ponies!!!")
+
+#arg = {'type': 'message', 'msgid': m.group('msgid'), 'timestamp': m.group('timestamp'),
+#				       'message': m.group('message'), 'media': None, 'peer': 'group' if (m.group('chatid')) else 'user',
+#				       'group': m.group('chat'), 'groupid': m.group('chatid')}
+
+#arg = {'media': None, 'ownmsg': False, 'groupid': '1145512', 'peer': 'group', 'message': 'und chrysalis ist immer noch unter den Ponies in canterlot', 'user': '\uf8ff', 'timestamp': '17:34', 'type': 'message', 'usercmd': '\uf8ff', 'group': 'Ponies!!!', 'msgid': '83334', 'groupcmd': 'Ponies!!!', 'userid': '30445578'}
+#arg["userpeer"] = Peer(Peer.GROUP, "1145512", "Ponies!!!")
 
 
 
-arg = {'type': 'message', 'msgid': m.group('msgid'), 'timestamp': m.group('timestamp'),
-				       'message': m.group('message'), 'media': None, 'peer': 'group' if (m.group('chatid')) else 'user',
-				       'group': m.group('chat'), 'groupid': m.group('chatid')}
+
+""" # the rest is unfinished...
+
 
 class Message(object):
 	is_own_msg = True
@@ -30,75 +106,6 @@ class Message(object):
 class ChatMessage(Message):
 	def __init__(self, message, timestamp, is_own_msg, user_peer):
 		super(ChatMessage, self).__init__(message, timestamp, is_own_msg, user_peer)
-		self.reply_to =
 
-class PeerType(object):
-    def __str__(self):
-        return "unknown chat type"
-    def __get__(self,*args,**kwargs):
-        return self()
 
-class Group(PeerType):
-    def __str__(self):
-        return "group chat"
-
-class User(PeerType):
-    def __str__(self):
-        return "user chat"
-
-class Secret(PeerType):
-    def to_string(self):
-        return "secret user chat"
-    __str__ = to_string
-
-class Peer(object):
-    GROUP = Group
-    USER = User
-    SECRET = Secret
-    #
-    # now the object:
-    type = None
-    cmd = None
-    name = None
-    id = None
-    namecmd = None
-    #
-    def __init__(self, type, id, name):
-        if not issubclass(type, PeerType):
-            raise TypeError("Type need to be a Peer.PeerType")
-        #end if
-        if type == Group:
-            self.cmd = "chat#" + id
-        elif type == User:
-            self.cmd = "user#" + id
-        else:
-            raise TypeError("Peer type {0} unsupported {0}.".format(type,Peer.GROUP))
-        #end if
-        self.type = type
-        try:
-            self.id = int(id)
-        except Exception:
-            raise
-        #end try
-        self.name = name
-        self.namecmd = name.replace(" ","_").replace("#","@")
-
-test = Peer(Peer.GROUP, "1145512", "Ponies!!!")
-
-class toObject(dict):
-    # stout("processing" + str(object))
-    def __init__(self, d,  **kwargs):
-        super(toObject, self).__init__(d,  **kwargs)
-        if not isinstance(d, dict):
-            raise TypeError("is no dict.")
-        self._dict = d
-        for a, b in d.items():
-            if isinstance(b, (list, tuple)): # add all list elements
-                setattr(self, a, [toObject(x) if isinstance(x, (dict,list,tuple)) else x for x in b])
-            elif isinstance(b, dict):# add list recursivly
-                setattr(self, a, toObject(b))
-            elif str(a).isdigit(): #add single numeric-element
-                setattr(self, a, str(b))
-                setattr(self, "_" + str(a), b) #to access  a = {'1':'foo'}  with toObject(a)._1
-            else: #add single element
-                setattr(self, a, b)
+"""
