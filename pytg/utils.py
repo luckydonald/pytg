@@ -101,12 +101,29 @@ class to_object(dict):
 			raise TypeError("is no dict.")
 		self._dict = d
 		for a, b in d.items():
-			if isinstance(b, (list, tuple)): # add all list elements
-				setattr(self, a, [to_object(x) if isinstance(x, (dict,list,tuple)) else x for x in b])
-			elif isinstance(b, dict):# add list recursivly
-				setattr(self, a, to_object(b))
-			elif str(a)[0].isdigit(): #add single numeric-element
-				setattr(self, a, str(b))
-				setattr(self, "_" + unallowed_in_variable_name.sub('_', a), b) #to access  a = {'1':'foo'}  with to_object(a)._1
-			else: #add single element
-				setattr(self, unallowed_in_variable_name.sub('_', a), b) # a = {'foo-2.4;"':'foo'} becomes to_object(a).foo_2_4_
+			self._add_to_object_part(a, b)
+
+	def _add_to_object_part(self, name, obj):
+		name = unallowed_in_variable_name.sub('_', name)
+		if str(name)[0].isdigit():
+			name = "_" + name #to access  a = {'1':'foo'}  with to_object(a)._1
+		if isinstance(obj, (list, tuple)): # add all list elements
+			setattr(self, name, [to_object(x) if isinstance(x, (dict,list,tuple)) else x for x in obj])
+		elif isinstance(obj, dict):# add list recursivly
+			setattr(self, name, to_object(obj))
+		elif str(obj).isdigit(): #add single numeric-element
+			setattr(self, name, int(obj))
+		else: #add single element
+			setattr(self, name, obj) # a = {'foo-2.4;"':'foo'} becomes to_object(a).foo_2_4_
+
+	def __setattr__(self, name, value):
+		self._add_to_object_part(name, value)
+		return super(to_object, self).__setattr__(name, value)
+
+	def __delattr__(self, name):
+		name = unallowed_in_variable_name.sub('_', name)
+		if str(name)[0].isdigit():
+			name = "_" + name
+		delattr(self,name)
+		return super(to_object, self).__delattr__(name)
+
