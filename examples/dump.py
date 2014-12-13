@@ -24,6 +24,9 @@ if __name__ == '__main__':
     telegram = 'tg-for-pytg2/bin/telegram-cli'
     pubkey = 'tg-for-pytg2/server.pub'
 
+    telegram = '../tg_mac/bin/telegram-cli'
+    pubkey = '../tg_mac/server.pub'
+
     # Instantiate Telegram class
     tg = pytg.Telegram(telegram, pubkey)
 
