@@ -18,8 +18,9 @@ When using the tg.message() pipeline and storing the message like ```msg = (yiel
 
 
 ### The Peer object ###
-When using one of the peer objects of the message array object. This can be one on three: ```msg.reply```, ```msg.user```, ```msg.group```
-Please note, ```group``` can be ```None```.
+When using one of the peer objects of the message array object.    
+This can be one on three: ```msg.reply```, ```msg.user```, ```msg.group```    
+Please note, ```group``` can be ```None```.    
 We will assume ```user = msg.user``` for the example:
 
     user.type = Peer.GROUP or Peer.USER
@@ -38,6 +39,7 @@ We will assume ```user = msg.user``` for the example:
     To identify a user              use msg.user.id    
     To get the user/chatroom name   use msg.user.name or msg.group.name    
 
+------------------------------------
 
 ## **Installation**
 You have to install the patched telegram cli and pytg2.
@@ -88,13 +90,13 @@ You're Done with the installation!
 ### 4. Look at the examples
 See some example scripts to start with.
 They are in the [examples folder](https://bitbucket.org/luckydonald/pytg2/src)    
-* pingbot.py is usefull to see how to interact with pytg, send messages etc.     
-* dump.py is usefull to see, how the messages look like.  
+* pingbot.py* is usefull to see how to interact with pytg, send messages etc.     
+* dump.py is* usefull to see, how the messages look like.  
    
 ### 5. Contribute
 You can help    
-* by [reporting issues](https://bitbucket.org/luckydonald/pytg2/issues)    
-* by commiting patches    
-* with testing    
+ * by [reporting issues](https://bitbucket.org/luckydonald/pytg2/issues)    
+ * by commiting patches    
+ * with testing    
 
 Thanks!
