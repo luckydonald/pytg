@@ -1,10 +1,13 @@
 # **PyTG2** #
 (Python 2.7 and 3)
 
-A Python package that wraps around (a patched version of) the  [Telegram messenger CLI](https://github.com/vysheng/tg).
-The original version does not support some required features.
-I really recommend to use Python 3, because of it's build in unicode support.
-Python 2 uses ascii only bytestrings, causing much trouble when dealing with characters like öäüß or emojis.
+A Python package that wraps around (a patched version of) the Telegram messenger CLI .
+The [original version](https://github.com/vysheng/tg) does not support some required features.    
+
+
+> I really recommend to use Python 3, because of it's build in unicode support.
+Python 2 uses ascii only bytestrings, causing much trouble when dealing with characters like öäüß or emojis.    
+~ luckydonald
 
 ## **New in Version 0.2.2**
 
@@ -94,9 +97,10 @@ They are in the [examples folder](https://bitbucket.org/luckydonald/pytg2/src)
 * dump.py is* usefull to see, how the messages look like.  
    
 ### 5. Contribute
-You can help    
- * by [reporting issues](https://bitbucket.org/luckydonald/pytg2/issues)    
- * by commiting patches    
- * with testing    
+You can help
+
+* by [reporting issues](https://bitbucket.org/luckydonald/pytg2/issues)
+* by commiting patches
+* with testing
 
 Thanks!
