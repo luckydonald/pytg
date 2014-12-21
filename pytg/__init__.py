@@ -111,6 +111,10 @@ class Telegram(object):
         self.tgin.write('contact_list\n')
         self.tgin.flush()
 
+    def add_contact(self, number, first_name, last_name):
+        self.tgin.write(''.join(['add_contact ', number, ' ', first_name, ' ', last_name, '\n']))
+        self.tgin.flush()
+        
     def whoami(self):
         if 'HOME' in os.environ:
             authfile = os.path.join(os.environ['HOME'], '.telegram', 'auth')
