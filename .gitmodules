@@ -1,0 +1,3 @@
+[submodule "pytg/DictObject"]
+	path = pytg/DictObject
+	url = https://github.com/luckydonald/DictObject.git
