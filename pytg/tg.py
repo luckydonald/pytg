@@ -5,7 +5,7 @@ from datetime import datetime
 from .utils import coroutine, clear_prompt, remove_color
 from .regex import unread_user,unread_chat,chat_info_header,chat_info_body,user_info_realname,user_info_peerid,user_info_header,user_info_phone,print_message_data,contact_list_data,user_status_data,service_message_data
 from .message import Peer
-from .DictObject import DictObject
+from DictObject import DictObject
 
 
 @coroutine
