@@ -2,9 +2,10 @@
 from __future__ import generators
 from types import GeneratorType
 from datetime import datetime
-from .utils import coroutine, clear_prompt, remove_color, to_object
+from .utils import coroutine, clear_prompt, remove_color
 from .regex import unread_user,unread_chat,chat_info_header,chat_info_body,user_info_realname,user_info_peerid,user_info_header,user_info_phone,print_message_data,contact_list_data,user_status_data,service_message_data
 from .message import Peer
+from .DictObject import DictObject
 
 
 @coroutine
@@ -214,7 +215,7 @@ def message(target):
 							pass
 					elif 'geo' in m.group('media'):
 						arg['media'] = {'type': 'geo', 'link': m.group('geolink')}
-				target.send(to_object(arg))
+				target.send(DictObject(arg))
 			else:
 				print("Pytg2 Warning: Message with invalid format: " + line)
 	except GeneratorExit:
