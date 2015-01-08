@@ -56,7 +56,7 @@ Install the future. (for Compatibility to both python 2.7 and 3)
 
 Clone PyTG 2 Repository
 
-    $ git clone https://bitbucket.org/luckydonald/pytg2.git && cd pytg2 && sudo python setup.py install
+    $ git clone --recursive https://bitbucket.org/luckydonald/pytg2.git && cd pytg2 && sudo python setup.py install
  
       
 ### 2. Install Patched Telegram CLI
