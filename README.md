@@ -37,10 +37,10 @@ We will assume ```user = msg.user``` for the example:
 
 ### tl;dr ###
 
-    To answer to an message in the same chat as the received message, use the data of msg.reply .     
-    To get the sender peer string   use .cmd on an Peer object.  E.g. msg.reply.cmd    
-    To identify a user              use msg.user.id    
-    To get the user/chatroom name   use msg.user.name or msg.group.name    
+* To answer to an message in the same chat as the received message, use the data of ```msg.reply``` .     
+* To get the sender peer string   use ```.cmd``` on an Peer object.  Example: ```msg.reply.cmd```    
+* To identify a user              use ```msg.user.id```   
+* To get the user/chatroom name   use ```msg.user.name``` or ```msg.group.name```    
 
 ------------------------------------
 
