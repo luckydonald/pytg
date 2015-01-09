@@ -38,6 +38,11 @@ class Telegram(object):
 		self._callables.append([func, args, kwargs])
 
 	def start(self):
+		"""
+		Start the telegram process.
+
+		:return: (int) process id of telegram.
+		"""
 		def preexec_function():
 			def on_abort(signal, stackframe):
 				print("SIGINT ignored!")
@@ -55,6 +60,7 @@ class Telegram(object):
 			fd = sys.__stdout__.fileno()  # see https://github.com/cobrateam/splinter/issues/257#issuecomment-38732807
 		fl = fcntl.fcntl(fd, fcntl.F_GETFL)
 		fcntl.fcntl(fd, fcntl.F_SETFL, fl | os.O_NONBLOCK)
+		return proc.pid
 
 	def poll(self):
 		if not self._proc or self._proc.poll():
