@@ -6,7 +6,7 @@ import sys # py version check.
 
 class Printable(type):
 	def __repr__(self):
-		return self.__str__().join(["'","'"])
+		return self.__str__().join(["'", "'"])
 	def __str__(self):
 			return self.__str__()
 class Peer(object):
@@ -46,11 +46,13 @@ class Peer(object):
 			def __str__(self):
 				return "group chat"
 			prefix = "chat"
+			type = "group"
 		class User(PeerType, metaclass=Printable):
 			@classmethod
 			def __str__(self):
 				return "user chat"
-			prefix = "chat"
+			prefix = "user"
+			type = "user"
 		class Secret(PeerType, metaclass=Printable):
 			def to_string(self):
 				return "secret user chat"
@@ -73,6 +75,7 @@ class Peer(object):
 		#end if
 		if type == Peer.Group:
 			self.cmd = "chat#" + id
+			# self.type =
 		elif type == Peer.User:
 			self.cmd = "user#" + id
 		else:
