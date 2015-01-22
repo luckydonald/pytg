@@ -52,14 +52,27 @@ class Telegram(object):
 			# Does this even work ?!?
 			import signal
 			signal.signal(signal.SIGINT, on_abort)
+
+		def _make_fd_blocking(file_descriptor):
+			"""
+			Updates the flags of the file descriptor to make it blocking.
+
+			file_obj is a `file` object, which has a `.fileno()` method.
+			See http://trac.edgewall.org/ticket/2066#comment:1
+			"""
+			flags = fcntl.fcntl(file_descriptor, fcntl.F_GETFL)
+			if flags & os.O_NONBLOCK:
+				fcntl.fcntl(file_descriptor, fcntl.F_SETFL, flags & ~os.O_NONBLOCK)
+
 		proc = subprocess.Popen([self._tg, '-R', '-N', '-W', '-k', self._pub], stdin=subprocess.PIPE, stdout=subprocess.PIPE, preexec_fn = preexec_function)
 		self._proc, self.tgin = proc, proc.stdin
-		fd = proc.stdout.fileno()
+		file_descriptor = proc.stdout.fileno()
 		if platform.system() == "Darwin": # is Mac OS ?
 			import sys                    # then do workaround for mac os bug...
-			fd = sys.__stdout__.fileno()  # see https://github.com/cobrateam/splinter/issues/257#issuecomment-38732807
-		fl = fcntl.fcntl(fd, fcntl.F_GETFL)
-		fcntl.fcntl(fd, fcntl.F_SETFL, fl | os.O_NONBLOCK)
+			file_descriptor = sys.__stdout__.fileno()  # see https://github.com/cobrateam/splinter/issues/257#issuecomment-38732807
+		flags = fcntl.fcntl(file_descriptor, fcntl.F_GETFL)
+		# fcntl.fcntl(file_descriptor, fcntl.F_SETFL, flags | os.O_NONBLOCK)
+		_make_fd_blocking(file_descriptor)
 		return proc.pid
 
 	def poll(self):
