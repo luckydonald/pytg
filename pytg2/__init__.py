@@ -73,36 +73,16 @@ class Telegram(object):
 				s.close()
 		# end while not self.QUIT
 	# end def
-	def message(self, target):
-		if type(target) is not GeneratorType:
+
+	def message(self, function):
+		if type(function) is not GeneratorType:
 			raise TypeError('target must be GeneratorType')
 		try:
 			while not self.QUIT:
 				self._messages.acquire()
-				target.send(self._queue.pop())
+				function.send(self._queue.pop())
 		except GeneratorExit:
 			pass
 	#end def
 #end class
 
-#@coroutine
-def dialog_list(target):
-	"""
-	Get the dialog list.
-	:param target:
-	:raise TypeError:
-	"""
-	#if type(target) is not GeneratorType:
-	#	raise TypeError('target must be GeneratorType')
-
-@coroutine
-def test(tg):
-	while True:
-		msg = (yield)
-		print("MSG: "+ str(msg))
-		time.sleep(10)
-
-if __name__ == '__main__':
-	tg = Telegram() #get a Telegram Connector instance
-	tg.start() #start the Connector.
-	tg.message(test(tg)) # add "test" function as listeners. You can supply arguments here (like tg).
