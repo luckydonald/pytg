@@ -7,7 +7,7 @@ import socket # connect to telegram cli.
 import time # wait for retry
 from DictObject import DictObject
 import json
-from utils import coroutine
+from .utils import coroutine
 from types import GeneratorType
 
 

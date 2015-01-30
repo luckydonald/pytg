@@ -1,9 +1,3 @@
-[submodule "pytg/DictObject"]
-	path = pytg/DictObject
-	url = https://github.com/luckydonald/DictObject.git
-[submodule "pytg2/DictObject"]
-	path = pytg2/DictObject
-	url = https://github.com/luckydonald/DictObject.git
 [submodule "DictObject"]
 	path = DictObject
 	url = https://github.com/luckydonald/DictObject.git
