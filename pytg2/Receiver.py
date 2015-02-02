@@ -14,13 +14,14 @@ from .encoding import to_unicode
 
 SOCKET_SIZE = 1 << 25
 
+__all__ = ["Receiver", "Sender"]
 class Receiver(object):
 	"""
 	Start telegram client somewhere.
 	$ ./bin/telegram-cli -P 1337 -s 127.0.0.1:4458 -W
 	Get a telegram
 	>>> tg = Receiver()
-	>>> tg.start();
+	>>> tg.start()
 
 	"""
 	QUIT = False
