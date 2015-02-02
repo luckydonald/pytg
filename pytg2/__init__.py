@@ -14,22 +14,21 @@ from .encoding import to_unicode
 
 SOCKET_SIZE = 1 << 25
 
-class Telegram(object):
+class Receiver(object):
 	"""
 	Start telegram client somewhere.
 	$ ./bin/telegram-cli -P 1337 -s 127.0.0.1:4458 -W
 	Get a telegram
-	>>> tg = Telegram()
+	>>> tg = Receiver()
 	>>> tg.start();
 
 	"""
 	QUIT = False
 	_queue = []
 	_new_messages = threading.Semaphore(0)
-	def __init__(self, host="localhost", port_in=4458, port_out=1337):
+	def __init__(self, host="localhost", port=4458):
 		self.host = host
-		self.port_in = port_in
-		self.port_out = port_out
+		self.port = port
 	def start(self):
 		receiver_thread = threading.Thread(target=self._receiver, args=())
 		receiver_thread.daemon = False  # don't exit if script reaches end. Use self.QUIT
@@ -42,18 +41,18 @@ class Telegram(object):
 		"""
 		Server.
 		"""
-		s = None;
+		s = None
 		print("Started server.")
 		while not self.QUIT:
 			if s:
 				s.close()
-			del s;
+			del s
 			s = socket.socket()
 			s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 			failed = True
 			while failed:
 				try:
-					s.bind((self.host, self.port_in))
+					s.bind((self.host, self.port))
 				except Exception as err:
 					print(err)
 					print("Port assignment Failed. Retring in 1 second.")

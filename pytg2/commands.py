@@ -105,7 +105,7 @@ class Sender(object):
 			s.close()
 			if error.errno != ECONNREFUSED:
 				raise suppress_context(socket_error)  # Not the error we are looking for, re-raise
-			print("Connection to Telegram CLI refused.\nMaybe not running?")
+			print("Connection to Receiver CLI refused.\nMaybe not running?")
 			return
 		print("Connected.")
 		try:

@@ -1,5 +1,5 @@
 __author__ = 'luckydonald'
-from pytg2 import Telegram
+from pytg2 import Receiver
 from pytg2.utils import coroutine
 
 @coroutine
@@ -14,7 +14,7 @@ def example_function(tg):
 		print("Exiting")
 
 if __name__ == '__main__':
-	tg = Telegram(port_out=9034) #get a Telegram Connector instance
+	tg = Receiver(port_out=9034) #get a Receiver Connector instance
 	tg.start() #start the Connector.
 	tg.message(example_function(tg)) # add "example_function" function as listeners. You can supply arguments here (like tg).
 	# continues here, after exiting while loop in example_function()
