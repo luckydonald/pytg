@@ -7,14 +7,19 @@ import socket # connect to telegram cli.
 import time # wait for retry
 from DictObject import DictObject
 import json
-from .utils import coroutine
+from .utils import coroutine, suppress_context
 from types import GeneratorType
-
+from errno import ECONNREFUSED
+from socket import error as socket_error
+from . import encoding
+from .encoding import to_unicode
 
 SOCKET_SIZE = 1 << 25
 
 class Telegram(object):
 	"""
+	Start telegram client somewhere.
+	$ ./bin/telegram-cli -P 1337 -s 127.0.0.1:4458 -W
 	Get a telegram
 	>>> tg = Telegram()
 	>>> tg.start();
@@ -22,16 +27,20 @@ class Telegram(object):
 	"""
 	QUIT = False
 	_queue = []
-	_messages = threading.Semaphore(0)
-	def __init__(self):
-		self.host = "127.0.0.1"
-		self.port = 4458
+	_new_messages = threading.Semaphore(0)
+	def __init__(self, host="localhost", port_in=4458, port_out=1337):
+		self.host = host
+		self.port_in = port_in
+		self.port_out = port_out
 	def start(self):
-		thread = threading.Thread(target=self.run, args=())
-		thread.daemon = False #don't exit if script reaches end. Use self.QUIT
-		thread.start()
+		receiver_thread = threading.Thread(target=self._receiver, args=())
+		receiver_thread.daemon = False  # don't exit if script reaches end. Use self.QUIT
+		receiver_thread.start()
 
-	def run(self):
+	def stop(self):
+		self.QUIT = True
+
+	def _receiver(self):
 		"""
 		Server.
 		"""
@@ -46,40 +55,67 @@ class Telegram(object):
 			failed = True
 			while failed:
 				try:
-					s.bind(((self.host), self.port))
+					s.bind((self.host, self.port_in))
 				except Exception as err:
 					print(err)
 					print("Port assignment Failed. Retring in 1 second.")
 					time.sleep(1)
 				else:
 					failed = False
-					print("Successful bound to port.")
 			s.listen(1) # allow 1 connection.
-			print("Listening!")
 			conn, addr = s.accept()
-			print("Got connection %s , %s" %(str(conn), str(addr)))
 			try:
 				buffer = ""
 				result = "-NO DATA-"
-				while not len(result) == 0:
-					result = conn.recv(SOCKET_SIZE).decode('utf-8')
-					print("Got something: " + str(result))
+				while not len(result) <= 0:
+					result = to_unicode(conn.recv(SOCKET_SIZE))
 					buffer += result
-				print("Got result: " + buffer)
-				message = DictObject.objectify(json.loads(buffer))
-				self._queue.append(message)
-				self._messages.release()
+				print("Got result: >%s<" % buffer) # TODO remove.
+				if (buffer != "" and  len(buffer) > 0 and buffer.strip() != ""):
+					message = DictObject.objectify(json.loads(buffer))
+					self._queue.append(message)
+					self._new_messages.release()
 			finally:
 				s.close()
 		# end while not self.QUIT
 	# end def
+
+	def _do_send(self, command):
+		print("sending {command}".format(command=command))
+		s = socket.socket()
+		try:
+			s.connect((self.host,self.port_out))
+		except socket_error as error:
+			s.close()
+			if error.errno != ECONNREFUSED:
+				raise suppress_context(socket_error)  # Not the error we are looking for, re-raise
+			print("Connection to Telegram CLI refused.\nMaybe not running?")
+			return
+		print("Connected.")
+		try:
+			s.send(command.encode("utf-8")) #TODO be py2/3 compatible
+		except socket_error as error:
+			s.close()
+			raise suppress_context(socket_error)
+		print("Sended.")
+		try:
+			answer = s.recv(SOCKET_SIZE)
+			print("Answer %s" % answer)
+		except socket_error as error:
+			print("Failed")
+			s.close()
+			raise suppress_context(socket_error)
+		s.close()
+		print (answer)
+		return answer
+		pass  # end try
 
 	def message(self, function):
 		if type(function) is not GeneratorType:
 			raise TypeError('target must be GeneratorType')
 		try:
 			while not self.QUIT:
-				self._messages.acquire()
+				self._new_messages.acquire() # waits until at least 1 message is in the queue.
 				function.send(self._queue.pop())
 		except GeneratorExit:
 			pass
