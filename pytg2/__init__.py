@@ -9,8 +9,6 @@ from DictObject import DictObject
 import json
 from .utils import coroutine, suppress_context
 from types import GeneratorType
-from errno import ECONNREFUSED
-from socket import error as socket_error
 from . import encoding
 from .encoding import to_unicode
 
@@ -79,36 +77,6 @@ class Telegram(object):
 				s.close()
 		# end while not self.QUIT
 	# end def
-
-	def _do_send(self, command):
-		print("sending {command}".format(command=command))
-		s = socket.socket()
-		try:
-			s.connect((self.host,self.port_out))
-		except socket_error as error:
-			s.close()
-			if error.errno != ECONNREFUSED:
-				raise suppress_context(socket_error)  # Not the error we are looking for, re-raise
-			print("Connection to Telegram CLI refused.\nMaybe not running?")
-			return
-		print("Connected.")
-		try:
-			s.send(command.encode("utf-8")) #TODO be py2/3 compatible
-		except socket_error as error:
-			s.close()
-			raise suppress_context(socket_error)
-		print("Sended.")
-		try:
-			answer = s.recv(SOCKET_SIZE)
-			print("Answer %s" % answer)
-		except socket_error as error:
-			print("Failed")
-			s.close()
-			raise suppress_context(socket_error)
-		s.close()
-		print (answer)
-		return answer
-		pass  # end try
 
 	def message(self, function):
 		if type(function) is not GeneratorType:
