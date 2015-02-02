@@ -14,7 +14,6 @@ from .encoding import to_unicode
 
 SOCKET_SIZE = 1 << 25
 
-__all__ = ["Receiver", "Sender"]
 class Receiver(object):
 	"""
 	Start telegram client somewhere.
