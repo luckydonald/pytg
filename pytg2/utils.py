@@ -6,7 +6,9 @@ def suppress_context(exc):
 
 
 def escape(string):
-	return string.replace("'","\\'").join(["'","'"])
+	for i in range(0,7):
+		string = string.replace(["\\","\n","\r","\t","\b","\a","'"][i], ["\\\\","\\n","\\r","\\t","\\b","\\a","\\'"][i])
+	return string.join(["'","'"])
 
 
 def coroutine(func):
