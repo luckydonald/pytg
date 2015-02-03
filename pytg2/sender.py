@@ -148,8 +148,3 @@ class Sender(object):
 			s.close()
 			return u(buffer)
 		# end block
-
-
-
-
-
