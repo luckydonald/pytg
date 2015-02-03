@@ -27,6 +27,12 @@ def secret_chat(value):
 def unicode_string(value):
 	return isinstance(value, encoding.text_type)
 
+def unescaped_unicode_string(value):
+	"""
+	Used for unicodes stings which will not be escaped.
+	"""
+	return isinstance(value, encoding.text_type)
+
 def number(value):
 	return isinstance(value, (int,long))
 
