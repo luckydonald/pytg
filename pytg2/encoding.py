@@ -28,7 +28,7 @@ def to_unicode(x):
     if isinstance(x, binary_type):
         #return codecs.unicode_escape_decode(x)[0]
         if x == b'\\':
-            return "\\"
+            return u"\\"
         return x.decode("utf-8")
     else:
         return x

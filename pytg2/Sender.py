@@ -3,7 +3,7 @@ from . import argumenttypes as args
 from .utils import suppress_context, escape
 from .encoding import to_native as n
 from .encoding import to_unicode as u
-from .encoding import text_type
+from .encoding import to_binary as b
 import socket # connect to telegram cli.
 from errno import ECONNREFUSED
 from socket import error as socket_error
@@ -98,7 +98,8 @@ class Sender(object):
 
 	def _do_command(self, function_sting, *argmts):
 		arg_string = " ".join([str(x) for x in argmts])
-		request = "".join([function_sting, " ", arg_string, "\n"])
+		request = " ".join([function_sting,  arg_string])
+		request = "".join([request, "\n"])
 		result = self._do_send(request)
 		return result
 
@@ -111,46 +112,42 @@ class Sender(object):
 			return self.sender_instance.execute_function(self.name, *args)
 
 	def _do_send(self, command):
-		with self._socked_used.acquire():
-		self._socked_used.acquire()
-		print("sending {command}".format(command=command))
-		s = socket.socket()
-		try:
-			s.connect((self.host,self.port_out))
-		except socket_error as error:
-			s.close()
-			if error.errno != ECONNREFUSED:
-				raise suppress_context(socket_error)  # Not the error we are looking for, re-raise
-			print("Connection to Receiver CLI refused.\nMaybe not running?")
-			self._socked_used.release()
-			return
-		print("Connected.")
-		try:
-			s.send(command.encode("utf-8")) #TODO be py2/3 compatible
-		except socket_error as error:
-			s.close()
-			self._socked_used.release()
-			raise suppress_context(socket_error)
-		print("Sended.")
-		completed = -1 # -1 = answer size yet unknown, >0 = got remaining answer size
-		buffer = u("")
-		while(completed != 0):
+		with self._socked_used:
+			print("sending {command}".format(command=command))
+			s = socket.socket()
 			try:
-				s.settimeout(10) # in seconds.
-				answer = u(s.recv(1))
-				buffer += answer
-				if completed <= -1 and buffer.startswith(u("ANSWER ")) and  buffer.endswith(u("\n")):
-					completed = int(n(buffer[7:-1])) #TODO regex.
-					buffer = u("")
-				completed -= 1
+				s.connect((self.host,self.port_out))
 			except socket_error as error:
-				print("Failed")
 				s.close()
-				self._socked_used.release()
-				raise suppress_context(error)
-		s.close()
-		self._socked_used.release()
-		return buffer
+				if error.errno != ECONNREFUSED:
+					raise suppress_context(socket_error)  # Not the error we are looking for, re-raise
+				print("Connection to Receiver CLI refused.\nMaybe not running?")
+				return
+			print("Connected.")
+			try:
+				s.send(command.encode("utf-8")) #TODO be py2/3 compatible
+			except socket_error as error:
+				s.close()
+				raise suppress_context(socket_error)
+			print("Sended.")
+			completed = -1 # -1 = answer size yet unknown, >0 = got remaining answer size
+			buffer = b("")
+			while(completed != 0):
+				try:
+					s.settimeout(10) # in seconds.
+					answer = s.recv(1)
+					buffer += answer
+					if completed <= -1 and buffer.startswith(b("ANSWER ")) and  buffer.endswith(b("\n")):
+						completed = int(n(buffer[7:-1])) #TODO regex.
+						buffer = b("")
+					completed -= 1
+				except socket_error as error:
+					print("Failed")
+					s.close()
+					raise suppress_context(error)
+			s.close()
+			return u(buffer)
+		# end block
 
 
 
