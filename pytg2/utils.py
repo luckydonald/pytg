@@ -4,6 +4,11 @@ def suppress_context(exc):
 	exc.__context__ = None
 	return exc
 
+
+def escape(string):
+	return string.replace("'","\\'").join(["'","'"])
+
+
 def coroutine(func):
 	"""
 	Skips to the first yield when the generator is created.

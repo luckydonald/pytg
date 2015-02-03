@@ -1,1 +1,1 @@
-__all__ = ["Receiver", "Sender"]
+__all__ = ["receiver", "sender"]

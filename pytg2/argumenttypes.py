@@ -1,5 +1,5 @@
 __author__ = 'luckydonald'
-import encoding
+from . import encoding
 
 def none(value):
 	if value == None:
@@ -7,7 +7,7 @@ def none(value):
 	return False
 
 def peer(value):
-	if not string(value):
+	if not unicode_string(value):
 		return False
 	if " " in value:
 		return False
@@ -24,7 +24,7 @@ def user(value):
 def secret_chat(value):
 	return peer(value)
 
-def string(value):
+def unicode_string(value):
 	return isinstance(value, encoding.text_type)
 
 def number(value):
@@ -46,7 +46,7 @@ def nonnegative_number(value):
 	return False
 
 def msg_id(value):
-	if string(value):
+	if unicode_string(value):
 		try:
 			int_val = int(value)
 			return positive_number(int_val)

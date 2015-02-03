@@ -10,7 +10,7 @@ import json
 from .utils import coroutine, suppress_context
 from types import GeneratorType
 from . import encoding
-from .encoding import to_unicode
+from .encoding import to_unicode as u
 
 SOCKET_SIZE = 1 << 25
 
@@ -62,13 +62,13 @@ class Receiver(object):
 			s.listen(1) # allow 1 connection.
 			conn, addr = s.accept()
 			try:
-				buffer = ""
+				buffer = u("")
 				result = "-NO DATA-"
 				while not len(result) <= 0:
-					result = to_unicode(conn.recv(SOCKET_SIZE))
+					result = u(conn.recv(SOCKET_SIZE))
 					buffer += result
 				print("Got result: >%s<" % buffer) # TODO remove.
-				if (buffer != "" and  len(buffer) > 0 and buffer.strip() != ""):
+				if (len(buffer) > 0 and buffer.strip() != ""):
 					message = DictObject.objectify(json.loads(buffer))
 					self._queue.append(message)
 					self._new_messages.release()
@@ -77,6 +77,7 @@ class Receiver(object):
 		# end while not self.QUIT
 	# end def
 
+	@coroutine
 	def message(self, function):
 		if type(function) is not GeneratorType:
 			raise TypeError('target must be GeneratorType')
