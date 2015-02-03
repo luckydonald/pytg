@@ -57,3 +57,8 @@ if __name__ == '__main__':
 
 	# continues here, after exiting while loop in example_function()
 	receiver.stop()
+
+	# the sender will disconnect after each send, so there is not stop needed.
+
+	# if you want to shutdown the telegram cli:
+	# sender.safe_quit() # this shuts down the telegram cli.
