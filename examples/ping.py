@@ -10,33 +10,43 @@ from pytg2.encoding import to_unicode #also avialable:  to_binary, to_native
 @coroutine
 def example_function(sender):
 	QUIT = False
-	ADMIN_ID = 123456
+	ADMIN_ID = 10717954
 	try:
 		while not QUIT: # loop for messages
 			msg = (yield) # it waits until it has a message here.
-
-			if msg['out'] == True: # the bot has send this message.
-				continue # we dont want to process this message.
-
+			print(msg)
+			if msg.own: # the bot has send this message.
+				continue # we don't want to process this message.
+			if msg.event != u"message": # not a message
+				continue # we'll skip that too.
+			if msg.text == None:  # we have media instead.
+				continue # and again, because we want to process only text message.
 			# Everything in ptg2 will be unicode. If you use python 3 thats no problem,
 			# just if you use python 2 you have to be carefull! (better switch to 3)
-			# for convinience of py2 users there is a to_unicode in pytg2.encoding
+			# for convinience of py2 users there is a to_unicode(<string>) in pytg2.encoding
 			# for python 3 the using of it is not needed.
 			# But again, use python 3, as you have a chat with umlaute and emojis.
 			# This WILL brake your python 2 code at some point!
-			if msg['text'] == u"ping":
-				sender.send_msg(msg['from']['print_name'], u"Pong!")
+			if msg.text == u"ping":
+				sender.send_msg(msg.peer.cmd, u"Pong!")
 
-			elif msg['text'] == u"quit":  # you should probably check a user id
-				if msg['from']['id'] == ADMIN_ID:
-					sender.send_msg(msg['from']['print_name'], u"Bye!")
+			elif msg.text == u"quit":  # you should probably check a user id
+				if msg.sender.id == ADMIN_ID:
+					sender.send_msg(msg.sender.cmd, u"Bye!")
+					receiver.stop() # please, no more messages. (we could stop the the cli too, with sender.safe_quit() )
 					QUIT = True
 				else:
 					reply = u"You are not my Admin.\nMy Admin has id {admin_id} but you have {user_id}".format(admin_id=ADMIN_ID, user_id=msg['from']['id'])
-					sender.send_msg(msg['from']['print_name'], reply)
+					sender.send_msg(msg.sender.cmd, reply)
+	except GeneratorExit:
+		# the generator (the yield part) got a KeyboardIterrupt.
+		pass
 	except KeyboardInterrupt:
-		print("Exiting")
-
+		# we got a KeyboardIterrupt.
+		pass
+	else:
+		# the loop exited without exception, becaues _quit was set True
+		pass
 
 
 ## program start here ##
@@ -54,11 +64,9 @@ if __name__ == '__main__':
 	# add "example_function" function as listeners. You can supply arguments here (like sender).
 	receiver.message(example_function(sender))
 	# now it will call the example_function and yield the new messages.
-
 	# continues here, after exiting while loop in example_function()
-	receiver.stop()
+	print("I am done!")
 
 	# the sender will disconnect after each send, so there is not stop needed.
-
 	# if you want to shutdown the telegram cli:
 	# sender.safe_quit() # this shuts down the telegram cli.

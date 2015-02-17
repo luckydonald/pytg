@@ -20,11 +20,14 @@ def coroutine(func):
 	"""
 
 	def start(*args, **kwargs):
-		cr = func(*args, **kwargs)
 		try:
-			next(cr)
-		except NameError: # not defined, python 2
-			cr.next()
-		return cr
+			cr = func(*args, **kwargs)
+			try:
+				next(cr)
+			except NameError: # not defined, python 2
+				cr.next()
+			return cr
+		except StopIteration:
+			return
 
 	return start

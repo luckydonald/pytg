@@ -6,7 +6,7 @@ here = path.abspath(path.dirname(__file__))
 long_description = """A Python module that connects to Telegram messenger CLI."""
 
 setup(
-	name='pytg',
+	name='pytg2',
 	version='0.3.0',
 	description='Telegram messenger CLI wrapper 2',
 	long_description=long_description,
@@ -47,7 +47,7 @@ setup(
 	keywords='telegram cli message send receive python secure fast',
 	# You can just specify the packages manually here if your project is
 	# simple. Or you can use find_packages().
-	packages= ['pytg2', 'DictObject'], #find_packages(exclude=['contrib', 'docs', 'tests*']),
+	packages= ['pytg2'], #find_packages(exclude=['contrib', 'docs', 'tests*']),
 	# List run-time dependencies here. These will be installed by pip when your
 	# project is installed. For an analysis of "install_requires" vs pip's
 	# requirements files see:
