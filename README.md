@@ -1,55 +1,37 @@
 # **PyTG2** #
-(Python 2.7 and 3)
+Python 3 (and 2.7)
 
-A Python package that wraps around (a patched version of) the Telegram messenger CLI .
+A Python package that communicates with (a patched version of) the Telegram messenger CLI.
 The [original version](https://github.com/vysheng/tg) does not support some required features.    
 
 
 > I really recommend to use Python 3, because of it's build in unicode support.
-Python 2 uses ascii only bytestrings, causing much trouble when dealing with characters like öäüß or emojis.    
+Python 2 uses ascii only bytestrings, causing much trouble when dealing with characters like öäüß or emojis.
 ~ luckydonald
 
-## **New in Version 0.2.2**
+## **New in Version 0.3.0**
+Pytg2 got overhauled to version 0.3.0, which will restructure heavily,
+BUT will decrease the CPU usage to around nothing.
+While the old versions need to parse the cli output directly, resuling in easy ways to exploit it, now it is safe, using json internal.
+Without the parsing we don't have to poll for new output ("Hey, got anything yet? And yet? And yet? ...") but just block until we got new output.
+The retrieval of new messaged is multitheaded, so you won't lose any messages if you do heavy and/or long operations between messages.
 
-### The message array object ###
-When using the tg.message() pipeline and storing the message like ```msg = (yield)```
-
-    msg.peer: Peer.GROUP or Peer.USER
-    msg.user: Peer object containing the user
-    msg.group: Peer object containing the group chat or None, if not GROUP message.
-    msg.reply: Peer object containing the group chat or the user chat object if not GROUP message.
-
-
-### The Peer object ###
-When using one of the peer objects of the message array object.    
-This can be one on three: ```msg.reply```, ```msg.user```, ```msg.group```    
-Please note, ```group``` can be ```None```.    
-We will assume ```user = msg.user``` for the example:
-
-    user.type = Peer.GROUP or Peer.USER
-    user.cmd = "chat#123" or "user#456" (peer identifier + hashtag + id)   Safe way to address a message
-    user.name = "Random Chat #1" or "I am a User."
-    user.id = 123 (a number)
-    user.namecmd = "Random_Chat_@1" or "I_am_a_User."    (username with '_' for spaces and '@' instead of '#')
-                                                   This is the deprecated way of addressing user/groups
-   
-   
-
-### tl;dr ###
-
-* To answer to an message in the same chat as the received message, use the data of ```msg.reply``` .     
-* To get the sender peer string   use ```.cmd``` on an Peer object.  Example: ```msg.reply.cmd```    
-* To identify a user              use ```msg.user.id```   
-* To get the user/chatroom name   use ```msg.user.name``` or ```msg.group.name```    
-
-------------------------------------
+Also a nice new feature is an automatic download of files. (more about this, as soon as I get time to edit this...)
+Please note, the array resulting in
 
 ## **Installation**
 You have to install the patched telegram cli and pytg2.
 This manual covers the installation of both. Lets begin with the python library: 
 
 ### 1. Install PyTG2 ###
- 
+
+THIS IS NOT UPDATED YET!!!
+ THIS WILL NOT WORK!
+  DON'T INSTALL YET
+   thanks.
+
+
+
 Install the future. (for Compatibility to both python 2.7 and 3)
 
     $ sudo pip install future
@@ -88,14 +70,16 @@ Register your client, if required. Please note that PyTG2 does not support clien
 
 ### 3. Eat a cookie.
 Thats actually optional.  
-You're Done with the installation!
+You're Done with the installation! [Yay.](http://flutteryay.com/)
 
 ### 4. Look at the examples
 See some example scripts to start with.
 They are in the [examples folder](https://bitbucket.org/luckydonald/pytg2/src)    
-* pingbot.py* is usefull to see how to interact with pytg, send messages etc.     
-* dump.py is* usefull to see, how the messages look like.  
-   
+* dump.py* is usefull to see, how the messages look like.
+* ping.py* is usefull to see how to interact with pytg, send messages etc.
+* dialog_list.py* shows you how to interact with the CLI and function returning stuff.
+
+
 ### 5. Contribute
 You can help
 
