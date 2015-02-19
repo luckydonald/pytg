@@ -17,7 +17,7 @@ Without the parsing we don't have to poll for new output ("Hey, got anything yet
 The retrieval of new messaged is multitheaded, so you won't lose any messages if you do heavy and/or long operations between messages.
 
 Also a nice new feature is an automatic download of files. (more about this, as soon as I get time to edit this...)
-Please note, the array resulting in
+Please note, the 
 
 ## **Installation**
 You have to install the patched telegram cli and pytg2.
@@ -30,7 +30,9 @@ THIS IS NOT UPDATED YET!!!
   DON'T INSTALL YET
    thanks.
 
+Install the [DictObject](https://github.com/luckydonald/DictObject/). (instead of dict["foo"] you can also use dict.foo on the msg dict.)
 
+    $ pip install DictObject
 
 Install the future. (for Compatibility to both python 2.7 and 3)
 
