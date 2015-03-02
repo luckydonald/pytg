@@ -54,15 +54,15 @@ Clone GitHub Repository
         
 Then, run
 
-    $ ./configure --disable-liblua
+    $ ./configure --enable-liblua
 
-(You probably don't want Lua support.)
+(You need that support because we want to use our replacement interface, it modifies only the lua part)
 
 Next, run
 
     $ make
 
-Telegram messenger CLI has its own dependencies. See [luckydonald/tg-for-pytg2](https://bitbucket.org/luckydonald/tg-for-pytg2) for details.
+Telegram messenger CLI has its own dependencies. See [luckydonald/tg-for-pytg2](todo://UPDATE_LINK) for details.
 
 Once you build successfully, try to run
 
@@ -77,16 +77,16 @@ You're Done with the installation! [Yay.](http://flutteryay.com/)
 ### 4. Look at the examples
 See some example scripts to start with.
 They are in the [examples folder](https://bitbucket.org/luckydonald/pytg2/src)    
-* dump.py* is usefull to see, how the messages look like.
-* ping.py* is usefull to see how to interact with pytg, send messages etc.
-* dialog_list.py* shows you how to interact with the CLI and function returning stuff.
+* dump.py * is usefull to see, how the messages look like.    
+* ping.py * is usefull to see how to interact with pytg, send messages etc.    
+* dialog_list.py * shows you how to interact with the CLI and function returning stuff.    
 
 
 ### 5. Contribute
 You can help
 
+* with testing
 * by [reporting issues](https://bitbucket.org/luckydonald/pytg2/issues)
 * by commiting patches
-* with testing
 
 Thanks!
