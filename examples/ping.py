@@ -2,7 +2,6 @@ __author__ = 'luckydonald'
 from pytg2.receiver import Receiver # get messages
 from pytg2.sender import Sender # send messages, and other querys.
 from pytg2.utils import coroutine
-from pytg2.encoding import to_unicode #also avialable:  to_binary, to_native
 
 
 

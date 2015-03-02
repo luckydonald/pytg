@@ -25,10 +25,13 @@ This manual covers the installation of both. Lets begin with the python library:
 
 ### 1. Install PyTG2 ###
 
-THIS IS NOT UPDATED YET!!!
- THIS WILL NOT WORK!
-  DON'T INSTALL YET
-   thanks.
+```
+THIS IS NOT UPDATED YET!!!    
+ THIS WILL NOT WORK!    
+  DON'T INSTALL YET    
+   thanks.    
+```
+For progress see [issue#4](https://bitbucket.org/luckydonald/tg-for-pytg2/issue/4/examples-in-pytg2)
 
 Install the [DictObject](https://github.com/luckydonald/DictObject/). (instead of dict["foo"] you can also use dict.foo on the msg dict.)
 
