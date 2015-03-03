@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from socket import SHUT_RDWR
 import threading
 
 __author__ = 'luckydonald'
@@ -35,45 +36,74 @@ class Receiver(object):
 		receiver_thread.start()
 
 	def stop(self):
+		"""
+		Shuts down the receivers server.
+		No more messages will be received.
+		"""
 		self.QUIT = True
+		if self.s:
+			self.s.settimeout(0)
+		#if self.s.c:
+			#self.s.shutdown(SHUT_RDWR)
+		if self.s:
+			self.s.close()
+		self._new_messages.release()
+
+
 
 	def _receiver(self):
 		"""
 		Server.
 		"""
-		s = None
+		self.s = None
 		print("Started server.")
 		while not self.QUIT:
-			if s:
-				s.close()
-			del s
-			s = socket.socket()
-			s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+			if self.s:
+				self.s.close()
+			del self.s
+			self.s = socket.socket()
+			self.s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+			self.s.settimeout(None) # enable blocking until we get a connention
 			failed = True
 			while failed:
+				if self.QUIT:
+					break
 				try:
-					s.bind((self.host, self.port))
+					self.s.bind((self.host, self.port))
 				except Exception as err:
+					if self.QUIT:
+						break
 					print(err)
 					print("Port assignment Failed. Retring in 1 second.")
 					time.sleep(1)
 				else:
 					failed = False
-			s.listen(1) # allow 1 connection.
-			conn, addr = s.accept()
+			if self.QUIT:
+				 continue
+			self.s.listen(1) # allow 1 connection.
+			if self.QUIT:
+				continue
+			conn, addr = self.s.accept()
+			if self.QUIT:
+				continue
 			try:
 				buffer = u("")
 				result = "-NO DATA-"
 				while not len(result) <= 0:
 					result = u(conn.recv(SOCKET_SIZE))
+					if self.QUIT:
+						continue
 					buffer += result
 				print("Got result: >%s<" % buffer) # TODO remove.
 				if (len(buffer) > 0 and buffer.strip() != ""):
 					message = DictObject.objectify(json.loads(buffer))
 					self._queue.append(message)
 					self._new_messages.release()
+			except ValueError: #json
+				raise
 			finally:
-				s.close()
+				if self.s:
+					self.s.close()
 		# end while not self.QUIT
 	# end def
 
@@ -84,6 +114,8 @@ class Receiver(object):
 		try:
 			while not self.QUIT:
 				self._new_messages.acquire() # waits until at least 1 message is in the queue.
+				if self.QUIT:
+					continue
 				function.send(self._queue.pop())
 		except GeneratorExit:
 			pass

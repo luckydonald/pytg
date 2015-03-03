@@ -13,6 +13,9 @@ def example_function(sender):
 	try:
 		while not QUIT: # loop for messages
 			msg = (yield) # it waits until it has a message here.
+			sender.status_online()  # so we will stay online.
+									# (if we are offline it might not receive the messages instantly,
+									#  but eventually we will get them)
 			print(msg)
 			if msg.own: # the bot has send this message.
 				continue # we don't want to process this message.

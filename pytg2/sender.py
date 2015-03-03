@@ -15,7 +15,7 @@ SOCKET_SIZE = 1 << 25
 FUNC_CMD  = 0
 FUNC_ARGS = 1
 FUNC_RES  = 2
-
+__all__ = ["FUNC_CMD", "FUNC_ARGS", "FUNC_RES", "functions", "Sender"]
 functions = {
 	"get_contact_list":		["contact_list",		[],																],
 	"get_dialog_list": 		["dialog_list", 		[],																],
@@ -65,21 +65,44 @@ functions = {
 	"raw": 					["", 					[args.unescaped_unicode_string],								]
 }
 
+class DelayedFunctions():
+		def __init__(self, function_name, *arguments):
+			self.function_name = function_name
+			self.args = args
+
 class Sender(object):
 	def __init__(self, host, port):
 		self.host = host
 		self.port_out = port
+		self._interaction = threading.Semaphore(1)
+		self._socked_used = threading.Semaphore(1)  # start unblocked.
+		self._stacked_commands = None # None or list
 
-	_socked_used = threading.Semaphore(1)  # start unblocked.
+	def __enter__(self):
+		self._interaction.acquire()
+		self._stacked_commands = list()
 
+
+	def __exit__(self, type, value, traceback):
+		for cmd in self._stacked_commands:
+			self._execute_function(cmd.function_name, cmd.arguments)
+		self._stacked_commands = None
+		self._interaction.release()
 
 	# \{"(.*)",\ .*,\ \{\ (.*)\ \}\}, >> "$1": ["$1", [$2]],
+	def execute_function(self, function_name, *args, **kwargs):
+		if self._stacked_commands is None:
+			print("executing {}.".format(function_name))
+			self._execute_function(function_name, *args, **kwargs)
+		else:
+			print("collecting {}.".format(function_name))
+			self.list.append(DelayedFunctions(function_name, *args, **kwargs))
 
-	def execute_function(self, function_name, *arguments):
+	def _execute_function(self, function_name, *arguments):
 		arguments_types = functions[function_name][FUNC_ARGS]
 		command_name = functions[function_name][FUNC_CMD]
 		if (len(arguments) != len(arguments_types)):
-			raise ValueError("Error in function {function_name}: {expected_number} paramters expected, but {given_number} were given.".format(function_name=function_name, expected_number=len(arguments_types), given_number=len(arguments)))
+			raise ValueError("Error in function {function_name}: {expected_number} paramters expected, but {given_number} were given.".format(function_name=function_name, expected_number=len(arguments_types), given_number=len(args)))
 		i = 0
 		new_args = []
 		for arg in arguments:
