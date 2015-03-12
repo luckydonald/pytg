@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from collections import deque
 from socket import SHUT_RDWR
 import threading
 
@@ -12,6 +13,9 @@ from .utils import coroutine, suppress_context
 from types import GeneratorType
 from . import encoding
 from .encoding import to_unicode as u
+from socket import error as socket_error
+from errno import ECONNABORTED, EADDRINUSE
+
 
 SOCKET_SIZE = 1 << 25
 
@@ -25,14 +29,19 @@ class Receiver(object):
 
 	"""
 	QUIT = False
-	_queue = []
+	_queue = deque()
 	_new_messages = threading.Semaphore(0)
-	def __init__(self, host="localhost", port=4458):
+	_queue_access = threading.Lock()
+	def __init__(self, host="localhost", port=4458, append_json=False):
+		"""
+		:param append_json: if the dict should contain the original json.
+		"""
 		self.host = host
 		self.port = port
+		self.append_json = append_json
 	def start(self):
 		receiver_thread = threading.Thread(target=self._receiver, args=())
-		receiver_thread.daemon = False  # don't exit if script reaches end. Use self.QUIT
+		receiver_thread.daemon = True  # exit if script reaches end.
 		receiver_thread.start()
 
 	def stop(self):
@@ -56,55 +65,76 @@ class Receiver(object):
 		Server.
 		"""
 		self.s = None
-		print("Started server.")
+		print("Starting server on %s:%s" % (str(self.host), str(self.port)))
 		while not self.QUIT:
 			if self.s:
 				self.s.close()
 			del self.s
+			###
 			self.s = socket.socket()
 			self.s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 			self.s.settimeout(None) # enable blocking until we get a connention
+			###
 			failed = True
-			while failed:
-				if self.QUIT:
-					break
+			count = 0
+			while failed and not self.QUIT:
 				try:
 					self.s.bind((self.host, self.port))
-				except Exception as err:
-					if self.QUIT:
-						break
-					print(err)
-					print("Port assignment Failed. Retring in 1 second.")
-					time.sleep(1)
+				except socket_error as err:
+					if err.errno == EADDRINUSE:
+						print("Port assignment Failed. Address already in use. (Retring in 1 second.)")
+						time.sleep(1)
+						count = 1
+						continue
+					raise err
 				else:
 					failed = False
-			if self.QUIT:
-				 continue
-			self.s.listen(1) # allow 1 connection.
+					if count == 1:
+						print("Did Bind successfully.")
+			###
 			if self.QUIT:
 				continue
-			conn, addr = self.s.accept()
+			###
+			self.s.listen(1) # allow 1 connection.
+			###
+			if self.QUIT:
+				continue
+			try:
+				conn, addr = self.s.accept()
+			except socket_error as err:
+				if err.errno == ECONNABORTED and self.QUIT:
+					continue
+				raise
+			####
 			if self.QUIT:
 				continue
 			try:
 				buffer = u("")
 				result = "-NO DATA-"
-				while not len(result) <= 0:
+				while not len(result) <= 0 and not self.QUIT:
 					result = u(conn.recv(SOCKET_SIZE))
-					if self.QUIT:
-						continue
 					buffer += result
-				print("Got result: >%s<" % buffer) # TODO remove.
+				if self.QUIT:
+					continue
+				# print("Got result: >%s<" % buffer) # TODO remove.
 				if (len(buffer) > 0 and buffer.strip() != ""):
-					message = DictObject.objectify(json.loads(buffer))
-					self._queue.append(message)
+					try:
+						json_dict = json.loads(buffer)
+						message = DictObject.objectify(json_dict)
+						if self.append_json:
+							message.merge_dict({u("json"): buffer})
+					except ValueError as e:
+						message = DictObject.objectify({u("error"):u(str(e)), u("json"): buffer})
+
+					with self._queue_access:
+						self._queue.append(message)
 					self._new_messages.release()
-			except ValueError: #json
-				raise
 			finally:
 				if self.s:
 					self.s.close()
 		# end while not self.QUIT
+		if self.s:
+			self.s.close()
 	# end def
 
 	@coroutine
@@ -116,9 +146,13 @@ class Receiver(object):
 				self._new_messages.acquire() # waits until at least 1 message is in the queue.
 				if self.QUIT:
 					continue
-				function.send(self._queue.pop())
+				with self._queue_access:
+					msg = self._queue.popleft() #pop oldest item
+				function.send(msg)
 		except GeneratorExit:
 			pass
+		except KeyboardInterrupt:
+			raise StopIteration
 	#end def
 #end class
 

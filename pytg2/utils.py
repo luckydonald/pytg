@@ -29,5 +29,7 @@ def coroutine(func):
 			return cr
 		except StopIteration:
 			return
+		except KeyboardInterrupt:
+			raise StopIteration
 
 	return start
