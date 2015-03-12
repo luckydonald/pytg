@@ -34,7 +34,7 @@ def unescaped_unicode_string(value):
 	return isinstance(value, encoding.text_type)
 
 def number(value):
-	return isinstance(value, (int,long))
+	return isinstance(value, (int, encoding.long_int))
 
 def double(value):
 	return isinstance(value, float)
