@@ -5,6 +5,7 @@ from .utils import suppress_context, escape
 from .encoding import to_native as n
 from .encoding import to_unicode as u
 from .encoding import to_binary as b
+from .encoding import text_type, binary_type
 import socket # connect to telegram cli.
 from errno import ECONNREFUSED
 from socket import error as socket_error
@@ -63,42 +64,24 @@ functions = {
 	"quit": 				["quit", 				[],																],
 	"safe_quit": 			["safe_quit",	 		[],																],
 	"raw": 					["", 					[args.unescaped_unicode_string],								]
-}
+} 	# \{"(.*)",\ .*,\ \{\ (.*)\ \}\}, >> "$1": ["$1", [$2]],
+
 
 class DelayedFunctions():
 		def __init__(self, function_name, *arguments):
 			self.function_name = function_name
 			self.args = args
-
+_ANSWER_SYNTAX = b("ANSWER ")
+_LINE_BREAK = b("\n")
 class Sender(object):
 	def __init__(self, host, port):
 		self.host = host
 		self.port_out = port
-		self._interaction = threading.Semaphore(1)
+		self.debug = False
 		self._socked_used = threading.Semaphore(1)  # start unblocked.
-		self._stacked_commands = None # None or list
-
-	def __enter__(self):
-		self._interaction.acquire()
-		self._stacked_commands = list()
 
 
-	def __exit__(self, type, value, traceback):
-		for cmd in self._stacked_commands:
-			self._execute_function(cmd.function_name, cmd.arguments)
-		self._stacked_commands = None
-		self._interaction.release()
-
-	# \{"(.*)",\ .*,\ \{\ (.*)\ \}\}, >> "$1": ["$1", [$2]],
-	def execute_function(self, function_name, *args, **kwargs):
-		if self._stacked_commands is None:
-			print("executing {}.".format(function_name))
-			self._execute_function(function_name, *args, **kwargs)
-		else:
-			print("collecting {}.".format(function_name))
-			self.list.append(DelayedFunctions(function_name, *args, **kwargs))
-
-	def _execute_function(self, function_name, *arguments):
+	def execute_function(self, function_name, *arguments):
 		arguments_types = functions[function_name][FUNC_ARGS]
 		command_name = functions[function_name][FUNC_CMD]
 		if (len(arguments) != len(arguments_types)):
@@ -107,6 +90,7 @@ class Sender(object):
 		new_args = []
 		for arg in arguments:
 			func_type = arguments_types[i]
+			# arg is the given one, which should be func_type.
 			if not func_type(arg):
 				raise ValueError("Error in function {function_name}: parameter {number} is not type {type}.".format(function_name=function_name, number=i, type=func_type.__name__))
 			if func_type == args.unicode_string:
@@ -129,7 +113,7 @@ class Sender(object):
 	def _do_command(self, function_sting, *argmts):
 		arg_string = " ".join([str(x) for x in argmts])
 		request = " ".join([function_sting,  arg_string])
-		request = "".join([request, "\n"])
+		request = "".join([request, "\n"]) #TODO can this be deleted?
 		result = self._do_send(request)
 		return result
 
@@ -142,39 +126,72 @@ class Sender(object):
 			return self.sender_instance.execute_function(self.name, *args)
 
 	def _do_send(self, command):
+		if not isinstance(command, (text_type, binary_type)):
+			raise TypeError("Command to send is not a unicode(?) string. (Instead of %s you used %s.) " % (str(text_type), str(type(command))))
+		if self.debug:
+			print("Sending command >%s<" % n(command))
+		s = None
 		with self._socked_used:
-			#print("sending {command}".format(command=command))
-			s = socket.socket()
-			try:
-				s.connect((self.host,self.port_out))
-			except socket_error as error:
-				s.close()
-				if error.errno != ECONNREFUSED:
-					raise suppress_context(socket_error)  # Not the error we are looking for, re-raise
-				print("Connection to Receiver CLI refused.\nMaybe not running?")
-				return
-			#print("Connected.")
-			try:
-				s.send(command.encode("utf-8")) #TODO be py2/3 compatible
-			except socket_error as error:
-				s.close()
-				raise suppress_context(socket_error)
-			#print("Sended.")
-			completed = -1 # -1 = answer size yet unknown, >0 = got remaining answer size
-			buffer = b("")
-			while(completed != 0):
-				try:
-					s.settimeout(10) # in seconds.
-					answer = s.recv(1)
-					buffer += answer
-					if completed <= -1 and buffer.startswith(b("ANSWER ")) and  buffer.endswith(b("\n")):
-						completed = int(n(buffer[7:-1])) #TODO regex.
-						buffer = b("")
-					completed -= 1
-				except socket_error as error:
-					#print("Failed")
+			while 1:
+				if s:
 					s.close()
-					raise suppress_context(error)
-			s.close()
-			return u(buffer)
+					del s
+				s = socket.socket()
+				try:
+					s.connect((self.host,self.port_out))
+				except socket_error as error:
+					s.close()
+					if error.errno != ECONNREFUSED:
+						raise socket_error  # Not the error we are looking for, re-raise
+					continue
+				except Exception as error:
+					s.close()
+					raise error
+				if self.debug:
+					print("Connected.")
+				try:
+					s.send(b(command))
+				except Exception as error:
+					s.close()
+					raise error #retry?
+				if self.debug:
+					print("Sended.")
+				completed = -1 # -1 = answer size yet unknown, >0 = got remaining answer size
+				buffer = b("")
+				while completed != 0:
+					try:
+						s.settimeout(10) # in seconds.
+						answer = s.recv(1)
+						buffer += answer
+						if completed < -1 and buffer[:len(_ANSWER_SYNTAX)] != _ANSWER_SYNTAX[:len(buffer)]:
+							raise ArithmeticError("Server response does not fit.")
+						if completed <= -1 and buffer.startswith(_ANSWER_SYNTAX) and buffer.endswith(_LINE_BREAK):
+							completed = int(n(buffer[7:-1])) #TODO regex.
+							buffer = b("")
+						completed -= 1
+					except socket.timeout:
+						raise NoResponse(command)
+						if self.debug:
+							print("Timed out, retry.")
+						continue  # just ignore and retry. Is used to be able to quit.
+					except KeyboardInterrupt as error:
+						print("Exception while reading the Answer for \"%s\". Got so far: >%s< of %i\n" % (n(command),n(buffer),completed))  # TODO remove me
+						s.close()
+						raise
+					except Exception as error:
+						print("Exception while reading the Answer for \"%s\". Got so far: >%s<\n" % (n(command),n(buffer))) #TODO remove me
+						s.close()
+						raise
+						#raise error
+				# end while completed != 0
+				if s:
+					s.close()
+				return u(buffer)
 		# end block
+		if s:
+			s.close()
+
+
+class NoResponse(Exception):
+	def __init__(self, *args, **kwargs):
+		super().__init__(*args, **kwargs)
