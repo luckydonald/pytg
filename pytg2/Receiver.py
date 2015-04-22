@@ -28,7 +28,7 @@ class Receiver(object):
 	>>> tg.start()
 
 	"""
-	QUIT = False
+	_do_quit = False
 	_queue = deque()
 	_new_messages = threading.Semaphore(0)
 	_queue_access = threading.Lock()
@@ -49,7 +49,7 @@ class Receiver(object):
 		Shuts down the receivers server.
 		No more messages will be received.
 		"""
-		self.QUIT = True
+		self._do_quit = True
 		if self.s:
 			self.s.settimeout(0)
 		#if self.s.c:
@@ -66,7 +66,7 @@ class Receiver(object):
 		"""
 		self.s = None
 		print("Starting server on %s:%s" % (str(self.host), str(self.port)))
-		while not self.QUIT:
+		while not self._do_quit:
 			if self.s:
 				self.s.close()
 			del self.s
@@ -77,7 +77,7 @@ class Receiver(object):
 			###
 			failed = True
 			count = 0
-			while failed and not self.QUIT:
+			while failed and not self._do_quit:
 				try:
 					self.s.bind((self.host, self.port))
 				except socket_error as err:
@@ -92,29 +92,29 @@ class Receiver(object):
 					if count == 1:
 						print("Did Bind successfully.")
 			###
-			if self.QUIT:
+			if self._do_quit:
 				continue
 			###
 			self.s.listen(1) # allow 1 connection.
 			###
-			if self.QUIT:
+			if self._do_quit:
 				continue
 			try:
 				conn, addr = self.s.accept()
 			except socket_error as err:
-				if err.errno == ECONNABORTED and self.QUIT:
+				if err.errno == ECONNABORTED and self._do_quit:
 					continue
 				raise
 			####
-			if self.QUIT:
+			if self._do_quit:
 				continue
 			try:
 				buffer = u("")
 				result = "-NO DATA-"
-				while not len(result) <= 0 and not self.QUIT:
+				while not len(result) <= 0 and not self._do_quit:
 					result = u(conn.recv(SOCKET_SIZE))
 					buffer += result
-				if self.QUIT:
+				if self._do_quit:
 					continue
 				# print("Got result: >%s<" % buffer) # TODO remove.
 				if (len(buffer) > 0 and buffer.strip() != ""):
@@ -132,19 +132,19 @@ class Receiver(object):
 			finally:
 				if self.s:
 					self.s.close()
-		# end while not self.QUIT
+		# end while not self._do_quit
 		if self.s:
 			self.s.close()
 	# end def
 
 	@coroutine
 	def message(self, function):
-		if type(function) is not GeneratorType:
-			raise TypeError('target must be GeneratorType')
+		if not isinstance(function, GeneratorType):
+			raise TypeError('Target must be GeneratorType')
 		try:
-			while not self.QUIT:
+			while not self._do_quit:
 				self._new_messages.acquire() # waits until at least 1 message is in the queue.
-				if self.QUIT:
+				if self._do_quit:
 					continue
 				with self._queue_access:
 					msg = self._queue.popleft() #pop oldest item
