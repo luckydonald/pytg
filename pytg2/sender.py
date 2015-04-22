@@ -19,7 +19,7 @@ FUNC_CMD  = 0
 FUNC_ARGS = 1
 FUNC_RES  = 2
 FUNC_TIME = 3
-__all__ = ["FUNC_CMD", "FUNC_ARGS", "FUNC_RES", "functions", "Sender"]
+__all__ = ["FUNC_CMD", "FUNC_ARGS", "FUNC_RES", "functions", "Sender", "NoResponse"]
 functions = {
 	# function to call      # actual telegram command  # required arguments  # expected return type (parser)  # timeout (None = global default)
 	"get_contact_list":		["contact_list",		[],																res.something, 	None],
@@ -75,6 +75,7 @@ _ANSWER_SYNTAX = b("ANSWER ")
 _LINE_BREAK = b("\n")
 
 class Sender(object):
+	_do_quit = False
 	default_answer_timeout = 0.2 # how long it should wait for a answer. DANGER: if set to None it will block!
 	def __init__(self, host, port):
 		"""
@@ -170,7 +171,7 @@ class Sender(object):
 			print("Sending command >%s<" % n(command))
 		s = None
 		with self._socked_used:
-			while 1:
+			while not self._do_quit:
 				if s:
 					s.close()
 					del s
@@ -227,9 +228,20 @@ class Sender(object):
 				if s:
 					s.close()
 				return u(buffer)
-		# end block
+			# end while not self._do_quit
+		# end with lock
 		if s:
 			s.close()
+	# end of function
+
+	def terminate(self):
+		self._do_quit  = True
+		if self.s:
+			self.s.settimeout(0)
+		return # don't abort sending, let it do stuff, it will suceed or fail soon anyway.
+		if self.s:
+			self.s.close()
+		self._new_messages.release()
 
 
 class NoResponse(Exception):
