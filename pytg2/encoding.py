@@ -20,7 +20,6 @@ else: # python 3
 
 def to_binary(x):
     if isinstance(x, text_type):
-        #return codecs.utf_8_encode(x)[0]
         return x.encode("utf-8")
     else:
         return x
@@ -28,7 +27,6 @@ def to_binary(x):
 
 def to_unicode(x):
     if isinstance(x, binary_type):
-        #return codecs.unicode_escape_decode(x)[0]
         if x == b'\\':
             return u"\\"
         return x.decode("utf-8")
