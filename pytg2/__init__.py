@@ -48,14 +48,14 @@ class Telegram(object):
 			return self._proc.returncode
 		try:
 			self._proc.terminate()
-		except ProcessLookupError:
+		except Exception as e: #todo: ProcessLookupError does not exist before python 3
 			pass
 		self._proc.poll()
 		if self._proc.returncode:
 			return self._proc.returncode
 		try:
 			self._proc.kill()
-		except ProcessLookupError:
+		except  Exception as e: #todo:  ProcessLookupError does not exist before python 3
 			pass
 		self._proc.poll()
 		return self._proc.returncode
