@@ -17,6 +17,8 @@ def something(value):
 	if not (value and len(value) > 1):
 		raise IllegalResponseException("Should return something.")
 
+def anything(value):
+	return value
 
 def success_fail(value):
 	if value == u("SUCCESS"):

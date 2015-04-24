@@ -9,7 +9,7 @@ from .encoding import to_unicode as u
 from .encoding import to_binary as b
 from .encoding import text_type, binary_type
 import socket # connect to telegram cli.
-from errno import ECONNREFUSED
+from errno import ECONNREFUSED, EINTR
 from socket import error as socket_error
 import threading
 import atexit
@@ -68,7 +68,7 @@ functions = {
 	"status_offline": 		["status_offline", 		[],																res.success_fail, None],
 	"quit": 				["quit", 				[],																res.success_fail, None],
 	"safe_quit": 			["safe_quit",	 		[],																res.success_fail, None],
-	"raw": 					["", 					[args.unescaped_unicode_string],								res.something, None]
+	"raw": 					["", 					[args.unescaped_unicode_string],								res.anything, None]
 } 	# \{"(.*)",\ .*,\ \{\ (.*)\ \}\}, >> "$1": ["$1", [$2]],
 
 
@@ -203,7 +203,13 @@ class Sender(object):
 				self.s.settimeout(answer_timeout) # in seconds.
 				while completed != 0:
 					try:
-						answer = self.s.recv(1)
+						while 1: #retry if CTRL+C'd
+							try:
+								answer = self.s.recv(1)
+								break
+							except socket_error as err:
+								if err.errno != EINTR:
+									raise
 						self.s.settimeout( max(self.default_answer_timeout, answer_timeout) ) # in seconds.
 						# If there was input the input is now either the default one or the given one, which waits longer.
 						buffer += answer
