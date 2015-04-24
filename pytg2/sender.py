@@ -12,6 +12,7 @@ import socket # connect to telegram cli.
 from errno import ECONNREFUSED
 from socket import error as socket_error
 import threading
+import atexit
 
 SOCKET_SIZE = 1 << 25
 
@@ -85,10 +86,12 @@ class Sender(object):
 		:param answer_timeout: how long it waits for the cli to answer, a float in seconds. Note that that commands like send_msg will not return anything, so a timeout makes sense to continue anyway.
 		:return:
 		"""
+		self.s = None
 		self.host = host
 		self.port_out = port
 		self.debug = False
 		self._socked_used = threading.Semaphore(1)  # start unblocked.
+		atexit.register(self.terminate)
 
 
 	def execute_function(self, function_name, *arguments):
@@ -99,8 +102,9 @@ class Sender(object):
 		:param answer_timeout:  set to a float to set a custom timeout for this answer.
 		:return:
 		"""
-
 		command_name, new_args = self._validate_input(function_name, arguments)
+		if self._do_quit and not "quit" in command_name:
+			raise AssertionError("Socket already terminated.")
 		result_parser = functions[function_name][FUNC_RES]
 		result_timeout = functions[function_name][FUNC_TIME]
 		if result_timeout:
@@ -169,39 +173,38 @@ class Sender(object):
 			raise TypeError("Command to send is not a unicode(?) string. (Instead of %s you used %s.) " % (str(text_type), str(type(command))))
 		if self.debug:
 			print("Sending command >%s<" % n(command))
-		s = None
 		with self._socked_used:
 			while not self._do_quit:
-				if s:
-					s.close()
-					del s
-				s = socket.socket()
+				if self.s:
+					self.s.close()
+					del self.s
+				self.s = socket.socket()
 				try:
-					s.connect((self.host,self.port_out))
+					self.s.connect((self.host,self.port_out))
 				except socket_error as error:
-					s.close()
+					self.s.close()
 					if error.errno != ECONNREFUSED:
-						raise socket_error  # Not the error we are looking for, re-raise
+						raise error  # Not the error we are looking for, re-raise
 					continue
 				except Exception as error:
-					s.close()
+					self.s.close()
 					raise error
 				if self.debug:
 					print("Connected.")
 				try:
-					s.send(b(command))
+					self.s.send(b(command))
 				except Exception as error:
-					s.close()
+					self.s.close()
 					raise error #retry?
 				if self.debug:
 					print("Sended.")
 				completed = -1 # -1 = answer size yet unknown, >0 = got remaining answer size
 				buffer = b("")
-				s.settimeout(answer_timeout) # in seconds.
+				self.s.settimeout(answer_timeout) # in seconds.
 				while completed != 0:
 					try:
-						answer = s.recv(1)
-						s.settimeout( max(self.default_answer_timeout, answer_timeout) ) # in seconds.
+						answer = self.s.recv(1)
+						self.s.settimeout( max(self.default_answer_timeout, answer_timeout) ) # in seconds.
 						# If there was input the input is now either the default one or the given one, which waits longer.
 						buffer += answer
 						if completed < -1 and buffer[:len(_ANSWER_SYNTAX)] != _ANSWER_SYNTAX[:len(buffer)]:
@@ -217,33 +220,41 @@ class Sender(object):
 						continue  # just ignore and retry. Is used to be able to quit.
 					except KeyboardInterrupt as error:
 						print("Exception while reading the Answer for \"%s\". Got so far: >%s< of %i\n" % (n(command),n(buffer),completed))  # TODO remove me
-						s.close()
+						self.s.close()
 						raise
 					except Exception as error:
 						print("Exception while reading the Answer for \"%s\". Got so far: >%s<\n" % (n(command),n(buffer))) #TODO remove me
-						s.close()
+						self.s.close()
 						raise
 						#raise error
 				# end while completed != 0
-				if s:
-					s.close()
+				if self.s:
+					self.s.close()
 				return u(buffer)
 			# end while not self._do_quit
 		# end with lock
-		if s:
-			s.close()
+		if self.s:
+			self.s.close()
 	# end of function
 
 	def terminate(self):
-		self._do_quit  = True
-		if self.s:
-			self.s.settimeout(0)
-		return # don't abort sending, let it do stuff, it will suceed or fail soon anyway.
-		if self.s:
-			self.s.close()
-		self._new_messages.release()
+		self._do_quit = True
+		if self._socked_used.acquire(blocking=False):
+			# Nothing is going on, just quit then.
+			print("Stopped Sending.")
+			self._socked_used.release()
+			return
+		else:
+			# Something was using the socket for more than 15 seconds.
+			print("Aborting Sending.")
+			if self.s:
+				self.s.settimeout(0)
+			return # don't abort sending, let it do stuff, it will suceed or fail soon anyway.
+			if self.s:
+				self.s.close()
+		atexit.unregister(self.terminate)
+
 
 
 class NoResponse(Exception):
-	def __init__(self, *args, **kwargs):
-		super().__init__(*args, **kwargs)
+	pass
