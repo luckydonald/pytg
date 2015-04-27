@@ -2,28 +2,26 @@ __author__ = 'luckydonald'
 
 import pytg2
 
-
+"""
+	This is more a test, than an example...
+	You probably should NOT start with this.
+"""
 
 
 
 def main():
 	import signal
 	signal.signal(signal.SIGINT, sigint_handler)
-	tg = pytg2.Telegram(telegram="/Users/tasso/git/tg/bin/telegram-cli", pubkey_file="/Users/tasso/git/tg/tg-server.pub")
-	try:
-		tg.sender.send_msg(u"luckydonald", u"test_")
-	except pytg2.sender.NoResponse:
-		pass
+	tg = pytg2.Telegram(telegram="/path/to/tg-for-pytg2/bin/telegram-cli", pubkey_file="/path/to/tg-for-pytg2/tg-server.pub")
 	import time
-	print("wait100.0")
+	print("Wait a bit (100s), you can test Ctrl-C here.")
 	time.sleep(100)
 	print("wait100.1")
 	time.sleep(100)
 	print("wait100.2")
 	while not _QUIT:
 		time.sleep(1)
-	print("wait   .3")
-
+	print("Quit it!")
 	return
 
 
@@ -39,7 +37,7 @@ def sigint_handler(signum, frame):
 		if not _QUIT:
 			if (not _quitfirst or (now - _quitfirst) >= _quitdelta):
 				print(
-					"\n [Ctrl-C]  Press again to Continue.")
+					"\n [Ctrl-C]  Press again (in the next 3 seconds) to Continue.")
 				_quitfirst = now
 				return
 			else:
@@ -51,8 +49,6 @@ def sigint_handler(signum, frame):
 			print("\n [Ctrl-C]  Termination. ")
 			import sys #only required once on runtime, lol.
 			sys.exit()
-
-
 
 if __name__ == '__main__':
 	main()
