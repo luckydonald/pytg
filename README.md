@@ -17,7 +17,10 @@ Without the parsing we don't have to poll for new output ("Hey, got anything yet
 The retrieval of new messaged is multitheaded, so you won't lose any messages if you do heavy and/or long operations between messages.
 
 Also a nice new feature is an automatic download of files. (more about this, as soon as I get time to edit this...)
-Please note, the 
+
+
+## **Instructions are not up to date!**
+They need to be updated. Proceed with caution.
 
 ## **Installation**
 You have to install the patched telegram cli and pytg2.

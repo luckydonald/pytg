@@ -3,12 +3,13 @@ from codecs import open # To use a consistent encoding
 from os import path
 here = path.abspath(path.dirname(__file__))
 
-long_description = """A Python module that connects to Telegram messenger CLI."""
+long_description = """A Python module that connects to a Telegram messenger CLI, allowing to interact with Telegram users or groups.
+Please Note, this needs the version from http://bitbucket.org/luckydonald/tg-for-pytg2/."""
 
 setup(
 	name='pytg2',
 	version='0.3.0',
-	description='Telegram messenger CLI wrapper 2',
+	description='Connect to the Telegram CLI, receive and send Telegram messages.',
 	long_description=long_description,
 	# The project's main homepage.
 	url='https://github.com/luckydonald/pytg',
