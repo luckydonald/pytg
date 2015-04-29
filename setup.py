@@ -8,7 +8,7 @@ Please Note, this needs the version from http://bitbucket.org/luckydonald/tg-for
 
 setup(
 	name='pytg2',
-	version='0.3.0',
+	version='0.3.1',
 	description='Connect to the Telegram CLI, receive and send Telegram messages.',
 	long_description=long_description,
 	# The project's main homepage.
