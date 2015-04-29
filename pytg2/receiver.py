@@ -13,8 +13,9 @@ from types import GeneratorType
 from . import encoding
 from .encoding import to_unicode as u
 from .encoding import to_binary as b
+from .encoding import to_native as n
 from socket import error as socket_error
-from errno import ECONNABORTED, EADDRINUSE
+from errno import ECONNABORTED, EADDRINUSE, EINTR
 
 
 SOCKET_SIZE = 1 << 25
@@ -22,7 +23,9 @@ BLOCK_SIZE = 256
 RESPONSE_ERROR = b("ERR")
 RESPONSE_ACKNOWLEDGED = b("ACK")
 EMPTY_UNICODE_STRING = u("") # So we don't call it every time in the if header.
-
+EMPTY_RAW_BYTE = b("") # So we don't call it every time in the if header.
+_ANSWER_SYNTAX = b("LENGTH ")
+_LINE_BREAK = b("\n")
 
 class Receiver(object):
 	"""
@@ -72,14 +75,15 @@ class Receiver(object):
 		self.s = None
 		print("Starting server on %s:%s" % (str(self.host), str(self.port)))
 		while not self._do_quit:
+			# close socket, if existent. Just beeing sure.
 			if self.s:
 				self.s.close()
 			del self.s
-			###
+			### open new socket
 			self.s = socket.socket()
 			self.s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 			self.s.settimeout(None) # enable blocking until we get a connention
-			###
+			### binding address.
 			failed = True
 			count = 0
 			while failed and not self._do_quit:
@@ -96,28 +100,81 @@ class Receiver(object):
 					failed = False
 					if count == 1:
 						print("Did Bind successfully.")
-			###
 			if self._do_quit:
 				continue
-			###
+
+			### start listening
+
 			self.s.listen(1) # allow 1 connection.
-			###
 			if self._do_quit:
 				continue
+				
 			try:
 				conn, addr = self.s.accept()
 			except socket_error as err:
 				if err.errno == ECONNABORTED and self._do_quit:
 					continue
 				raise
+
+
+
+			success = True
+			completed = -1 # -1 = answer size yet unknown, >0 = got remaining answer size
+			buffer = EMPTY_RAW_BYTE
 			try:
-				# buffer = EMPTY_UNICODE_STRING
+				while completed != 0:
+					while 1: #retry recv(1) if CTRL+C'd
+						try:
+							answer = self.s.recv(1)
+							break
+						except socket_error as err:
+							if err.errno != EINTR: # not CTRL+C'd
+								raise
+					buffer += answer
+					if completed < -1 and buffer[:len(_ANSWER_SYNTAX)] != _ANSWER_SYNTAX[:len(buffer)]:
+						self._send_acknowledged(False)
+						raise ArithmeticError("Server response does not fit.")
+					if completed <= -1 and buffer.startswith(_ANSWER_SYNTAX) and buffer.endswith(_LINE_BREAK):
+						try:
+							completed = int(n(buffer[ len(_ANSWER_SYNTAX)-1 : -len(_LINE_BREAK) ])) #TODO regex for numbers?
+						except:
+							self._send_acknowledged(False) # Length failed.
+							self.s.close()
+							raise
+						self._send_acknowledged(True) # Got Length.
+						buffer = EMPTY_RAW_BYTE
+					completed -= 1
+				text = u(buffer)
+				if len(text) > 0 and text.strip() != EMPTY_UNICODE_STRING:
+						if self._do_quit:
+							continue
+						try:
+							json_dict = json.loads(text)
+							message = DictObject.objectify(json_dict)
+							if self.append_json:
+								message.merge_dict({u("json"): text})
+							with self._queue_access:
+								self._queue.append(message)
+								self._new_messages.release()
+						except ValueError as e:
+							print (e)
+							# DictObject.objectify({u("error"): u(str(e)), u("json"): buffer})
+							success = False
+			except Exception as err:
+				print("Exception while receiving Message. Got so far: >%s<\n%s" % (n(buffer),str(err)))) #TODO remove me
+				success = False
+				raise
+			finally:
+				if not self._do_quit:  # open socket is supposed to exist.
+					self._send_acknowledged(success)
+					self.s.close()
+			/*try:
 				result = "-NO DATA-"  # so len(result) is > 0
-				result_buffer = b("")
+				result_buffer = EMPTY_RAW_BYTE
 				while len(result) > 0 and not self._do_quit:
-					result = conn.recv(BLOCK_SIZE)
+					result = conn.recv(1)
 					result_buffer += result
-					#print("resultpart: %s" % u(result))
+					print("resultpart: <%s>" % u(result))
 				buffer = u(result_buffer)
 				print("Got result: >%s<" % buffer) # TODO remove.
 				if len(buffer) > 0 and buffer.strip() != EMPTY_UNICODE_STRING:
@@ -129,26 +186,41 @@ class Receiver(object):
 						if self.append_json:
 							message.merge_dict({u("json"): buffer})
 						with self._queue_access:
-							self._queue.append(buffer)
+							self._queue.append(message)
 							self._new_messages.release()
 					except ValueError as e:
+						print (e)
 						# DictObject.objectify({u("error"): u(str(e)), u("json"): buffer})
-						raise
+						success = False
 
 			except Exception as err:
 				print (err)
-				if self.s:
-					self.s.sendall(RESPONSE_ERROR) # 'ERR'
-			else:
-				if self.s:
-					self.s.sendall(RESPONSE_ACKNOWLEDGED) # 'ACK'
+				success = False
 			finally:
-				if self.s:
+				if not self._do_quit:  # open socket is supposed to exist.
+					self._send_acknowledged(success)
 					self.s.close()
-		# end while not self._do_quit
+			*/
+			# end try/except/finally
+		# end while(not self._do_quit)
 		if self.s:
-			self.s.close()
+			self.s.close() # if the while exits because of _do_quit
 	# end def
+
+	def _send_acknowledged(self,success, reason=""):
+		if self.s:
+			old_timeout = self.s.gettimeout()
+			self.s.settimeout(10)
+			try:
+				if success:
+					self.s.send(RESPONSE_ACKNOWLEDGED) # 'ACK'
+				else:
+					self.s.send(RESPONSE_ERROR) # 'ERR'
+			except socket.timeout as e:
+				#logger.warn("Acknowledge send timeout")
+				pass
+			self.s.settimeout(old_timeout)
+			
 
 	@coroutine
 	def message(self, function):
