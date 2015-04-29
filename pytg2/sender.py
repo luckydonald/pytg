@@ -192,7 +192,7 @@ class Sender(object):
 				if self.debug:
 					print("Connected.")
 				try:
-					self.s.send(b(command))
+					self.s.sendall(b(command))
 				except Exception as error:
 					self.s.close()
 					raise error #retry?

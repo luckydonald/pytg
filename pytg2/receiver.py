@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
+__author__ = 'luckydonald'
+
 from collections import deque
 from socket import SHUT_RDWR
 import threading
-
-__author__ = 'luckydonald'
-
 import socket # connect to telegram cli.
 import time # wait for retry
 from DictObject import DictObject
@@ -13,11 +12,17 @@ from .utils import coroutine, suppress_context
 from types import GeneratorType
 from . import encoding
 from .encoding import to_unicode as u
+from .encoding import to_binary as b
 from socket import error as socket_error
 from errno import ECONNABORTED, EADDRINUSE
 
 
 SOCKET_SIZE = 1 << 25
+BLOCK_SIZE = 256
+RESPONSE_ERROR = b("ERR")
+RESPONSE_ACKNOWLEDGED = b("ACK")
+EMPTY_UNICODE_STRING = u("") # So we don't call it every time in the if header.
+
 
 class Receiver(object):
 	"""
@@ -105,30 +110,38 @@ class Receiver(object):
 				if err.errno == ECONNABORTED and self._do_quit:
 					continue
 				raise
-			####
-			if self._do_quit:
-				continue
 			try:
-				buffer = u("")
-				result = "-NO DATA-"
-				while not len(result) <= 0 and not self._do_quit:
-					result = u(conn.recv(SOCKET_SIZE))
-					buffer += result
-				if self._do_quit:
-					continue
-				# print("Got result: >%s<" % buffer) # TODO remove.
-				if (len(buffer) > 0 and buffer.strip() != ""):
+				# buffer = EMPTY_UNICODE_STRING
+				result = "-NO DATA-"  # so len(result) is > 0
+				result_buffer = b("")
+				while len(result) > 0 and not self._do_quit:
+					result = conn.recv(BLOCK_SIZE)
+					result_buffer += result
+					#print("resultpart: %s" % u(result))
+				buffer = u(result_buffer)
+				print("Got result: >%s<" % buffer) # TODO remove.
+				if len(buffer) > 0 and buffer.strip() != EMPTY_UNICODE_STRING:
+					if self._do_quit:
+						continue
 					try:
 						json_dict = json.loads(buffer)
 						message = DictObject.objectify(json_dict)
 						if self.append_json:
 							message.merge_dict({u("json"): buffer})
+						with self._queue_access:
+							self._queue.append(buffer)
+							self._new_messages.release()
 					except ValueError as e:
-						message = DictObject.objectify({u("error"):u(str(e)), u("json"): buffer})
+						# DictObject.objectify({u("error"): u(str(e)), u("json"): buffer})
+						raise
 
-					with self._queue_access:
-						self._queue.append(message)
-					self._new_messages.release()
+			except Exception as err:
+				print (err)
+				if self.s:
+					self.s.sendall(RESPONSE_ERROR) # 'ERR'
+			else:
+				if self.s:
+					self.s.sendall(RESPONSE_ACKNOWLEDGED) # 'ACK'
 			finally:
 				if self.s:
 					self.s.close()
@@ -144,11 +157,10 @@ class Receiver(object):
 		try:
 			while not self._do_quit:
 				self._new_messages.acquire() # waits until at least 1 message is in the queue.
-				if self._do_quit:
-					continue
 				with self._queue_access:
-					msg = self._queue.popleft() #pop oldest item
-				function.send(msg)
+					print('Messages Waiting: ', len(self._queue))
+					message = self._queue.popleft() #pop oldest item
+				function.send(message)
 		except GeneratorExit:
 			pass
 		except KeyboardInterrupt:
