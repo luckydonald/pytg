@@ -202,7 +202,7 @@ class Receiver(object):
 			while not self._do_quit:
 				self._new_messages.acquire() # waits until at least 1 message is in the queue.
 				with self._queue_access:
-					logger.debug('Messages waiting in queue: ', len(self._queue))
+					logger.debug('Messages waiting in queue: %d', len(self._queue))
 					message = self._queue.popleft() #pop oldest item
 				function.send(message)
 		except GeneratorExit:
