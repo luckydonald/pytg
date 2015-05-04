@@ -16,13 +16,16 @@ class Telegram(object):
 			self.startCLI(telegram=telegram, pubkey_file=pubkey_file, port_receive=port_receive, port_send=port_send)
 		self.sender = Sender(host=host,port=port_send)
 		self.receiver = Receiver(host=host,port=port_receive)
-		while self._proc is not None:
-			result = self.sender.raw(u("help"))
-			if result and u("Prints this help") in result:
-				print("CLI available.")
-				break
-			else:
-				print("CLI does not response. (Debug: {})".format(result))
+		#NOTE: with the following while, if the cli has a message at boot, it will NOT ANSWER anything
+		#      until that message got transmitted succsessfully. So it would block the foobar=Telegram(tg,key) call.
+
+		#while self._proc is not None:
+		#	result = self.sender.raw(u("help"))
+		#	if result and u("Prints this help") in result:
+		#		print("CLI available.")
+		#		break
+		#	else:
+		#		print("CLI does not response. (Debug: {})".format(result))
 
 
 

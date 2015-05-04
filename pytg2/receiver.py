@@ -143,8 +143,8 @@ class Receiver(object):
 							self._send_acknowledged(False, conn) # Length failed.
 							self.s.close()
 							raise
-						logger.debug("Loading message with lenght {}.".format(completed))
-						self._send_acknowledged(True, conn) # Got Length.
+						self._send_acknowledged(True, conn)  #TODO: fail check?
+						logger.debug("Loading message with length {}.".format(completed))
 						buffer = EMPTY_RAW_BYTE
 					completed -= 1
 				text = n(buffer)
