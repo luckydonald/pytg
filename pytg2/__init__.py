@@ -4,7 +4,13 @@ import atexit
 from pytg2.encoding import to_unicode as u
 __all__ = ["receiver", "sender"]
 
+import logging
+logger = logging.getLogger(__name__)
 class Telegram(object):
+	"""
+	To have the sender and the receiver in one handsome object.
+	Also is able to start the CLI, and stop it respectivly.
+	"""
 	def __init__(self, host="127.0.0.1", port_receive=4458, port_send=1337, telegram = None, pubkey_file = None):
 		from .sender import Sender
 		from .receiver import Receiver
@@ -22,7 +28,7 @@ class Telegram(object):
 		#while self._proc is not None:
 		#	result = self.sender.raw(u("help"))
 		#	if result and u("Prints this help") in result:
-		#		print("CLI available.")
+		#		logger.info("CLI available.")
 		#		break
 		#	else:
 		#		print("CLI does not response. (Debug: {})".format(result))
@@ -35,7 +41,6 @@ class Telegram(object):
 
 		:return: (int) process id of telegram.
 		"""
-		print("Starting CLI.")
 		if not telegram or not pubkey_file:
 			raise ValueError("telegram and/or pubkey_file not defined.")
 		self._tg = telegram
@@ -45,13 +50,15 @@ class Telegram(object):
 			import os
 			os.setpgrp()
 		atexit.register(self.stopCLI)
-		self._proc = subprocess.Popen([self._tg, '-R', '-W', '-s','127.0.0.1:' + str(port_receive), '-P', str(port_send),  '-k', self._pub], stdin=subprocess.PIPE, stdout=subprocess.PIPE, preexec_fn = preexec_function)
+		args = [self._tg, '-R', '-W', '-s','127.0.0.1:' + str(port_receive), '-P', str(port_send),  '-k', self._pub]
+		logger.info("Starting Telegram Executable: \"{cmd}\"".format(cmd=args))
+		self._proc = subprocess.Popen(args, stdin=subprocess.PIPE, stdout=subprocess.PIPE, preexec_fn = preexec_function)
 		return self._proc.pid
 		#return pid
 		#raise NotImplementedError("I Have to figure out processes in Python first...")
 
 	def stopCLI(self):
-		print("Stopping CLI.")
+		logger.info("Stopping CLI.")
 		if self._proc is not None:
 			try:
 				self.sender.safe_quit()
@@ -69,7 +76,7 @@ class Telegram(object):
 				return self._proc.returncode
 			try:
 				self._proc.kill()
-			except  Exception as e: #todo:  ProcessLookupError does not exist before python 3
+			except Exception as e: #todo:  ProcessLookupError does not exist before python 3
 				pass
 			self._proc.poll()
 			return self._proc.returncode

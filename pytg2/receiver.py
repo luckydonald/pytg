@@ -179,17 +179,15 @@ class Receiver(object):
 	# end def
 
 	def _send_acknowledged(self,success, connection):
-		logger.info("Sending acknowledged {bool}".format(bool=success))
+		response = RESPONSE_ACKNOWLEDGED if success else RESPONSE_ERROR
+		logger.debug("Sending acknowledged: {response}".format(response=response))
 		if connection:
 			old_timeout = connection.gettimeout()
 			self.s.settimeout(10)
 			try:
-				if success:
-					connection.send(RESPONSE_ACKNOWLEDGED) # 'ACK'
-				else:
-					connection.send(RESPONSE_ERROR) # 'ERR'
+				connection.send(response) # 'ACK' or 'ERR'
 			except socket.timeout as e:
-				#logger.warn("Acknowledge send timeout")
+				logger.debug("Timeout sending '{response}' Acknowledged.".format(response=response))
 				pass
 			connection.settimeout(old_timeout)
 			

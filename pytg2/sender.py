@@ -13,6 +13,8 @@ from errno import ECONNREFUSED, EINTR
 from socket import error as socket_error
 import threading
 import atexit
+import logging
+logger = logging.getLogger(__name__)
 
 SOCKET_SIZE = 1 << 25
 
@@ -146,7 +148,6 @@ class Sender(object):
 
 	def __getattr__(self, attr):
 		if attr in functions:
-			#print("newly: %s" % attr)
 			command = self.Command(attr, self)
 			setattr(self, attr, command)
 			return command
@@ -171,8 +172,7 @@ class Sender(object):
 	def _do_send(self, command, answer_timeout=default_answer_timeout):
 		if not isinstance(command, (text_type, binary_type)):
 			raise TypeError("Command to send is not a unicode(?) string. (Instead of %s you used %s.) " % (str(text_type), str(type(command))))
-		if self.debug:
-			print("Sending command >%s<" % n(command))
+		logger.debug("Sending command >%s<" % n(command))
 		with self._socked_used:
 			while not self._do_quit:
 				if self.s:
@@ -189,15 +189,13 @@ class Sender(object):
 				except Exception as error:
 					self.s.close()
 					raise error
-				if self.debug:
-					print("Connected.")
+				logger.debug("Socket Connected.")
 				try:
 					self.s.sendall(b(command))
 				except Exception as error:
 					self.s.close()
 					raise error #retry?
-				if self.debug:
-					print("Sended.")
+				logger.debug("All Sent.")
 				completed = -1 # -1 = answer size yet unknown, >0 = got remaining answer size
 				buffer = b("")
 				self.s.settimeout(answer_timeout) # in seconds.
@@ -221,15 +219,12 @@ class Sender(object):
 						completed -= 1
 					except socket.timeout:
 						raise NoResponse(command)
-						if self.debug:
-							print("Timed out, retry.")
-						continue  # just ignore and retry. Is used to be able to quit.
 					except KeyboardInterrupt as error:
-						print("Exception while reading the Answer for \"%s\". Got so far: >%s< of %i\n" % (n(command),n(buffer),completed))  # TODO remove me
+						logger.error("Exception while reading the Answer for \"%s\". Got so far: >%s< of %i\n" % (n(command),n(buffer),completed))  # TODO remove me
 						self.s.close()
 						raise
 					except Exception as error:
-						print("Exception while reading the Answer for \"%s\". Got so far: >%s<\n" % (n(command),n(buffer))) #TODO remove me
+						logger.error("Exception while reading the Answer for \"%s\". Got so far: >%s<\n" % (n(command),n(buffer))) #TODO remove me
 						self.s.close()
 						raise
 						#raise error
@@ -247,18 +242,18 @@ class Sender(object):
 		self._do_quit = True
 		if self._socked_used.acquire(blocking=False):
 			# Nothing is going on, just quit then.
-			print("Stopped Sending.")
+			logger.info("Stopped Sending.")
 			self._socked_used.release()
 			return
 		else:
 			# Something was using the socket for more than 15 seconds.
-			print("Aborting Sending.")
+			logger.warn("Aborting Sending.")
 			if self.s:
 				self.s.settimeout(0)
 			return # don't abort sending, let it do stuff, it will suceed or fail soon anyway.
-			if self.s:
-				self.s.close()
-		atexit.unregister(self.terminate)
+				   # Well, hopefully. Else something like this should work:
+			#if self.s:
+			#	self.s.close()
 
 
 

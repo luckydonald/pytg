@@ -2,6 +2,9 @@ __author__ = 'luckydonald'
 from . import encoding
 from os import path # file checking.
 
+import logging
+logger = logging.getLogger(__name__)
+
 class UnknownFunction(Exception):
 	pass
 
@@ -51,7 +54,7 @@ def positive_number(value):
 	return False
 
 def file(value):
-	print("Got file: [{}]".format(value)) #TODO remove
+	logger.debug("Got file: [{}]".format(value)) #TODO remove
 	return path.isfile(encoding.native_type(value))
 
 def nonnegative_number(value):
