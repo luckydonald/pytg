@@ -9,6 +9,67 @@ The [original version](https://github.com/vysheng/tg) does not support some requ
 Python 2 uses ascii only bytestrings, causing much trouble when dealing with characters like öäüß or emojis.
 ~ luckydonald
 
+
+## **Usage** ##
+
+### How to *start* it up ###
+
+Create a Telegram Instance.
+This will manage the CLI process, and registers the Sender and Receiver for you.
+
+```python
+tg = pytg2.Telegram(
+	telegram="/path/to/telejson/bin/telegram-cli",
+	pubkey_file="/path/to/telejson/tg-server.pub")
+receiver = tg.receiver
+sender = tg.sender
+```
+
+You can instead do that by yourself, if you don't want to start the cli (already running maybe?) or only need the Receiver or the Sender.
+
+```python
+receiver = Receiver(host="localhost", port=4458)
+sender = Sender(host="localhost" ,port=1337)
+```
+
+### *Send* a message ###
+
+```python
+sender.send_msg("username", "Hello World!")
+# Easy huh?
+```
+    
+### *Receiving* messages ###
+
+You need a function as main loop.
+```python
+@coroutine # from pytg2.utils import coroutine
+def main_loop():
+	while not QUIT:
+		msg = (yield) # it waits until it got a message, stored now in msg.
+		print("Message: ", msg.text)
+		# do more stuff here!
+	#
+#
+```
+
+Last step is to register that function:
+
+```python
+	# add "example_function" function as message listener. You can supply arguments here, like main_loop(foo, bar).
+	receiver.message(main_loop())  # now it will call the main_loop and yield the new messages.
+	
+	# start the Receiver, so we can get messages!
+	receiver.start()
+```
+
+That's the basics. Have a look into the examples folder. For starters, I recommend:    
+* dump.py * is usefull to see, how the messages look like.    
+* ping.py * is usefull to see how to interact with pytg, send messages etc.   
+
+
+
+
 ## **New in Version 0.3.0**
 Pytg2 got overhauled to version 0.3.0, which will restructure heavily,
 BUT will decrease the CPU usage to around nothing.
@@ -19,7 +80,28 @@ The retrieval of new messaged is multitheaded, so you won't lose any messages if
 Also a nice new feature is an automatic download of files. (more about this, as soon as I get time to edit this...)
 
 
-## **Instructions are not up to date!**
+
+### Look at the examples
+See some example scripts to start with.
+They are in the [examples folder](https://bitbucket.org/luckydonald/pytg2/src)    
+* dump.py * is usefull to see, how the messages look like.    
+* ping.py * is usefull to see how to interact with pytg, send messages etc.    
+* dialog_list.py * shows you how to interact with the CLI and function returning stuff.    
+
+
+### Contribute
+You can help
+
+* with testing
+* by [reporting issues](https://bitbucket.org/luckydonald/pytg2/issues)
+* by commiting patches
+
+Thanks!
+
+
+
+
+# **Instructions are not up to date!**
 They need to be updated. Proceed with caution.
 
 ## **Installation**
@@ -82,19 +164,3 @@ Register your client, if required. Please note that PyTG2 does not support clien
 Thats actually optional.  
 You're Done with the installation! [Yay.](http://flutteryay.com/)
 
-### 4. Look at the examples
-See some example scripts to start with.
-They are in the [examples folder](https://bitbucket.org/luckydonald/pytg2/src)    
-* dump.py * is usefull to see, how the messages look like.    
-* ping.py * is usefull to see how to interact with pytg, send messages etc.    
-* dialog_list.py * shows you how to interact with the CLI and function returning stuff.    
-
-
-### 5. Contribute
-You can help
-
-* with testing
-* by [reporting issues](https://bitbucket.org/luckydonald/pytg2/issues)
-* by commiting patches
-
-Thanks!
