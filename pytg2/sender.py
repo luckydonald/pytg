@@ -79,7 +79,7 @@ _LINE_BREAK = b("\n")
 
 class Sender(object):
 	_do_quit = False
-	default_answer_timeout = 0.2 # how long it should wait for a answer. DANGER: if set to None it will block!
+	default_answer_timeout = 0.5 # how long it should wait for a answer. DANGER: if set to None it will block!
 	def __init__(self, host, port):
 		"""
 
