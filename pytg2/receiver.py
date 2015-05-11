@@ -58,6 +58,7 @@ class Receiver(object):
 		"""
 		Shuts down the receivers server.
 		No more messages will be received.
+		You should not try to start() it again afterwards.
 		"""
 		self._do_quit = True
 		if self.s:
@@ -148,7 +149,7 @@ class Receiver(object):
 						buffer = EMPTY_RAW_BYTE
 					completed -= 1
 				text = n(buffer)
-				if len(text) > 0 and text.strip() != EMPTY_UNICODE_STRING:
+				if len(text) > 0 and text.strip() != "":
 						if self._do_quit:
 							continue
 						try:

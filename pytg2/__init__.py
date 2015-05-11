@@ -51,7 +51,7 @@ class Telegram(object):
 			os.setpgrp()
 		atexit.register(self.stopCLI)
 		args = [self._tg, '-R', '-W', '-s','127.0.0.1:' + str(port_receive), '-P', str(port_send),  '-k', self._pub]
-		logger.info("Starting Telegram Executable: \"{cmd}\"".format(cmd=args))
+		logger.info("Starting Telegram Executable: \"{cmd}\"".format(cmd=" ".join(args)))
 		self._proc = subprocess.Popen(args, stdin=subprocess.PIPE, stdout=subprocess.PIPE, preexec_fn = preexec_function)
 		return self._proc.pid
 		#return pid
