@@ -1,5 +1,3 @@
-from pytg2.argumenttypes import UnknownFunction
-
 __author__ = 'luckydonald'
 from . import argumenttypes as args
 from . import result_parser as res
@@ -8,11 +6,13 @@ from .encoding import to_native as n
 from .encoding import to_unicode as u
 from .encoding import to_binary as b
 from .encoding import text_type, binary_type
+from .exceptions import UnknownFunction, ConnectionError, NoResponse, IllegalResponseException
 import socket # connect to telegram cli.
 from errno import ECONNREFUSED, EINTR
 from socket import error as socket_error
 import threading
 import atexit
+import inspect # g
 import logging
 logger = logging.getLogger(__name__)
 
@@ -31,12 +31,12 @@ functions = {
 	"send_msg": 			["msg", 				[args.peer, args.unicode_string],								res.success_fail, None],
 	"send_typing": 			["send_typing", 		[args.peer, args.nonnegative_number],							res.success_fail, None],
 	"send_typing_abort": 	["send_typing_abort", 	[args.peer],													res.success_fail, None],
-	"send_photo": 			["send_photo", 			[args.peer, args.file],								res.success_fail, 60.0],
-	"send_video": 			["send_video", 			[args.peer, args.file],								res.success_fail, 60.0],
-	"send_audio": 			["send_audio", 			[args.peer, args.file],								res.success_fail, 60.0],
-	"send_document": 		["send_document", 		[args.peer, args.file],								res.success_fail, 60.0],
-	"send_file": 			["send_file", 			[args.peer, args.file],								res.success_fail, 60.0],
-	"send_text": 			["send_text", 			[args.peer, args.file],								res.success_fail, 60.0],
+	"send_photo": 			["send_photo", 			[args.peer, args.file],											res.success_fail, 60.0],
+	"send_video": 			["send_video", 			[args.peer, args.file],											res.success_fail, 60.0],
+	"send_audio": 			["send_audio", 			[args.peer, args.file],											res.success_fail, 60.0],
+	"send_document": 		["send_document", 		[args.peer, args.file],											res.success_fail, 60.0],
+	"send_file": 			["send_file", 			[args.peer, args.file],											res.success_fail, 60.0],
+	"send_text": 			["send_text", 			[args.peer, args.file],											res.success_fail, 60.0],
 	"send_location": 		["send_location", 		[args.peer, args.double, args.double],							res.success_fail, None],
 	"load_photo": 			["load_photo", 			[args.msg_id],													res.something, 	60.0], #String saying something and a filepath
 	"load_video": 			["load_video", 			[args.msg_id],													res.something, 	60.0], #String saying something and a filepath
@@ -60,7 +60,7 @@ functions = {
 	"msg_search": 			["search", 				[args.peer, args.unicode_string],								res.something, None], #ret: formated messages
 	"msg_global_search": 	["search", 				[args.unicode_string],											res.something, None], #ret: formated messages
 	"mark_read": 			["mark_read", 			[args.peer],													res.success_fail, None],
-	"set_profile_photo": 	["set_profile_photo", 	[args.file],											res.something, 	60.0], #TODO
+	"set_profile_photo": 	["set_profile_photo", 	[args.file],													res.something, 	60.0], #TODO
 	"set_profile_name": 	["set_profile_name", 	[args.unicode_string, args.unicode_string],						res.something, 	60.0], #ret: new name
 	"delete_msg": 			["delete_msg", 			[args.msg_id],													res.success_fail, None],
 	"restore_msg": 			["restore_msg", 		[args.positive_number],											res.success_fail, None],
@@ -68,8 +68,8 @@ functions = {
 	"send_contact": 		["send_contact", 		[args.peer, args.unicode_string, args.unicode_string, args.unicode_string], res.something, 	60.0], #ret: formated message
 	"status_online": 		["status_online", 		[],																res.success_fail, None],
 	"status_offline": 		["status_offline", 		[],																res.success_fail, None],
-	"quit": 				["quit", 				[],																res.success_fail, None],
-	"safe_quit": 			["safe_quit",	 		[],																res.success_fail, None],
+	"quit": 				["quit", 				[],																res.response_fails, None],
+	"safe_quit": 			["safe_quit",	 		[],																res.response_fails, None],
 	"raw": 					["", 					[args.unescaped_unicode_string],								res.anything, None]
 } 	# \{"(.*)",\ .*,\ \{\ (.*)\ \}\}, >> "$1": ["$1", [$2]],
 
@@ -102,18 +102,27 @@ class Sender(object):
 		:param function_name:
 		:param arguments:
 		:param answer_timeout:  set to a float to set a custom timeout for this answer.
-		:return:
+		:return: parsed result/exception
 		"""
 		command_name, new_args = self._validate_input(function_name, arguments)
 		if self._do_quit and not "quit" in command_name:
 			raise AssertionError("Socket already terminated.")
 		result_parser = functions[function_name][FUNC_RES]
 		result_timeout = functions[function_name][FUNC_TIME]
-		if result_timeout:
-			result = self._do_command(command_name, *new_args, answer_timeout = result_timeout)
-		else:
-			result = self._do_command(command_name, *new_args, answer_timeout = self.default_answer_timeout)
-
+		try:
+			if result_timeout:
+				result = self._do_command(command_name, *new_args, answer_timeout=result_timeout)
+			else:
+				result = self._do_command(command_name, *new_args, answer_timeout=self.default_answer_timeout)
+		except NoResponse as err:
+			args_ = inspect.getargspec(result_parser)[0]
+			if not "exception" in args_:
+				raise IllegalResponseException("Result parser does not allow exceptions.")
+			try:
+				return_result = result_parser(exception=err)
+				return return_result
+			except TypeError:
+				raise IllegalResponseException("Result parser did not allow exceptions.")
 		return result_parser(result)
 
 	@staticmethod
@@ -177,7 +186,7 @@ class Sender(object):
 			while not self._do_quit:
 				if self.s:
 					self.s.close()
-					del self.s
+					self.s = None
 				self.s = socket.socket()
 				try:
 					self.s.connect((self.host,self.port_out))
@@ -204,11 +213,16 @@ class Sender(object):
 						while 1: #retry if CTRL+C'd
 							try:
 								answer = self.s.recv(1)
+								# recv() returns an empty string if the remote end is closed
+								if len(answer) == 0:
+									raise ConnectionError("Remote end closed")
 								break
 							except socket_error as err:
 								if err.errno != EINTR:
 									raise
-						self.s.settimeout( max(self.default_answer_timeout, answer_timeout) ) # in seconds.
+								else:
+									logger.exception("Uncatched exception in reading answer from cli.")
+						self.s.settimeout(max(self.default_answer_timeout, answer_timeout)) # in seconds.
 						# If there was input the input is now either the default one or the given one, which waits longer.
 						buffer += answer
 						if completed < -1 and buffer[:len(_ANSWER_SYNTAX)] != _ANSWER_SYNTAX[:len(buffer)]:
@@ -217,20 +231,24 @@ class Sender(object):
 							completed = int(n(buffer[7:-1])) #TODO regex.
 							buffer = b("")
 						completed -= 1
+					except ConnectionError:
+						self.s.close()
+						raise
 					except socket.timeout:
 						raise NoResponse(command)
 					except KeyboardInterrupt as error:
-						logger.error("Exception while reading the Answer for \"%s\". Got so far: >%s< of %i\n" % (n(command),n(buffer),completed))  # TODO remove me
+						logger.exception("Exception while reading the Answer for \"%s\". Got so far: >%s< of %i\n" % (n(command), n(buffer), completed))  # TODO remove me
 						self.s.close()
 						raise
 					except Exception as error:
-						logger.error("Exception while reading the Answer for \"%s\". Got so far: >%s<\n" % (n(command),n(buffer))) #TODO remove me
+						logger.exception("Exception while reading the Answer for \"%s\". Got so far: >%s<\n" % (n(command), n(buffer))) #TODO remove me
 						self.s.close()
 						raise
 						#raise error
 				# end while completed != 0
 				if self.s:
 					self.s.close()
+					self.s = None
 				return u(buffer)
 			# end while not self._do_quit
 		# end with lock
@@ -254,8 +272,3 @@ class Sender(object):
 				   # Well, hopefully. Else something like this should work:
 			#if self.s:
 			#	self.s.close()
-
-
-
-class NoResponse(Exception):
-	pass

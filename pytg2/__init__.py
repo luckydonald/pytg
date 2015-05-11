@@ -1,11 +1,12 @@
-from pytg2.sender import NoResponse
-from pytg2.result_parser import IllegalResponseException
 import atexit
-from pytg2.encoding import to_unicode as u
 __all__ = ["receiver", "sender"]
 
 import logging
 logger = logging.getLogger(__name__)
+from .exceptions import NoResponse, IllegalResponseException
+#from .encoding import to_unicode as u
+
+
 class Telegram(object):
 	"""
 	To have the sender and the receiver in one handsome object.
