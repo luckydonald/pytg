@@ -59,7 +59,7 @@ class Telegram(object):
 		#raise NotImplementedError("I Have to figure out processes in Python first...")
 
 	def stopCLI(self):
-		logger.info("Stopping CLI.")
+		logger.info("Asking to CLI to stop.")
 		if self._proc is not None:
 			try:
 				self.sender.safe_quit()
@@ -67,19 +67,38 @@ class Telegram(object):
 				pass
 			self._proc.poll()
 			if self._proc.returncode:
+				logger.info("CLI did stop ({return_code}).".format(return_code=self._proc.returncode))
 				return self._proc.returncode
+			logger.debug("safe_quit did not terminate.")
+			try:
+				self.sender.quit()
+			except (NoResponse, IllegalResponseException, AssertionError):
+				pass
+			self._proc.poll()
+			if self._proc.returncode:
+				logger.info("CLI did stop ({return_code}).".format(return_code=self._proc.returncode))
+				return self._proc.returncode
+			logger.debug("quit did not terminate.")
 			try:
 				self._proc.terminate()
 			except Exception as e: #todo: ProcessLookupError does not exist before python 3
 				pass
 			self._proc.poll()
 			if self._proc.returncode:
+				logger.info("CLI did stop ({return_code}).".format(return_code=self._proc.returncode))
 				return self._proc.returncode
+			logger.debug("terminate did not terminate.")
 			try:
 				self._proc.kill()
 			except Exception as e: #todo:  ProcessLookupError does not exist before python 3
 				pass
 			self._proc.poll()
+			if self._proc.returncode:
+				logger.info("CLI did stop ({return_code}).".format(return_code=self._proc.returncode))
+				return self._proc.returncode
+			logger.debug("kill did not terminate.")
+			logger.warn("CLI kinda not stopped... ({return_code}).".format(return_code=self._proc.returncode))
 			return self._proc.returncode
 		else:
-			raise AssertionError("No CLI was started.")
+			logger.warn("No CLI running.")
+			raise AssertionError("No CLI running.")
