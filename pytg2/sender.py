@@ -79,7 +79,7 @@ _LINE_BREAK = b("\n")
 
 class Sender(object):
 	_do_quit = False
-	default_answer_timeout = 0.5 # how long it should wait for a answer. DANGER: if set to None it will block!
+	default_answer_timeout = 1.0 # how long it should wait for a answer. DANGER: if set to None it will block!
 	def __init__(self, host, port):
 		"""
 
@@ -192,9 +192,9 @@ class Sender(object):
 					self.s.connect((self.host,self.port_out))
 				except socket_error as error:
 					self.s.close()
-					if error.errno != ECONNREFUSED:
-						raise error  # Not the error we are looking for, re-raise
-					continue
+					if error.errno == ECONNREFUSED and not self._do_quit:
+						continue
+					raise error  # Not the error we are looking for, re-raise
 				except Exception as error:
 					self.s.close()
 					raise error
@@ -256,12 +256,19 @@ class Sender(object):
 			self.s.close()
 	# end of function
 
-	def terminate(self):
+	def quit(self):
 		self._do_quit = True
+		logger.info("Quit Sending. Not allowing sending anymore.")
+	def unquit(self):
+		self._do_quit = False
+		logger.info("Unquit Sending. Allowing sending again.")
+	def terminate(self):
+		self.quit()
+		logger.warn("Terminating currently sending request.")
 		if self._socked_used.acquire(blocking=False):
 			# Nothing is going on, just quit then.
-			logger.info("Stopped Sending.")
-			self._socked_used.release()
+			logger.info("Currently not Sending.")
+			self._socked_used.release() # someone can use it again.
 			return
 		else:
 			# Something was using the socket for more than 15 seconds.
@@ -269,6 +276,6 @@ class Sender(object):
 			if self.s:
 				self.s.settimeout(0)
 			return # don't abort sending, let it do stuff, it will suceed or fail soon anyway.
-				   # Well, hopefully. Else something like this should work:
+			#	   # Well, hopefully. Else something like this should work:
 			#if self.s:
 			#	self.s.close()

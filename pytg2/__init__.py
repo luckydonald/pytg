@@ -66,7 +66,7 @@ class Telegram(object):
 			except (NoResponse, IllegalResponseException, AssertionError):
 				pass
 			self._proc.poll()
-			if self._proc.returncode:
+			if self._proc.returncode is not None:
 				logger.info("CLI did stop ({return_code}).".format(return_code=self._proc.returncode))
 				return self._proc.returncode
 			logger.debug("safe_quit did not terminate.")
@@ -75,7 +75,7 @@ class Telegram(object):
 			except (NoResponse, IllegalResponseException, AssertionError):
 				pass
 			self._proc.poll()
-			if self._proc.returncode:
+			if self._proc.returncode is not None:
 				logger.info("CLI did stop ({return_code}).".format(return_code=self._proc.returncode))
 				return self._proc.returncode
 			logger.debug("quit did not terminate.")
@@ -83,8 +83,9 @@ class Telegram(object):
 				self._proc.terminate()
 			except Exception as e: #todo: ProcessLookupError does not exist before python 3
 				pass
+			self.sender.quit()
 			self._proc.poll()
-			if self._proc.returncode:
+			if self._proc.returncode is not None:
 				logger.info("CLI did stop ({return_code}).".format(return_code=self._proc.returncode))
 				return self._proc.returncode
 			logger.debug("terminate did not terminate.")
@@ -93,11 +94,12 @@ class Telegram(object):
 			except Exception as e: #todo:  ProcessLookupError does not exist before python 3
 				pass
 			self._proc.poll()
-			if self._proc.returncode:
+			if self._proc.returncode is not None:
 				logger.info("CLI did stop ({return_code}).".format(return_code=self._proc.returncode))
 				return self._proc.returncode
 			logger.debug("kill did not terminate.")
 			logger.warn("CLI kinda not stopped... ({return_code}).".format(return_code=self._proc.returncode))
+			self._proc.wait()
 			return self._proc.returncode
 		else:
 			logger.warn("No CLI running.")
