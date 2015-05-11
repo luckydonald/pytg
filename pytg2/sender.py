@@ -1,5 +1,5 @@
 __author__ = 'luckydonald'
-from . import argumenttypes as args
+from . import argument_types as args
 from . import result_parser as res
 from .utils import escape
 from .encoding import to_native as n
