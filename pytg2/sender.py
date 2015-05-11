@@ -155,7 +155,7 @@ class Sender(object):
 			return object.__getattribute__(self, attr)
 
 	def _do_command(self, function_sting, *argmts, **kwargs):
-		arg_string = " ".join([str(x) for x in argmts])
+		arg_string = " ".join([u(x) for x in argmts])
 		request = " ".join([function_sting,  arg_string])
 		request = "".join([request, "\n"]) #TODO can this be deleted?
 		result = self._do_send(request, **kwargs)

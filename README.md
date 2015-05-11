@@ -56,11 +56,12 @@ def main_loop():
 Last step is to register that function:
 
 ```python
+	# start the Receiver, so we can get messages!
+	receiver.start()
+
 	# add "example_function" function as message listener. You can supply arguments here, like main_loop(foo, bar).
 	receiver.message(main_loop())  # now it will call the main_loop and yield the new messages.
 	
-	# start the Receiver, so we can get messages!
-	receiver.start()
 ```
 
 That's the basics. Have a look into the examples folder. For starters, I recommend:    
