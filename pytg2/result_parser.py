@@ -16,6 +16,7 @@ def nothing(value):
 def something(value):
 	if not (value and len(value) > 1):
 		raise IllegalResponseException("Should return something.")
+	return value
 
 def anything(value):
 	return value
