@@ -122,7 +122,8 @@ class Sender(object):
 				return_result = result_parser(exception=err)
 				return return_result
 			except TypeError:
-				raise IllegalResponseException("Result parser did not allow exceptions.")
+				logger.error("Result parser did not allow exceptions.")
+				raise
 		return result_parser(result)
 
 	@staticmethod
@@ -256,10 +257,10 @@ class Sender(object):
 			self.s.close()
 	# end of function
 
-	def quit(self):
+	def stop(self):
 		self._do_quit = True
 		logger.info("Quit Sending. Not allowing sending anymore.")
-	def unquit(self):
+	def unstop(self):
 		self._do_quit = False
 		logger.info("Unquit Sending. Allowing sending again.")
 	def terminate(self):

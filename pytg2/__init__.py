@@ -68,6 +68,7 @@ class Telegram(object):
 			self._proc.poll()
 			if self._proc.returncode is not None:
 				logger.info("CLI did stop ({return_code}).".format(return_code=self._proc.returncode))
+				self.sender.stop()
 				return self._proc.returncode
 			logger.debug("safe_quit did not terminate.")
 			try:
@@ -77,16 +78,18 @@ class Telegram(object):
 			self._proc.poll()
 			if self._proc.returncode is not None:
 				logger.info("CLI did stop ({return_code}).".format(return_code=self._proc.returncode))
+				self.sender.stop()
 				return self._proc.returncode
 			logger.debug("quit did not terminate.")
 			try:
 				self._proc.terminate()
 			except Exception as e: #todo: ProcessLookupError does not exist before python 3
 				pass
-			self.sender.quit()
+			self.sender.stop()
 			self._proc.poll()
 			if self._proc.returncode is not None:
 				logger.info("CLI did stop ({return_code}).".format(return_code=self._proc.returncode))
+				self.sender.stop()
 				return self._proc.returncode
 			logger.debug("terminate did not terminate.")
 			try:

@@ -62,8 +62,6 @@ class Receiver(object):
 		self._do_quit = True
 		if self.s:
 			self.s.settimeout(0)
-		#if self.s.c:
-			#self.s.shutdown(SHUT_RDWR)
 		if self.s:
 			self.s.close()
 		self._new_messages.release()
