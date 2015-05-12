@@ -258,13 +258,20 @@ class Sender(object):
 	# end of function
 
 	def stop(self):
-		self._do_quit = True
-		logger.info("Quit Sending. Not allowing sending anymore.")
+		if self._do_quit:
+			logger.debug("Already did quit Sending. Not allowing sending.")
+		else:
+			logger.info("Quit Sending. Not allowing sending anymore.")
+			self._do_quit = True
 	def unstop(self):
-		self._do_quit = False
+		if self._do_quit:
+			logger.info("Unquit Sending. Allowing sending again.")
+			self._do_quit = False
+		else:
+			logger.debug("Already did unquit Sending. Allowing sending.")
 		logger.info("Unquit Sending. Allowing sending again.")
 	def terminate(self):
-		self.quit()
+		self.stop()
 		logger.warn("Terminating currently sending request.")
 		if self._socked_used.acquire(blocking=False):
 			# Nothing is going on, just quit then.
