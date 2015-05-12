@@ -1,12 +1,9 @@
 __author__ = 'luckydonald'
-from . import encoding
 from os import path # file checking.
-
 import logging
 logger = logging.getLogger(__name__)
-
-class UnknownFunction(Exception):
-	pass
+from . import encoding
+from .utils import escape #validate_input
 
 
 def none(value):
@@ -75,7 +72,6 @@ def msg_id(value):
 def optional():
 	return True
 
-from .utils import escape
 def validate_input(function_name, arguments, arguments_types):
 		if (len(arguments) != len(arguments_types)):
 			raise ValueError("Error in function {function_name}: {expected_number} paramters expected, but {given_number} were given.".format(function_name=function_name, expected_number=len(arguments_types), given_number=len(args)))
