@@ -2,7 +2,9 @@ __author__ = 'luckydonald'
 from .encoding import to_unicode as u
 from .encoding import to_native as n
 from .exceptions import IllegalResponseException, NoResponse
+import logging
 
+logger = logging.getLogger(__name__)
 
 def nothing(value):
 	if value:
@@ -24,7 +26,9 @@ def success_fail(value):
 		return False
 	raise IllegalResponseException("Found \"%s\"" % n(value))
 
-def response_fails(exception=None):
+def response_fails(exception=None, *args):
+	if len(args) > 0:
+		logger.warn("response_fails: args: {}",args)
 	if exception is None:
 		raise IllegalResponseException("Did not throw timeout exception.")
 	if isinstance(exception, NoResponse):
