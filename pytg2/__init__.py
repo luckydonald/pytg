@@ -61,49 +61,49 @@ class Telegram(object):
 	def stopCLI(self):
 		logger.info("Asking to CLI to stop.")
 		if self._proc is not None:
-			try:
-				self.sender.safe_quit()
-			except (NoResponse, IllegalResponseException, AssertionError):
-				pass
-			self._proc.poll()
-			if self._proc.returncode is not None:
-				logger.info("CLI did stop ({return_code}).".format(return_code=self._proc.returncode))
-				self.sender.stop()
-				return self._proc.returncode
-			logger.debug("safe_quit did not terminate.")
-			try:
-				self.sender.quit()
-			except (NoResponse, IllegalResponseException, AssertionError):
-				pass
-			self._proc.poll()
-			if self._proc.returncode is not None:
-				logger.info("CLI did stop ({return_code}).".format(return_code=self._proc.returncode))
-				self.sender.stop()
-				return self._proc.returncode
-			logger.debug("quit did not terminate.")
+			if self.sender._do_quit:
+				logger.warn("Sender already stopped. Unable to issue safe_quit or quit to exit the cli nicely.")
+			else:
+				try:
+					self.sender.safe_quit()
+				except (NoResponse, IllegalResponseException, AssertionError):
+					logger.debug("safe_quit Exception", exc_info=True)
+				if self._check_stopped(): return self._proc.returncode
+				logger.debug("safe_quit did not terminate.")
+
+				try:
+					self.sender.quit()
+				except (NoResponse, IllegalResponseException, AssertionError):
+					logger.debug("quit Exception", exc_info=True)
+				if self._check_stopped(): return self._proc.returncode
+				logger.debug("quit did not terminate.")
+				self.sender.stop() # quit and safe quit are done, we don't need the sender any longer.
+			#end if-else: self.sender._do_quit
 			try:
 				self._proc.terminate()
 			except Exception as e: #todo: ProcessLookupError does not exist before python 3
-				pass
-			self.sender.stop()
-			self._proc.poll()
-			if self._proc.returncode is not None:
-				logger.info("CLI did stop ({return_code}).".format(return_code=self._proc.returncode))
-				self.sender.stop()
-				return self._proc.returncode
+				logger.debug("terminate Exception", exc_info=True)
+			if self._check_stopped(): return self._proc.returncode
 			logger.debug("terminate did not terminate.")
+
 			try:
 				self._proc.kill()
 			except Exception as e: #todo:  ProcessLookupError does not exist before python 3
-				pass
-			self._proc.poll()
-			if self._proc.returncode is not None:
-				logger.info("CLI did stop ({return_code}).".format(return_code=self._proc.returncode))
-				return self._proc.returncode
+				logger.debug("kill Exception", exc_info=True)
+			if self._check_stopped(): return self._proc.returncode
 			logger.debug("kill did not terminate.")
-			logger.warn("CLI kinda not stopped... ({return_code}).".format(return_code=self._proc.returncode))
+			logger.warn("CLI kinda didn't die... Will wait (block) for termination.")
+
 			self._proc.wait()
+			self._check_stopped()
 			return self._proc.returncode
 		else:
 			logger.warn("No CLI running.")
 			raise AssertionError("No CLI running.")
+
+	def _check_stopped(self):
+		self._proc.poll()
+		if self._proc.returncode is not None:
+			logger.info("CLI did stop ({return_code}).".format(return_code=self._proc.returncode))
+			self.sender.stop()
+			return True
