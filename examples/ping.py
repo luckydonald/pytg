@@ -1,15 +1,18 @@
+# coding=utf-8
+from __future__ import unicode_literals
 __author__ = 'luckydonald'
 from pytg2.receiver import Receiver # get messages
 from pytg2.sender import Sender # send messages, and other querys.
 from pytg2.utils import coroutine
-from __future__ import unicode_literals
 
 def main():
+	# The port to connect to.
+	PORT = 1337
 	# get a Receiver instance, to get messages.
-	receiver = Receiver(host="localhost", port=4458)
+	receiver = Receiver(host="localhost", port=PORT)
 
 	# get a Sender instance, to send messages, and other querys.
-	sender = Sender(host="localhost" ,port=1337)
+	sender = Sender(host="localhost" ,port=PORT)
 
 	# start the Receiver, so we can get messages!
 	receiver.start() # note that the Sender has no need for a start function.
@@ -43,8 +46,6 @@ def example_function(sender): # name "example_function" and given parameters are
 			print(msg)
 			if msg.own: # the bot has send this message.
 				continue # we don't want to process this message.
-			if msg.event != u"message": # not a message
-				continue # we'll skip that too.
 			if msg.text == None:  # we have media instead.
 				continue # and again, because we want to process only text message.
 			# Everything in ptg2 will be unicode. If you use python 3 thats no problem,
@@ -54,13 +55,13 @@ def example_function(sender): # name "example_function" and given parameters are
 			# But again, use python 3, as you have a chat with umlaute and emojis.
 			# This WILL brake your python 2 code at some point!
 			if msg.text == u"ping":
-				sender.send_msg(msg.peer.cmd, u"Pong!")
+				sender.send_msg(msg.peer.cmd, u"Pöng!") #unicode support :D
 			elif msg.text == u"quit":  # you should probably check a user id
 				if msg.sender.id == ADMIN_ID:
 					sender.send_msg(msg.sender.cmd, u"Bye!")
 					QUIT = True
 				else:
-					reply = u"You are not my Admin.\nMy Admin has id {admin_id} but you have {user_id}".format(admin_id=ADMIN_ID, user_id=msg['from']['id'])
+					reply = u"You are not my Admin.\nMy Admin has id {admin_id} but you have {user_id}".format(admin_id=ADMIN_ID, user_id=msg.sender.id)
 					sender.send_msg(msg.sender.cmd, reply)
 	except GeneratorExit:
 		# the generator (pytg2) exited (got a KeyboardIterrupt).
