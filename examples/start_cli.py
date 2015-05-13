@@ -13,6 +13,8 @@ def main():
 	import signal
 	signal.signal(signal.SIGINT, sigint_handler)
 	tg = pytg2.Telegram(telegram="/path/to/tg-for-pytg2/bin/telegram-cli", pubkey_file="/path/to/tg-for-pytg2/tg-server.pub")
+	tg.stopCLI()
+
 	import time
 	print("Wait a bit (100s), you can test Ctrl-C here.")
 	time.sleep(100)
