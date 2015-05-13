@@ -118,7 +118,7 @@ class Receiver(object):
 						logger.debug("skipping second linebreak.")
 						completed = -1
 						continue
-					print("Got:", buffer)
+					logger.debug("Received Message: %s", buffer)
 					text = n(buffer)
 					if len(text) > 0 and text.strip() != "":
 						self._add_message(text)
