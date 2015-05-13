@@ -19,12 +19,12 @@ def something(value):
 def anything(value):
 	return value
 
-def success_fail(value):
-	if value == u("SUCCESS"):
+def success_fail(json):
+	if json.result == u("SUCCESS"):
 		return True
-	if value == u("FAIL"):
+	if json.result == u("FAIL"):
 		return False
-	raise IllegalResponseException("Found \"%s\"" % n(value))
+	raise IllegalResponseException("Found: {}".format(json))
 
 def response_fails(exception=None, *args):
 	if len(args) > 0:

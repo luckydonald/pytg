@@ -7,6 +7,10 @@ from .encoding import to_unicode as u
 from .encoding import to_binary as b
 from .encoding import text_type, binary_type
 from .exceptions import UnknownFunction, ConnectionError, NoResponse, IllegalResponseException
+from .msg_array_fixer import fix_message
+
+import json
+from DictObject import DictObject
 import socket # connect to telegram cli.
 from errno import ECONNREFUSED, EINTR
 from socket import error as socket_error
@@ -124,7 +128,14 @@ class Sender(object):
 			except TypeError:
 				logger.error("Result parser did not allow exceptions.")
 				raise
-		return result_parser(result)
+		try:
+			json_dict = json.loads(result)
+			message = DictObject.objectify(json_dict)
+			message = fix_message(message)
+		except:
+			logger.exception("Parsing of answer failed, maybe not valid json?\nMessage: >{}<".format(result))
+			return IllegalResponseException("Parsing of answer failed, maybe not valid json?\nMessage: >{}<".format(result))  #TODO: This is *very* bad code.
+		return result_parser(message)
 
 	@staticmethod
 	def _validate_input(function_name, arguments):
