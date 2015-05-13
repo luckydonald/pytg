@@ -6,13 +6,11 @@ from pytg2.sender import Sender # send messages, and other querys.
 from pytg2.utils import coroutine
 
 def main():
-	# The port to connect to.
-	PORT = 1337
 	# get a Receiver instance, to get messages.
-	receiver = Receiver(host="localhost", port=PORT)
+	receiver = Receiver(host="localhost", port=4458)
 
 	# get a Sender instance, to send messages, and other querys.
-	sender = Sender(host="localhost" ,port=PORT)
+	sender = Sender(host="localhost", port=4458)
 
 	# start the Receiver, so we can get messages!
 	receiver.start() # note that the Sender has no need for a start function.

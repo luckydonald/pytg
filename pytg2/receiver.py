@@ -36,7 +36,7 @@ _LINE_BREAK = b("\n")
 class Receiver(object):
 	"""
 	Start telegram client somewhere.
-	$ ./bin/telegram-cli -P 1337 -s 127.0.0.1:4458 -W
+	$ ./bin/telegram-cli -P 4458 -W --json
 	Get a telegram
 	>>> tg = Receiver()
 	>>> tg.start()
@@ -46,7 +46,7 @@ class Receiver(object):
 	_queue = deque()
 	_new_messages = threading.Semaphore(0)
 	_queue_access = threading.Lock()
-	def __init__(self, host="localhost", port=1337, append_json=False):
+	def __init__(self, host="localhost", port=4458, append_json=False):
 		"""
 		:param append_json: if the dict should contain the original json.
 		"""

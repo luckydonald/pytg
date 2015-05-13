@@ -13,7 +13,7 @@ def example_function(receiver):
 		print("Exiting")
 
 if __name__ == '__main__':
-	receiver = Receiver(port=1337) #get a Receiver Connector instance
+	receiver = Receiver(port=4458) #get a Receiver Connector instance
 	receiver.start() #start the Connector.
 	receiver.message(example_function(receiver)) # add "example_function" function as listeners. You can supply arguments here (like receiver).
 	# continues here, after exiting while loop in example_function()

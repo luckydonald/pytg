@@ -8,5 +8,5 @@
 	```port_receive```, ```port_send``` are unified to ```port```:
 	
 	```python
-	tg.Telegram(port=1337)  # sending and receiving now uses the same port.
+	tg.Telegram(port=4458)  # sending and receiving now uses the same port.
 ```

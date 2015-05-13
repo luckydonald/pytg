@@ -29,7 +29,7 @@ You can instead do that by yourself, if you don't want to start the cli (already
 
 ```python
 receiver = Receiver(host="localhost", port=4458)
-sender = Sender(host="localhost" ,port=1337)
+sender = Sender(host="localhost", port=4458)
 ```
 
 ### *Send* a message ###

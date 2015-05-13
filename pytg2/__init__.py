@@ -12,7 +12,7 @@ class Telegram(object):
 	To have the sender and the receiver in one handsome object.
 	Also is able to start the CLI, and stop it respectivly.
 	"""
-	def __init__(self, host="127.0.0.1", port=1337, telegram = None, pubkey_file = None, custom_cli_args = None):
+	def __init__(self, host="127.0.0.1", port=4458, telegram = None, pubkey_file = None, custom_cli_args = None):
 		from .sender import Sender
 		from .receiver import Receiver
 		self._proc = None
@@ -38,7 +38,7 @@ class Telegram(object):
 
 
 
-	def startCLI(self, telegram=None, pubkey_file=None, custom_cli_args=None, port=1337):
+	def startCLI(self, telegram=None, pubkey_file=None, custom_cli_args=None, port=4458):
 		"""
 		Start the telegram process.
 
