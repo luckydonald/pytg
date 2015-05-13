@@ -1,5 +1,5 @@
 import atexit
-__all__ = ["receiver", "sender"]
+__all__ = ["receiver", "sender", "Telegram"]
 
 import logging
 logger = logging.getLogger(__name__)
@@ -12,7 +12,7 @@ class Telegram(object):
 	To have the sender and the receiver in one handsome object.
 	Also is able to start the CLI, and stop it respectivly.
 	"""
-	def __init__(self, host="127.0.0.1", port_receive=4458, port_send=1337, telegram = None, pubkey_file = None):
+	def __init__(self, host="127.0.0.1", port=1337, telegram = None, pubkey_file = None, custom_cli_args = None):
 		from .sender import Sender
 		from .receiver import Receiver
 		self._proc = None
@@ -20,9 +20,11 @@ class Telegram(object):
 			if host not in ["127.0.0.1", "localhost","",None]:
 				raise ValueError("Can only start the cli at localhost. You may not provide a different host.")
 			host = "127.0.0.1"
-			self.startCLI(telegram=telegram, pubkey_file=pubkey_file, port_receive=port_receive, port_send=port_send)
-		self.sender = Sender(host=host,port=port_send)
-		self.receiver = Receiver(host=host,port=port_receive)
+			self.startCLI(telegram=telegram, pubkey_file=pubkey_file, custom_cli_args=custom_cli_args, port=port)
+		elif telegram is not None or pubkey_file is not None or custom_cli_args is not None:
+			logger.warn("cli related parameter given, but not cli and pubkey path not present.")
+		self.sender = Sender(host=host,port=port)
+		self.receiver = Receiver(host=host,port=port)
 		#NOTE: with the following while, if the cli has a message at boot, it will NOT ANSWER anything
 		#      until that message got transmitted succsessfully. So it would block the foobar=Telegram(tg,key) call.
 
@@ -36,11 +38,15 @@ class Telegram(object):
 
 
 
-	def startCLI(self, telegram=None, pubkey_file=None, port_receive=4458, port_send=1337):
+	def startCLI(self, telegram=None, pubkey_file=None, custom_cli_args=None, port=1337):
 		"""
 		Start the telegram process.
 
+		:type telegram: builtins.str
+		:type pubkey_file: builtins.str
+		:type custom_cli_args: list | tuple
 		:return: (int) process id of telegram.
+		:rtype int:
 		"""
 		if not telegram or not pubkey_file:
 			raise ValueError("telegram and/or pubkey_file not defined.")
@@ -51,7 +57,11 @@ class Telegram(object):
 			import os
 			os.setpgrp()
 		atexit.register(self.stopCLI)
-		args = [self._tg, '-R', '-W', '-s','127.0.0.1:' + str(port_receive), '-P', str(port_send),  '-k', self._pub]
+		args = [self._tg, '-R', '-W', '-P', str(port),  '-k', self._pub, '--json']
+		if custom_cli_args is not None:
+			if not isinstance(custom_cli_args, (list, tuple)):
+				raise TypeError("custom_cli_args should be a list or a tuple.")
+			args.extend(custom_cli_args)
 		logger.info("Starting Telegram Executable: \"{cmd}\"".format(cmd=" ".join(args)))
 		self._proc = subprocess.Popen(args, stdin=subprocess.PIPE, stdout=subprocess.PIPE, preexec_fn = preexec_function)
 		return self._proc.pid
@@ -59,6 +69,12 @@ class Telegram(object):
 		#raise NotImplementedError("I Have to figure out processes in Python first...")
 
 	def stopCLI(self):
+		"""
+		Stop the telegram process.
+
+		:return: (int) returncode of the cli process.
+		:rtype int:
+		"""
 		logger.info("Asking to CLI to stop.")
 		if self._proc is not None:
 			if self.sender._do_quit:
