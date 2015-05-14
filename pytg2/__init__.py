@@ -96,6 +96,7 @@ class Telegram(object):
 				logger.debug("quit did not terminate.")
 				self.sender.stop() # quit and safe quit are done, we don't need the sender any longer.
 			#end if-else: self.sender._do_quit
+			if self._check_stopped(): return self._proc.returncode
 			try:
 				self._proc.terminate()
 			except Exception as e: #todo: ProcessLookupError does not exist before python 3
