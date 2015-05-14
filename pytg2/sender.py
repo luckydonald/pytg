@@ -157,7 +157,19 @@ class Sender(object):
 		i = 0
 		new_args = []
 		for func_type in arguments_types:
+			if i >= len(arguments):
+				if not (hasattr(func_type, "_optional") and func_type._optional is True):
+					raise ValueError(
+						"Error in function {function_name}: Not enough parameter given: {arguments}".format(
+							function_name=function_name, arguments=arguments)
+					)
+				else:
+					logger.debug("Skipping missing optional parameter {number} (type {type}) in function {function_name}.".format(type=func_type.__name__, function_name=function_name,  number=i))
+					continue  # do not increment i, we are still processing the same arg.
+
 			arg = arguments[i]
+			#func_type = arguments_types[i]
+			logger.debug("Parsing {function_name}: Argument {arg} - {type} ({opt})".format(function_name=function_name, arg=arg, type=func_type.__name__, opt=("optional" if hasattr(func_type, "_optional") else "needed")))
 			# arg is the given one, which should be func_type.
 			if hasattr(func_type, "_optional") and func_type._optional is True and not func_type(arg):
 				logger.debug("Skipping unfitting optional parameter {number} (type {type}) in function {function_name}.".format(type=func_type.__name__, function_name=function_name,  number=i))
