@@ -1,12 +1,13 @@
 __author__ = 'luckydonald'
-from . import argument_types as args
 from . import result_parser as res
+from . import argument_types as args
 from .utils import escape
 from .encoding import to_native as n
 from .encoding import to_unicode as u
 from .encoding import to_binary as b
 from .encoding import text_type, binary_type
 from .exceptions import UnknownFunction, ConnectionError, NoResponse, IllegalResponseException
+from .argument_types import optional
 from .msg_array_fixer import fix_message
 
 import json
@@ -35,8 +36,8 @@ functions = {
 	"send_msg": 			["msg", 				[args.peer, args.unicode_string],								res.success_fail, None],
 	"send_typing": 			["send_typing", 		[args.peer, args.nonnegative_number],							res.success_fail, None],
 	"send_typing_abort": 	["send_typing_abort", 	[args.peer],													res.success_fail, None],
-	"send_photo": 			["send_photo", 			[args.peer, args.file],											res.success_fail, 60.0],
-	"send_video": 			["send_video", 			[args.peer, args.file],											res.success_fail, 60.0],
+	"send_photo": 			["send_photo", 			[args.peer, args.file, optional(args.unicode_string)],											res.success_fail, 60.0],
+	"send_video": 			["send_video", 			[args.peer, args.file, optional(args.unicode_string)],											res.success_fail, 60.0],
 	"send_audio": 			["send_audio", 			[args.peer, args.file],											res.success_fail, 60.0],
 	"send_document": 		["send_document", 		[args.peer, args.file],											res.success_fail, 60.0],
 	"send_file": 			["send_file", 			[args.peer, args.file],											res.success_fail, 60.0],
@@ -121,6 +122,7 @@ class Sender(object):
 		except NoResponse as err:
 			args_ = inspect.getargspec(result_parser)[0]
 			if not "exception" in args_:
+				logger.exception("Result parser does not allow exceptions, but we got one: ")
 				raise IllegalResponseException("Result parser does not allow exceptions.")
 			try:
 				return_result = result_parser(exception=err)
@@ -146,7 +148,7 @@ class Sender(object):
 			raise UnknownFunction(function_name)
 		command_name    = functions[function_name][FUNC_CMD]
 		arguments_types = functions[function_name][FUNC_ARGS]
-		if len(arguments) != len(arguments_types):
+		if len(arguments) > len(arguments_types):
 			raise ValueError(
 				"Error in function {function_name}: {expected_number} paramters expected, but {given_number} were given.".format(
 					function_name=function_name, expected_number=len(arguments_types), given_number=len(arguments))
@@ -154,9 +156,12 @@ class Sender(object):
 		#end if
 		i = 0
 		new_args = []
-		for arg in arguments:
-			func_type = arguments_types[i]
+		for func_type in arguments_types:
+			arg = arguments[i]
 			# arg is the given one, which should be func_type.
+			if hasattr(func_type, "_optional") and func_type._optional is True and not func_type(arg):
+				logger.debug("Skipping unfitting optional parameter {number} (type {type}) in function {function_name}.".format(type=func_type.__name__, function_name=function_name,  number=i))
+				continue  # do not increment i, we are still processing the same arg.
 			if not func_type(arg):
 				raise ValueError("Error in function {function_name}: parameter {number} is not type {type}.".format(
 					function_name=function_name, number=i, type=func_type.__name__))

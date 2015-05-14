@@ -69,8 +69,14 @@ def msg_id(value):
 			return False
 	return positive_number(value)
 
-def optional():
-	return True
+def optional(func):
+	"""
+	Sets the func._optional tag, processed by sender.py's _validate_input()
+	:param func: Argument type function, e.g. unicode_string, without brackets().
+	:return: func with func._optional = True
+	"""
+	setattr(func, "_optional", True)
+	return func
 
 def validate_input(function_name, arguments, arguments_types):
 		if (len(arguments) != len(arguments_types)):
