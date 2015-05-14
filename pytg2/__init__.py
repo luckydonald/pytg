@@ -64,7 +64,8 @@ class Telegram(object):
 			args.extend(custom_cli_args)
 		logger.info("Starting Telegram Executable: \"{cmd}\"".format(cmd=" ".join(args)))
 		self._proc = subprocess.Popen(args, stdin=subprocess.PIPE, stdout=subprocess.PIPE, preexec_fn = preexec_function)
-		return self._proc.pid
+		if self._check_stopped():
+			raise AssertionError("CLI did stop, should be running...")
 		#return pid
 		#raise NotImplementedError("I Have to figure out processes in Python first...")
 
@@ -121,5 +122,6 @@ class Telegram(object):
 		self._proc.poll()
 		if self._proc.returncode is not None:
 			logger.info("CLI did stop ({return_code}).".format(return_code=self._proc.returncode))
-			self.sender.stop()
+			if hasattr(self, "sender") and self.sender is not None:
+				self.sender.stop()
 			return True
