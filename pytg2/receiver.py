@@ -11,6 +11,7 @@ import json
 from .utils import coroutine, suppress_context
 from types import GeneratorType
 from . import encoding
+from . import fix_plain_output
 from .encoding import to_unicode as u
 from .encoding import to_binary as b
 from .encoding import to_native as n
@@ -105,6 +106,9 @@ class Receiver(object):
 							raise ConnectionError("Remote end closed")
 						break
 					except socket.error as err:
+						if self._do_quit:
+							self.s.close()
+							return
 						if err.errno != EINTR:
 							raise
 						else:
@@ -151,14 +155,22 @@ class Receiver(object):
 			json_dict = json.loads(text)
 			message = DictObject.objectify(json_dict)
 			message = fix_message(message)
-			if self.append_json:
-				message.merge_dict({u("json"): text})
-			with self._queue_access:
-				self._queue.append(message)
-				self._new_messages.release()
 		except ValueError as e:
-			# DictObject.objectify({u("error"): u(str(e)), u("json"): buffer})
-			logger.warn("Received message could not be parsed.\nMessage:>{}<".format(text), exc_info=True)
+			for check in fix_plain_output.all:
+				m = check[0].match(text)
+				if m:
+					message = DictObject(manual_result=m.groupdict(), type=check[1])
+					logger.warn("Manually parsed output! This should be json!\nMessage:>{}<".format(text))
+					break
+			else:
+				logger.warn("Received message could not be parsed.\nMessage:>{}<".format(text), exc_info=True)
+				return
+		if self.append_json:
+			message.merge_dict({u("json"): text})
+		with self._queue_access:
+			self._queue.append(message)
+			self._new_messages.release()
+
 
 	#end def
 
