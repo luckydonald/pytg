@@ -19,3 +19,7 @@ class UnknownFunction(Exception):
 #result_parser.py/sender.py
 class IllegalResponseException(Exception):
 	pass
+
+#argument_types.py
+class ArgumentParseError(Exception):
+	pass

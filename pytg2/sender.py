@@ -7,7 +7,7 @@ from .encoding import to_unicode as u
 from .encoding import to_binary as b
 from .encoding import text_type, binary_type
 from .exceptions import UnknownFunction, ConnectionError, NoResponse, IllegalResponseException
-from .argument_types import optional
+from .argument_types import Argument
 from .msg_array_fixer import fix_message
 
 import json
@@ -31,51 +31,56 @@ __all__ = ["FUNC_CMD", "FUNC_ARGS", "FUNC_RES", "functions", "Sender", "NoRespon
 functions = {
 	# function to call      # actual telegram command  # required arguments  # expected return type (parser)  # timeout (None = global default)
 	"get_contact_list":		["contact_list",		[],																res.something, 	None],
-	"get_dialog_list": 		["dialog_list", 		[],																res.something, 	None],
-	"rename_chat": 			["rename_chat", 		[args.chat, args.unicode_string],								res.success_fail, None],
-	"send_msg": 			["msg", 				[args.peer, args.unicode_string],								res.success_fail, None],
-	"send_typing": 			["send_typing", 		[args.peer, args.nonnegative_number],							res.success_fail, None],
-	"send_typing_abort": 	["send_typing_abort", 	[args.peer],													res.success_fail, None],
-	"send_photo": 			["send_photo", 			[args.peer, args.file, optional(args.unicode_string)],											res.success_fail, 60.0],
-	"send_video": 			["send_video", 			[args.peer, args.file, optional(args.unicode_string)],											res.success_fail, 60.0],
-	"send_audio": 			["send_audio", 			[args.peer, args.file],											res.success_fail, 60.0],
-	"send_document": 		["send_document", 		[args.peer, args.file],											res.success_fail, 60.0],
-	"send_file": 			["send_file", 			[args.peer, args.file],											res.success_fail, 60.0],
-	"send_text": 			["send_text", 			[args.peer, args.file],											res.success_fail, 60.0],
-	"send_location": 		["send_location", 		[args.peer, args.double, args.double],							res.success_fail, None],
-	"load_photo": 			["load_photo", 			[args.msg_id],													res.something, 	60.0], #String saying something and a filepath
-	"load_video": 			["load_video", 			[args.msg_id],													res.something, 	60.0], #String saying something and a filepath
-	"load_video_thumb": 	["load_video_thumb", 	[args.msg_id],													res.something, 	60.0], #String saying something and a filepath
-	"load_audio": 			["load_audio", 			[args.msg_id],													res.something, 	60.0], #String saying something and a filepath
-	"load_document": 		["load_document", 		[args.msg_id],													res.something, 	60.0], #String saying something and a filepath
-	"load_document_thumb": 	["load_document_thumb", [args.msg_id],													res.something, 	60.0], #String saying something and a filepath
-	"fwd_msg": 				["fwd",		 			[args.peer, args.msg_id],										res.success_fail, None],
-	"fwd_media": 			["fwd_media", 			[args.peer, args.msg_id],										res.success_fail, None],
-	"chat_info": 			["chat_info", 			[args.chat],													res.something, None],
-	"chat_set_photo": 		["chat_set_photo", 		[args.chat, args.unicode_string],								res.success_fail, None],
-	"chat_add_user": 		["chat_add_user", 		[args.chat, args.user],											res.something, 	60.0],
-	"chat_del_user": 		["chat_del_user", 		[args.chat, args.user],											res.success_fail, None],
-	"create_secret_chat": 	["create_secret_chat", 	[args.user],													res.success_fail, None],
-	"create_group_chat": 	["create_group_chat", 	[args.unicode_string, args.user],								res.success_fail, None],
-	"user_info": 			["user_info", 			[args.user],													res.something, None],
-	"get_history": 			["history", 			[args.peer, args.nonnegative_number],							res.something, None],
-	"add_contact": 			["add_contact", 		[args.unicode_string, args.unicode_string, args.unicode_string],res.something, None], #returns the new name
-	"rename_contact": 		["rename_contact", 		[args.user, args.unicode_string, args.unicode_string],			res.something, None], #returns the new name
-	"del_contact": 			["del_contact", 		[args.user],													res.success_fail, None],
-	"msg_search": 			["search", 				[args.peer, args.unicode_string],								res.something, None], #ret: formated messages
-	"msg_global_search": 	["search", 				[args.unicode_string],											res.something, None], #ret: formated messages
-	"mark_read": 			["mark_read", 			[args.peer],													res.success_fail, None],
-	"set_profile_photo": 	["set_profile_photo", 	[args.file],													res.something, 	60.0], #TODO
-	"set_profile_name": 	["set_profile_name", 	[args.unicode_string, args.unicode_string],						res.something, 	60.0], #ret: new name
-	"delete_msg": 			["delete_msg", 			[args.msg_id],													res.success_fail, None],
-	"restore_msg": 			["restore_msg", 		[args.positive_number],											res.success_fail, None],
-	"accept_secret_chat": 	["accept_secret_chat", 	[args.secret_chat],												res.success_fail, None],
-	"send_contact": 		["send_contact", 		[args.peer, args.unicode_string, args.unicode_string, args.unicode_string], res.something, 	60.0], #ret: formated message
+	"get_dialog_list": 		["dialog_list", 		[args.PositiveNumber("limit", optional=True), args.NonNegativeNumber("offset", optional=True)], res.something, 	None],
+	"rename_chat": 			["rename_chat", 		[args.Chat("chat"), args.UnicodeString("new_name")],			res.success_fail, None],
+	"send_msg": 			["msg", 				[args.Peer("peer"), args.UnicodeString("test")],				res.success_fail, None],
+	"send_typing": 			["send_typing", 		[args.Peer("peer")],							res.success_fail, None],
+	"send_typing_abort": 	["send_typing_abort", 	[args.Peer("peer")],													res.success_fail, None],
+	"send_photo": 			["send_photo", 			[args.Peer("peer"), args.File("file"), args.UnicodeString("caption", optional=True)],											res.success_fail, 60.0],
+	"send_video": 			["send_video", 			[args.Peer("peer"), args.File("file"), args.UnicodeString("caption", optional=True)],											res.success_fail, 60.0],
+	"send_audio": 			["send_audio", 			[args.Peer("peer"), args.File("file")],											res.success_fail, 60.0],
+	"send_document": 		["send_document", 		[args.Peer("peer"), args.File("file")],											res.success_fail, 60.0],
+	"send_file": 			["send_file", 			[args.Peer("peer"), args.File("file")],											res.success_fail, 60.0],
+	"send_text": 			["send_text", 			[args.Peer("peer"), args.File("file")],											res.success_fail, 60.0],
+	"send_location": 		["send_location", 		[args.Peer("peer"), args.Double("latitude"), args.Double("longitude")],							res.success_fail, None],
+	"load_photo": 			["load_photo", 			[args.MsgId("msg_id")],													res.something, 	60.0], #String saying something and a filepath
+	"load_video": 			["load_video", 			[args.MsgId("msg_id")],													res.something, 	60.0], #String saying something and a filepath
+	"load_video_thumb": 	["load_video_thumb", 	[args.MsgId("msg_id")],													res.something, 	60.0], #String saying something and a filepath
+	"load_audio": 			["load_audio", 			[args.MsgId("msg_id")],													res.something, 	60.0], #String saying something and a filepath
+	"load_document": 		["load_document", 		[args.MsgId("msg_id")],													res.something, 	60.0], #String saying something and a filepath
+	"load_document_thumb": 	["load_document_thumb", [args.MsgId("msg_id")],													res.something, 	60.0], #String saying something and a filepath
+	"fwd_msg": 				["fwd",		 			[args.Peer("peer"), args.MsgId("msg_id")],										res.success_fail, None],
+	"fwd_media": 			["fwd_media", 			[args.Peer("peer"), args.MsgId("msg_id")],										res.success_fail, None],
+	"chat_info": 			["chat_info", 			[args.Chat("chat")],													res.something, None],
+	"chat_set_photo": 		["chat_set_photo", 		[args.Chat("chat"), args.File("file")],								res.success_fail, None],
+	"chat_add_user": 		["chat_add_user", 		[args.Chat("chat"), args.User("user"), args.NonNegativeNumber("msgs_to_forward", optional=True)],	res.something, 	60.0],
+	"chat_del_user": 		["chat_del_user", 		[args.Chat("chat"), args.User("user")],											res.success_fail, None],
+	"create_secret_chat": 	["create_secret_chat", 	[args.User("user")],													res.success_fail, None],
+	"create_group_chat": 	["create_group_chat", 	[args.UnicodeString("name"), args.User("user", multible=True)],								res.success_fail, None],
+	"user_info": 			["user_info", 			[args.User("user")],													res.something, None],
+	"get_history": 			["history", 			[args.Peer("user"), args.PositiveNumber("limit", optional=True), args.NonNegativeNumber("offset", optional=True)],							res.something, None],
+	"add_contact": 			["add_contact", 		[args.UnicodeString("phone"), args.UnicodeString("first_name"), args.UnicodeString("last_name")], res.something, None], #returns the new name
+	"rename_contact": 		["rename_contact", 		[args.User("user"), args.UnicodeString("first_name"), args.UnicodeString("last_name")],			res.something, None], #returns the new name
+	"del_contact": 			["del_contact", 		[args.User("user")],													res.success_fail, None],
+	"msg_search": 			["search", 				[
+														args.Peer("peer", optional=True),
+														args.NonNegativeNumber("limit", optional=True),
+														args.NonNegativeNumber("from", optional=True),
+														args.NonNegativeNumber("to", optional=True),
+														args.NonNegativeNumber("offset", optional=True),
+														args.UnicodeString("pattern")
+													],							res.something, None],
+	"mark_read": 			["mark_read", 			[args.Peer("peer")],													res.success_fail, None],
+	"set_profile_photo": 	["set_profile_photo", 	[args.File("file")],													res.something, 	60.0], #TODO
+	"set_profile_name": 	["set_profile_name", 	[args.UnicodeString("first_name"), args.UnicodeString("last_name")],	res.something, 	60.0], #ret: new name
+	"delete_msg": 			["delete_msg", 			[args.MsgId("msg_id")],													res.success_fail, None],
+	"accept_secret_chat": 	["accept_secret_chat", 	[args.SecretChat("secret_chat")],												res.success_fail, None],
+	"send_contact": 		["send_contact", 		[args.Peer("peer"), args.UnicodeString("phone"), args.UnicodeString("first_name"), args.UnicodeString("last_name")], res.something, 	60.0], #ret: formated message
 	"status_online": 		["status_online", 		[],																res.success_fail, None],
 	"status_offline": 		["status_offline", 		[],																res.success_fail, None],
 	"quit": 				["quit", 				[],																res.response_fails, None],
 	"safe_quit": 			["safe_quit",	 		[],																res.response_fails, None],
-	"raw": 					["", 					[args.unescaped_unicode_string],								res.anything, None]
+	"raw": 					["", 					[args.UnescapedUnicodeString],								res.anything, None]
 } 	# \{"(.*)",\ .*,\ \{\ (.*)\ \}\}, >> "$1": ["$1", [$2]],
 
 
@@ -156,31 +161,37 @@ class Sender(object):
 		#end if
 		i = 0
 		new_args = []
+		error = None
 		for func_type in arguments_types:
-			if i >= len(arguments):
-				if not (hasattr(func_type, "_optional") and func_type._optional is True):
+			""":type func_type: Argument"""
+			if i >= len(arguments): # if to many arguments
+				if not func_type.optional:
 					raise ValueError(
-						"Error in function {function_name}: Not enough parameter given: {arguments}".format(
-							function_name=function_name, arguments=arguments)
+						"Error in function {function_name}: Not enough parameter given, {arg_name} missing. Arguments got: {arguments}".format(
+							function_name=function_name, arguments=arguments, arg_name=str(func_type))
 					)
 				else:
-					logger.debug("Skipping missing optional parameter {number} (type {type}) in function {function_name}.".format(type=func_type.__name__, function_name=function_name,  number=i))
+					logger.debug("Skipping missing optional parameter #{number} {arg_name} (type {type}) in function {function_name}.".format(
+						type=func_type.__class__.__name__, function_name=function_name,  number=i, arg_name=str(func_type))
+					)
 					continue  # do not increment i, we are still processing the same arg.
-
+				#end if optional
+			#end if to many arguments
 			arg = arguments[i]
-			#func_type = arguments_types[i]
-			logger.debug("Parsing {function_name}: Argument {arg} - {type} ({opt})".format(function_name=function_name, arg=arg, type=func_type.__name__, opt=("optional" if hasattr(func_type, "_optional") else "needed")))
+			logger.debug("Parsing {function_name}: Argument {arg} - {type} ({opt})".format(function_name=function_name, arg=arg, type=str(func_type), opt=("optional" if hasattr(func_type, "_optional") else "needed")))
 			# arg is the given one, which should be func_type.
-			if hasattr(func_type, "_optional") and func_type._optional is True and not func_type(arg):
-				logger.debug("Skipping unfitting optional parameter {number} (type {type}) in function {function_name}.".format(type=func_type.__name__, function_name=function_name,  number=i))
-				continue  # do not increment i, we are still processing the same arg.
-			if not func_type(arg):
-				raise ValueError("Error in function {function_name}: parameter {number} is not type {type}.".format(
-					function_name=function_name, number=i, type=func_type.__name__))
-			if func_type == args.unicode_string:
-				new_args.append(u(escape(arg)))
-			else:
-				new_args.append(u(str(arg)))
+
+			arg_value = None
+			try:
+				arg_value = func_type.parse(arg)
+			except Exception as err:
+				logger.debug("Got error", exc_info=True)
+				if func_type.optional:
+					logger.debug("Skipping unfitting optional parameter #{number} {param} (type {type}) in function {function_name}.".format(type=func_type.__class__.__name__, function_name=function_name, param=str(func_type),  number=i))
+					continue  # do not increment i, we are still processing the same arg.
+				raise ValueError("Error in function {function_name}: parameter #{number} {param} is not type {type}. ({error})".format(
+					function_name=function_name, number=i, type=func_type.__class__.__name__, param=str(func_type), error=str(err)))
+			new_args.append(u(str(arg_value)))
 			i += 1
 		return command_name, new_args
 

@@ -1,97 +1,152 @@
+from pytg2.exceptions import ArgumentParseError
+
 __author__ = 'luckydonald'
 from os import path # file checking.
 import logging
 logger = logging.getLogger(__name__)
 from . import encoding
-from .utils import escape #validate_input
+from .utils import escape  # validate_input
 
 
-def none(value):
-	if value == None:
-		return True
-	return False
+class Argument(object):
+	def __init__(self, name, optional=False, multible=False):
+		super(object, self).__init__()
+		self.name = name
+		self.optional = optional
+		self.multible = multible
 
-def peer(value):
-	if not unescaped_unicode_string(value):
-		return False
-	if " " in value:
-		return False
-	return True
+	def __str__(self):
+		string = self.name
+		if self.optional:
+			string = "["+string+"]"
+		else:
+			string = "<"+string+">"
+		if self.multible:
+			string = string + "+"
+		return string
 
-def chat(value):
-	if not peer(value):
-		return False
-	return True
+	def parse(self, value):
+		return value
 
-def user(value):
-	return peer(value)
 
-def secret_chat(value):
-	return peer(value)
+class Nothing(Argument):
+	def parse(self, value):
+		value = super(Argument, self).parse(value)
+		if not value is None:
+			raise ArgumentParseError("Is not null.")
+		return value
 
-def unicode_string(value):
-	return isinstance(value, encoding.text_type) #TODO
 
-def unescaped_unicode_string(value):
+class UnescapedUnicodeString(Argument):
 	"""
 	Used for unicodes stings which will not be escaped.
 	"""
-	return isinstance(value, encoding.text_type)
+	pass
 
-def number(value):
-	return isinstance(value, (int, encoding.long_int))
 
-def double(value):
-	return isinstance(value, float)
-
-def positive_number(value):
-	if number(value):
-		if value > 0:
-			return True
-	return False
-
-def file(value):
-	logger.debug("Got file: [{}]".format(value)) #TODO remove
-	return path.isfile(encoding.native_type(value))
-
-def nonnegative_number(value):
-	if number(value):
-		if value >= 0:
-			return True
-	return False
-
-def msg_id(value):
-	if unicode_string(value):
-		try:
-			int_val = int(value)
-			return positive_number(int_val)
-		except:
-			return False
-	return positive_number(value)
-
-def optional(func):
+class UnicodeString(UnescapedUnicodeString):
 	"""
-	Sets the func._optional tag, processed by sender.py's _validate_input()
-	:param func: Argument type function, e.g. unicode_string, without brackets().
-	:return: func with func._optional = True
+	Used for unicodes stings which will be escaped, and wrapped in 'simple quotes'
 	"""
-	setattr(func, "_optional", True)
-	return func
+	def parse(self, value):
+		value = super(UnescapedUnicodeString, self).parse(value)
+		value = escape(value)
+		if not isinstance(value, encoding.text_type):
+			raise ArgumentParseError("Not a string.")
+		return value
+
+
+
+
+
+class Peer(UnescapedUnicodeString):
+	def parse(self, value):
+		value = super(UnescapedUnicodeString, self).parse(value)
+		if " " in value:
+			raise ArgumentParseError("Space in peer.")
+		return value
+
+
+class Chat(Peer):
+	def parse(self, value):
+		return super(Peer, self).parse(value)
+
+
+class User(Peer):
+	def parse(self, value):
+		return super(Peer, self).parse(value)
+
+
+class SecretChat(Peer):
+	def parse(self, value):
+		return super(Peer, self).parse(value)
+
+
+class Number(Argument):
+	def parse(self, value):
+		super(Argument, self).parse(value)
+		if isinstance(encoding.native_type, encoding.text_type):
+			return int(value)
+		if not isinstance(value, (int, encoding.long_int)):
+			raise ArgumentParseError("Not a int/long")
+		return value
+
+
+
+
+class Double(Argument):
+	def parse(self, value):
+		value = super(Argument, self).parse(value)
+		if not isinstance(value, float):
+			raise ArgumentParseError("Not a float.")
+		return value
+
+class NonNegativeNumber(Number):
+	def parse(self, value):
+		value = super(Number, self).parse(value)
+		if value < 0:
+			raise ArgumentParseError("Number smaller than 0.")
+		return value
+
+
+class PositiveNumber(NonNegativeNumber):
+	def parse(self, value):
+		value = super(NonNegativeNumber, self).parse(value)
+		if value <= 0:
+			raise ArgumentParseError("Number must be bigger than 0.")
+		return value
+
+
+class File(UnicodeString):
+	def parse(self, value):
+		value = super(UnicodeString, self).parse(value)
+		if not path.isfile(encoding.native_type(value)):
+			raise ArgumentParseError("File path not valid.")
+		return value
+
+
+class MsgId(PositiveNumber):
+	def parse(self, value):
+		return super(PositiveNumber, self).parse(value)
+
 
 def validate_input(function_name, arguments, arguments_types):
-		if (len(arguments) != len(arguments_types)):
-			raise ValueError("Error in function {function_name}: {expected_number} paramters expected, but {given_number} were given.".format(function_name=function_name, expected_number=len(arguments_types), given_number=len(args)))
-		i = 0
-		new_args = []
-		for arg in arguments:
-			func_type = arguments_types[i]
-			# arg is the given one, which should be func_type.
-			if not func_type(arg):
-				raise ValueError("Error in function {function_name}: parameter {number} is not type {type}.".format(function_name=function_name, number=i, type=func_type.__name__))
-			if func_type == unicode_string:
-				new_args.append(encoding.to_unicode(escape(arg)))
-			else:
-				new_args.append(encoding.to_unicode(str(arg)))
-			i += 1
-		# end for
-		return new_args
+	logger.warn("validate_input() is deprecated!")
+	raise NotImplementedError()
+
+	if (len(arguments) != len(arguments_types)):
+		raise ValueError("Error in function {function_name}: {expected_number} paramters expected, but {given_number} were given.".format(function_name=function_name, expected_number=len(arguments_types), given_number=len(args)))
+	i = 0
+	new_args = []
+	for arg in arguments:
+		func_type = arguments_types[i]
+		# arg is the given one, which should be func_type.
+		if not func_type(arg):
+			raise ValueError("Error in function {function_name}: parameter {number} is not type {type}.".format(function_name=function_name, number=i, type=func_type.__name__))
+		if func_type == UnicodeString:
+			new_args.append(encoding.to_unicode(escape(arg)))
+		else:
+			new_args.append(encoding.to_unicode(str(arg)))
+		i += 1
+	# end for
+	return new_args
