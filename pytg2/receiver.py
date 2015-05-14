@@ -55,9 +55,10 @@ class Receiver(object):
 		self.port = port
 		self.append_json = append_json
 	def start(self):
-		receiver_thread = threading.Thread(target=self._receiver, args=())
-		receiver_thread.daemon = True  # exit if script reaches end.
-		receiver_thread.start()
+		self._receiver_thread = threading.Thread(target=self._receiver, args=())
+		self._receiver_thread.daemon = True  # exit if script reaches end.
+		self._receiver_thread.start()
+
 
 	def stop(self):
 		"""
@@ -70,7 +71,8 @@ class Receiver(object):
 			self.s.settimeout(0)
 		if self.s:
 			self.s.close()
-		self._new_messages.release()
+		logger.debug("receiver thread existing: {}".format(self._receiver_thread.isAlive()))
+		#self._new_messages.release()
 
 
 	def _receiver(self):
@@ -103,7 +105,8 @@ class Receiver(object):
 						answer = self.s.recv(1)
 						# recv() returns an empty string if the remote end is closed
 						if len(answer) == 0:
-							raise ConnectionError("Remote end closed")
+							self.s.close()
+							raise ConnectionError("Remote end closed.")
 						break
 					except socket.error as err:
 						if self._do_quit:
@@ -113,6 +116,8 @@ class Receiver(object):
 							raise
 						else:
 							logger.exception("Uncatched exception in reading answer from cli.")
+							self.s.close()
+							break # to the retry connection look again.
 				#end while: ctrl+c protection
 				if completed == 0:
 					logger.debug("Hit end.")
@@ -150,6 +155,12 @@ class Receiver(object):
 			self.s = None
 
 	def _add_message(self, text):
+		"""
+		Appends a message to the message queue.
+
+		:type text: builtins.str
+		:return:
+		"""
 		try:
 			logger.debug("Received Message: \"{str}\"".format(str=text))
 			json_dict = json.loads(text)
