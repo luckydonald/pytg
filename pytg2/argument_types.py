@@ -119,9 +119,9 @@ class PositiveNumber(NonNegativeNumber):
 
 class File(UnicodeString):
 	def parse(self, value):
-		value = super(File, self).parse(value)
 		if not path.isfile(encoding.native_type(value)):
-			raise ArgumentParseError("File path not valid.")
+			raise ArgumentParseError("File path \"{path}\" not valid.".format(path=value))
+		value = super(File, self).parse(value)
 		return value
 
 
