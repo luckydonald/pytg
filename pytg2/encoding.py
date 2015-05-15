@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-__author__ = 'luckydonald'
 from __future__ import unicode_literals
+__author__ = 'luckydonald'
 import sys
 
 if sys.version < '3': # python 2.7
