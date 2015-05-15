@@ -1,13 +1,12 @@
-# **PyTG2** #
+# **PyTG2** Version 0.4.0 #
 Python 3 (and 2.7)
 
-A Python package that communicates with (a patched version of) the Telegram messenger CLI.
-The [original version](https://github.com/vysheng/tg) does not support some required features.    
-
+A Python package that communicates with the [Telegram messenger CLI](https://github.com/vysheng/tg).
 
 > I really recommend to use Python 3, because of it's build in unicode support.
 Python 2 uses ascii only bytestrings, causing much trouble when dealing with characters like öäüß or emojis.
 ~ luckydonald
+
 
 
 ## **Usage** ##
@@ -66,11 +65,20 @@ Last step is to register that function:
 
 That's the basics. Have a look into the examples folder. For starters, I recommend:    
 * dump.py * is usefull to see, how the messages look like.    
-* ping.py * is usefull to see how to interact with pytg, send messages etc.   
+* ping.py * is usefull to see how to interact with pytg, send messages etc.
 
 
 
+## **New in Version 0.4.0**
+No need for telejson any more, you can now run with the offical telegram-cli!
+Connecting to the cli for sending will now surrender after given retrys, and not loop forever.
+Also added a CHANGELOG file.
 
+
+## New in Version 0.3.1
+Updates for telejson beta compatibility.
+This version never got offically released before the telejson fork got replaced by vysheng's native json implementation.
+ 
 ## **New in Version 0.3.0**
 Pytg2 got overhauled to version 0.3.0, which will restructure heavily,
 BUT will decrease the CPU usage to around nothing.

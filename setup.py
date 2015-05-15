@@ -11,19 +11,19 @@ Please Note, this needs the version from http://bitbucket.org/luckydonald/tg-for
 
 setup(
 	name='pytg2',
-	version='0.3.1',
+	version='0.4.0',
 	description='Connect to the Telegram CLI, receive and send Telegram messages.',
 	long_description=long_description,
 	# The project's main homepage.
 	url='https://github.com/luckydonald/pytg',
 	# Author details
 	author='luckydonald',
-	author_email='spam@luckydonald.de',
+	author_email='code@luckydonald.de',
 	# Choose your license
 	license='GPLv3+',
 	# See https://pypi.python.org/pypi?%3Aaction=list_classifiers
 	classifiers=[
-	'Development Status :: 3 - Alpha', # 4 - Beta, 5 - Production/Stable
+	'Development Status :: 4 - Beta', # 3 - Alpha, 4 - Beta, 5 - Production/Stable
 	# Indicate who your project is intended for
 	'Intended Audience :: Developers',
 	'Topic :: Software Development :: Build Tools',
@@ -33,7 +33,7 @@ setup(
 	# that you indicate whether you support Python 2, Python 3 or both.
 	# 'Programming Language :: Python :: 2',
 	# 'Programming Language :: Python :: 2.6',
-	# 'Programming Language :: Python :: 2.7',
+	'Programming Language :: Python :: 2.7',
 	# 'Programming Language :: Python :: 3',
 	# 'Programming Language :: Python :: 3.2',
 	# 'Programming Language :: Python :: 3.3',
