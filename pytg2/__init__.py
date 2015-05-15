@@ -33,6 +33,7 @@ class Telegram(object):
 		self.receiver = Receiver(host=host,port=port)
 
 		while self._proc is not None and self._proc.returncode is None:
+			self._proc.poll()
 			try:
 				result = self.sender.raw(u("help"), retry_connect=False)
 				if result and u("Prints this help") in result:
