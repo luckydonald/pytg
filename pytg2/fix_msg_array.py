@@ -1,10 +1,12 @@
-ENCR_CHAT_PREFIX = "!_user@"
-__author__ = "luckydonald"
+# -*- coding: utf-8 -*-
+__author__ = 'luckydonald'
+
 import logging
 logger = logging.getLogger(__name__)
+
 from .encoding import to_unicode as u
 
-
+ENCR_CHAT_PREFIX = "!_user@"
 TGL_PEER_CHAT = u("chat")
 TGL_PEER_USER = u("user")
 TGL_PEER_ENCR_CHAT = u("encr_chat")
@@ -43,10 +45,12 @@ def fix_peer(peer):
 	if peer["type"] == TGL_PEER_ENCR_CHAT:
 		assert peer["print_name"].startswith(ENCR_CHAT_PREFIX)
 		peer["cmd"] = peer["print_name"]
-		peer["print_name"] = None
 	else:
 		peer["cmd"] = peer["type"] + u("#") + u(str(peer["id"]))
-		if peer["print_name"] == peer["cmd"]:
-			peer["print_name"] = None # remove printnames like "user#123" or "chat#123"
-	peer["name"] = (peer["first_name"] + " " + peer["last_name"]) or peer["username"]
+
+	#remove print_name field
+	del peer["print_name"] # remove printnames like "user#123" or "chat#123"
+
+	#add name filed
+	peer["name"] = peer["first_name"] or peer["username"]
 	return peer

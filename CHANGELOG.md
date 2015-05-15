@@ -7,6 +7,7 @@ Unupdated CLI? That is a thing of the past!
 > But: I learned a lot about C and git on that journy, and are letting my experience with json flow back into the original cli.
 > Everybody will profit from this.
 
+
 ```pytg.*```, ```examples/```
 - sending and receiving now uses the same port.   
 	- changed tg.Telegram() parameters:
@@ -15,6 +16,17 @@ Unupdated CLI? That is a thing of the past!
 	```python
 	tg.Telegram(port=4458)  # sending and receiving now uses the same port.
 	```
+- sender and receiver both alter the resulting message dict:
+	- Renaming "from", "to" and "out" because reserved word in python/not intuitive.
+		- ```from``` -> ```sender``` (Reserved word in python)
+		- ```to``` -> ```receiver```
+		- ```out``` -> ```own``` (out is not intuitive as not mandatory this cli has send the message but the account did.)
+	- Added "peer" attribute:
+		- ```peer``` is where you mostly want to reply to. It will be the group where the message got send, or the user if it is a private message.
+	- Deleting "print_name" in peers, adding "cmd" and "name" instead.
+		- ```cmd``` is the unique identifier string which will not change. (exception: secret chats might change)
+		- ```name``` is a display name. Either the first name or, if not set, the username.
+	
 
 pytg.sender.Sender:
 
