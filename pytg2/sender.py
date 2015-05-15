@@ -8,7 +8,7 @@ from .encoding import to_binary as b
 from .encoding import text_type, binary_type
 from .exceptions import UnknownFunction, ConnectionError, NoResponse, IllegalResponseException
 from .argument_types import Argument
-from .msg_array_fixer import fix_message
+from .fix_msg_array import fix_message
 
 import json
 from DictObject import DictObject
