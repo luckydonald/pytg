@@ -49,8 +49,30 @@ def fix_peer(peer):
 		peer["cmd"] = peer["type"] + u("#") + u(str(peer["id"]))
 
 	#remove print_name field
-	del peer["print_name"] # remove printnames like "user#123" or "chat#123"
+	#create name field
+	if "print_name" in peer:
+		peer["name"] = peer["print_name"] # just in case everything failes.
+		del peer["print_name"] # can contain ugly print_names like "user#123", "chat#123" or "no_spaces_just_underscores"
+	else:
+		peer["name"] = ""
 
-	#add name filed
-	peer["name"] = peer["first_name"] or peer["username"]
+	#add name field
+	if peer["type"] == TGL_PEER_USER:
+		if "first_name" in peer and peer["first_name"]:
+			peer["name"] = peer["first_name"]
+		elif "username" in peer and peer["username"]:
+			peer["name"] =  peer["username"]
+	elif peer["type"] == TGL_PEER_CHAT:
+		if "title" in peer and peer["title"]:
+			peer["name"] = peer["title"]
+	elif peer["type"] == TGL_PEER_ENCR_CHAT:
+		if "user" in peer and peer["user"]:
+			if "first_name" in peer and peer["first_name"]:
+				peer["name"] = peer["first_name"]
+			elif "username" in peer and peer["username"]:
+				peer["name"] =  peer["username"]
+			elif "print_name" in peer and peer["print_name"]:
+				peer["name"] =  peer["username"] # there are no other choices.
+	else:
+		logger.error("Unknown peer type: {type}".format(type={peer["type"]}))
 	return peer
