@@ -11,7 +11,6 @@ logger = logging.getLogger(__name__)
 
 class Argument(object):
 	def __init__(self, name, optional=False, multible=False):
-		super(object, self).__init__()
 		self.name = name
 		self.optional = optional
 		self.multible = multible
@@ -32,7 +31,7 @@ class Argument(object):
 
 class Nothing(Argument):
 	def parse(self, value):
-		value = super(Argument, self).parse(value)
+		value = super(Nothing, self).parse(value)
 		if not value is None:
 			raise ArgumentParseError("Is not null.")
 		return value
@@ -50,7 +49,7 @@ class UnicodeString(UnescapedUnicodeString):
 	Used for unicodes stings which will be escaped, and wrapped in 'simple quotes'
 	"""
 	def parse(self, value):
-		value = super(UnescapedUnicodeString, self).parse(value)
+		value = super(UnicodeString, self).parse(value)
 		value = escape(value)
 		if not isinstance(value, encoding.text_type):
 			raise ArgumentParseError("Not a string.")
@@ -62,7 +61,7 @@ class UnicodeString(UnescapedUnicodeString):
 
 class Peer(UnescapedUnicodeString):
 	def parse(self, value):
-		value = super(UnescapedUnicodeString, self).parse(value)
+		value = super(Peer, self).parse(value)
 		if " " in value:
 			raise ArgumentParseError("Space in peer.")
 		return value
@@ -70,22 +69,22 @@ class Peer(UnescapedUnicodeString):
 
 class Chat(Peer):
 	def parse(self, value):
-		return super(Peer, self).parse(value)
+		return super(Chat, self).parse(value)
 
 
 class User(Peer):
 	def parse(self, value):
-		return super(Peer, self).parse(value)
+		return super(User, self).parse(value)
 
 
 class SecretChat(Peer):
 	def parse(self, value):
-		return super(Peer, self).parse(value)
+		return super(SecretChat, self).parse(value)
 
 
 class Number(Argument):
 	def parse(self, value):
-		super(Argument, self).parse(value)
+		super(Number, self).parse(value)
 		if isinstance(encoding.native_type, encoding.text_type):
 			return int(value)
 		if not isinstance(value, (int, encoding.long_int)):
@@ -97,14 +96,14 @@ class Number(Argument):
 
 class Double(Argument):
 	def parse(self, value):
-		value = super(Argument, self).parse(value)
+		value = super(Double, self).parse(value)
 		if not isinstance(value, float):
 			raise ArgumentParseError("Not a float.")
 		return value
 
 class NonNegativeNumber(Number):
 	def parse(self, value):
-		value = super(Number, self).parse(value)
+		value = super(NonNegativeNumber, self).parse(value)
 		if value < 0:
 			raise ArgumentParseError("Number smaller than 0.")
 		return value
@@ -112,7 +111,7 @@ class NonNegativeNumber(Number):
 
 class PositiveNumber(NonNegativeNumber):
 	def parse(self, value):
-		value = super(NonNegativeNumber, self).parse(value)
+		value = super(PositiveNumber, self).parse(value)
 		if value <= 0:
 			raise ArgumentParseError("Number must be bigger than 0.")
 		return value
@@ -120,7 +119,7 @@ class PositiveNumber(NonNegativeNumber):
 
 class File(UnicodeString):
 	def parse(self, value):
-		value = super(UnicodeString, self).parse(value)
+		value = super(File, self).parse(value)
 		if not path.isfile(encoding.native_type(value)):
 			raise ArgumentParseError("File path not valid.")
 		return value
@@ -128,7 +127,7 @@ class File(UnicodeString):
 
 class MsgId(PositiveNumber):
 	def parse(self, value):
-		return super(PositiveNumber, self).parse(value)
+		return super(MsgId, self).parse(value)
 
 
 def validate_input(function_name, arguments, arguments_types):
