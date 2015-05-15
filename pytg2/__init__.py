@@ -1,13 +1,16 @@
 # -*- coding: utf-8 -*-
 __author__ = 'luckydonald'
 
-import atexit
-__all__ = ["receiver", "sender", "Telegram"]
+from .exceptions import NoResponse, IllegalResponseException
+from .encoding import to_unicode as u
+from time import sleep
 
+import atexit
 import logging
 logger = logging.getLogger(__name__)
-from .exceptions import NoResponse, IllegalResponseException
-#from .encoding import to_unicode as u
+
+
+__all__ = ["receiver", "sender", "Telegram"]
 
 
 class Telegram(object):
@@ -28,16 +31,20 @@ class Telegram(object):
 			logger.warn("cli related parameter given, but not cli and pubkey path not present.")
 		self.sender = Sender(host=host,port=port)
 		self.receiver = Receiver(host=host,port=port)
-		#NOTE: with the following while, if the cli has a message at boot, it will NOT ANSWER anything
-		#      until that message got transmitted succsessfully. So it would block the foobar=Telegram(tg,key) call.
 
-		#while self._proc is not None:
-		#	result = self.sender.raw(u("help"))
-		#	if result and u("Prints this help") in result:
-		#		logger.info("CLI available.")
-		#		break
-		#	else:
-		#		print("CLI does not response. (Debug: {})".format(result))
+		while self._proc is not None and self._proc.returncode is None:
+			try:
+				result = self.sender.raw(u("help"), retry_connect=False)
+				if result and u("Prints this help") in result:
+					logger.info("CLI available.")
+				else:
+					logger.warn("CLI does not responde correctly. (Debug: {})".format(result))
+				break
+			except:
+				logger.info("CLI did not responde.")
+			sleep(1)
+		else:
+			raise AssertionError("CLI Process died.")
 
 
 

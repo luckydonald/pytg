@@ -8,6 +8,10 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+
+def raw(value):
+	return value
+
 def nothing(value):
 	if value:
 		raise IllegalResponseException("Should return nothing.")

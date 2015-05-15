@@ -11,13 +11,15 @@ from .exceptions import UnknownFunction, ConnectionError, NoResponse, IllegalRes
 from .fix_msg_array import fix_message
 
 import json
-from DictObject import DictObject
+import atexit
 import socket # connect to telegram cli.
+import inspect
+import threading
+from time import sleep
+from DictObject import DictObject
 from errno import ECONNREFUSED, EINTR
 from socket import error as socket_error
-import threading
-import atexit
-import inspect
+
 import logging
 logger = logging.getLogger(__name__)
 
@@ -80,7 +82,7 @@ functions = {
 	"status_offline": 		["status_offline", 		[],																res.success_fail, None],
 	"quit": 				["quit", 				[],																res.response_fails, None],
 	"safe_quit": 			["safe_quit",	 		[],																res.response_fails, None],
-	"raw": 					["", 					[args.UnescapedUnicodeString],								res.anything, None]
+	"raw": 					["", 					[args.UnescapedUnicodeString("command")],								res.raw, None]
 } 	# \{"(.*)",\ .*,\ \{\ (.*)\ \}\}, >> "$1": ["$1", [$2]],
 
 
@@ -105,25 +107,29 @@ class Sender(object):
 		self._socked_used = threading.Semaphore(1)  # start unblocked.
 		atexit.register(self.terminate)
 
-
-	def execute_function(self, function_name, *arguments):
+	def execute_function(self, function_name, *arguments, **kwargs):
 		"""
 		Execute a function.
 		:param function_name:
 		:param arguments:
-		:param answer_timeout:  set to a float to set a custom timeout for this answer.
+		:param retry_connect=2:  How often it should try to reconnect (-1 = infinite times) or fail if it can't establish the first connection.
 		:return: parsed result/exception
 		"""
 		command_name, new_args = self._validate_input(function_name, arguments)
+		retry_connect = 2 #default value
+		if "retry_connect" in kwargs:
+			retry_connect = kwargs["retry_connect"]
 		if self._do_quit and not "quit" in command_name:
 			raise AssertionError("Socket already terminated.")
 		result_parser = functions[function_name][FUNC_RES]
 		result_timeout = functions[function_name][FUNC_TIME]
 		try:
 			if result_timeout:
-				result = self._do_command(command_name, *new_args, answer_timeout=result_timeout)
+				result = self._do_command(command_name, *new_args, answer_timeout=result_timeout, retry_connect=retry_connect)
 			else:
-				result = self._do_command(command_name, *new_args, answer_timeout=self.default_answer_timeout)
+				result = self._do_command(command_name, *new_args, answer_timeout=self.default_answer_timeout, retry_connect=retry_connect)
+		except ConnectionError as err:
+			raise
 		except NoResponse as err:
 			args_ = inspect.getargspec(result_parser)[0]
 			if not "exception" in args_:
@@ -135,14 +141,18 @@ class Sender(object):
 			except TypeError:
 				logger.error("Result parser did not allow exceptions.")
 				raise
-		try:
-			json_dict = json.loads(result)
-			message = DictObject.objectify(json_dict)
-			message = fix_message(message)
-		except:
-			logger.exception("Parsing of answer failed, maybe not valid json?\nMessage: >{}<".format(result))
-			return IllegalResponseException("Parsing of answer failed, maybe not valid json?\nMessage: >{}<".format(result))  #TODO: This is *very* bad code.
-		return result_parser(message)
+		if result_parser != res.raw: # skip json'ing stuff marked as raw output.
+			try:
+				json_dict = json.loads(result)
+				message = DictObject.objectify(json_dict)
+				message = fix_message(message)
+			except:
+				logger.exception("Parsing of answer failed, maybe not valid json?\nMessage: >{}<".format(result))
+				result_parser
+				return IllegalResponseException("Parsing of answer failed, maybe not valid json?\nMessage: >{}<".format(result))  #TODO: This is *very* bad code.
+			return result_parser(message)
+		return result_parser(result) # raw()
+
 
 	@staticmethod
 	def _validate_input(function_name, arguments):
@@ -216,10 +226,33 @@ class Sender(object):
 			self.name = name
 			self.sender_instance = sender_instance
 
-		def __call__(self, *args):
-			return self.sender_instance.execute_function(self.name, *args)
+		def __call__(self, *args, **kwargs):
+			return self.sender_instance.execute_function(self.name, *args, **kwargs)
 
-	def _do_send(self, command, answer_timeout=default_answer_timeout):
+	def _do_send(self, command, answer_timeout=default_answer_timeout, retry_connect=2):
+		"""
+		You can force retry with retry_connect=2 (3 tries, default settings, first try + 2 retries)
+		retry_connect=0 , retry_connect=False and retry_connect=None  means not to retry,
+		retry_connect=True or retry_connect= -1 means to retry infinite times.
+
+		:type command: builtins.str
+		:type answer_timeout: builtins.float or builtins.int
+		:param retry_connect:
+		:return:
+		"""
+		if isinstance(retry_connect, int):
+			pass # correct
+		elif isinstance(retry_connect, bool):
+			if retry_connect: # True = forever
+				retry_connect = -1
+			else:
+				retry_connect = 0
+		elif retry_connect is None:
+			retry_connect = 0
+		else:
+			raise ValueError("retry_connect is not type int, bool or None.")
+		retry_connect_original = retry_connect
+
 		if not isinstance(command, (text_type, binary_type)):
 			raise TypeError("Command to send is not a unicode(?) string. (Instead of %s you used %s.) " % (str(text_type), str(type(command))))
 		logger.debug("Sending command >%s<" % n(command))
@@ -230,11 +263,17 @@ class Sender(object):
 					self.s = None
 				self.s = socket.socket()
 				try:
-					self.s.connect((self.host,self.port_out))
+					self.s.connect((self.host, self.port_out))
 				except socket_error as error:
 					self.s.close()
 					if error.errno == ECONNREFUSED and not self._do_quit:
-						continue
+						if retry_connect != 0:
+							sleep(1)
+							if retry_connect > 0:
+								retry_connect -= 1
+							continue
+						else:
+							raise ConnectionError("Could not establish connection to the cli port, failed after {number} tries. (called with retry_connect={retry_connect})".format(number=(retry_connect_original+1), retry_connect=retry_connect_original))
 					raise error  # Not the error we are looking for, re-raise
 				except Exception as error:
 					self.s.close()

@@ -8,7 +8,7 @@ Unupdated CLI? That is a thing of the past!
 > Everybody will profit from this.
 
 
-```pytg.*```, ```examples/```
+##### *```pytg.*```,```examples/```* #####
 - sending and receiving now uses the same port.   
 	- changed tg.Telegram() parameters:
 	```port_receive```, ```port_send``` are unified to ```port```:
@@ -28,7 +28,12 @@ Unupdated CLI? That is a thing of the past!
 		- ```name``` is a display name. Either the first name or, if not set, the username.
 	
 
-pytg.sender.Sender:
+##### *```pytg.sender.Sender```* #####
+- all commands now raises an exception if the connection (i.e. the connecting) to the cli failed after given number of retries.
+- all commands now have a ```retry_connect=<value>``` parameter (as ```**kwargs```).
+	```retry_connect=2``` means 3 tries, first try + 2 retries. This is the *default setting*.
+	```retry_connect=0```, ```retry_connect=False``` and ```retry_connect=None``` will not retry,
+	```retry_connect=True``` or ```retry_connect= -1``` means to retry infinite times. (this was the default before.)
 
 - ```send_photo()```: added optional attribute ```caption``` (unicode_string) (max length: 140) to ```send_photo```.
 ```
