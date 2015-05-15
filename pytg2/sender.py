@@ -1,13 +1,13 @@
+# -*- coding: utf-8 -*-
 __author__ = 'luckydonald'
+
 from . import result_parser as res
 from . import argument_types as args
-from .utils import escape
 from .encoding import to_native as n
 from .encoding import to_unicode as u
 from .encoding import to_binary as b
 from .encoding import text_type, binary_type
 from .exceptions import UnknownFunction, ConnectionError, NoResponse, IllegalResponseException
-from .argument_types import Argument
 from .fix_msg_array import fix_message
 
 import json
@@ -17,7 +17,7 @@ from errno import ECONNREFUSED, EINTR
 from socket import error as socket_error
 import threading
 import atexit
-import inspect # g
+import inspect
 import logging
 logger = logging.getLogger(__name__)
 
@@ -27,7 +27,7 @@ FUNC_CMD  = 0
 FUNC_ARGS = 1
 FUNC_RES  = 2
 FUNC_TIME = 3
-__all__ = ["FUNC_CMD", "FUNC_ARGS", "FUNC_RES", "functions", "Sender", "NoResponse"]
+__all__ = ["Sender"]
 functions = {
 	# function to call      # actual telegram command  # required arguments  # expected return type (parser)  # timeout (None = global default)
 	"get_contact_list":		["contact_list",		[],																res.something, 	None],
@@ -153,6 +153,7 @@ class Sender(object):
 			raise UnknownFunction(function_name)
 		command_name    = functions[function_name][FUNC_CMD]
 		arguments_types = functions[function_name][FUNC_ARGS]
+		""":type arguments_types: list of pytg2.argument_types.Argument"""
 		if len(arguments) > len(arguments_types):
 			raise ValueError(
 				"Error in function {function_name}: {expected_number} paramters expected, but {given_number} were given.".format(
@@ -163,7 +164,7 @@ class Sender(object):
 		new_args = []
 		error = None
 		for func_type in arguments_types:
-			""":type func_type: Argument"""
+			""":type func_type: pytg2.argument_types.Argument"""
 			if i >= len(arguments): # if to many arguments
 				if not func_type.optional:
 					raise ValueError(

@@ -1,3 +1,6 @@
+# -*- coding: utf-8 -*-
+__author__ = 'luckydonald'
+
 import atexit
 __all__ = ["receiver", "sender", "Telegram"]
 

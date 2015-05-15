@@ -1,4 +1,6 @@
+# -*- coding: utf-8 -*-
 __author__ = 'luckydonald'
+
 from .encoding import to_unicode as u
 from .encoding import to_native as n
 from .exceptions import IllegalResponseException, NoResponse

@@ -1,9 +1,10 @@
+# -*- coding: utf-8 -*-
 __author__ = 'luckydonald'
 
 import pytg2
 
 """
-	This is more a test, than an example...
+	This is more a TEST, not an example...
 	You probably should NOT start with this.
 """
 

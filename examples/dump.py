@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 __author__ = 'luckydonald'
 from pytg2.receiver import Receiver
 from pytg2.utils import coroutine

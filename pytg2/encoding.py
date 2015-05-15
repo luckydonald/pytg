@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+__author__ = 'luckydonald'
 from __future__ import unicode_literals
 import sys
 

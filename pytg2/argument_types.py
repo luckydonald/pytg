@@ -1,11 +1,12 @@
-from pytg2.exceptions import ArgumentParseError
-
+# -*- coding: utf-8 -*-
 __author__ = 'luckydonald'
+
+from . import encoding
+from .utils import escape  # validate_input
+from .exceptions import ArgumentParseError
 from os import path # file checking.
 import logging
 logger = logging.getLogger(__name__)
-from . import encoding
-from .utils import escape  # validate_input
 
 
 class Argument(object):
