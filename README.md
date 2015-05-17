@@ -1,5 +1,5 @@
-# **PyTG2** Version 0.4.0 #
-Python 3 (and 2.7)
+# **PyTG2** #
+#### Version 0.4.0 ####
 
 A Python package that communicates with the [Telegram messenger CLI](https://github.com/vysheng/tg).
 
