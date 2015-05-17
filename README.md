@@ -12,21 +12,27 @@ Python 2 uses ascii only bytestrings, causing much trouble when dealing with cha
 ## **Install**##
 
  1. Install the Telegram CLI (from @vysheng), follow the [official Instructions](https://github.com/vysheng/tg)
- 2. Download (clone) this code from github.    
-    ```shell
+ 2. Get the latest code from github.    
+    
+    ```
     $ git clone https://github.com/luckydonald/pytg2.git && cd pytg2
     ```
+    
  3. Install
-    ```shell
-    sudo python setup.py install 
+    
+    ```python
+    $ sudo python setup.py install 
     ```
+    
  Done.
 
 ## **Usage** ##
 
 ### How to *start* it up ###
+```python
 
-Create a Telegram Instance.
+```
+Create a Telegram Instance. 
 This will manage the CLI process, and registers the Sender and Receiver for you.
 
 ```python
@@ -42,6 +48,8 @@ You can then use the Receiver and/or the Sender like this:
 
 
 ```python
+from pytg2.sender import Sender
+from pytg2.receiver import Receiver
 receiver = Receiver(host="localhost", port=4458)
 sender = Sender(host="localhost", port=4458)
 ```
