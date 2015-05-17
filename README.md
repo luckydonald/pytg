@@ -2,6 +2,8 @@
 
 A Python package that wraps around [Telegram messenger CLI](https://github.com/vysheng/tg).
 
+@luckydonald updated a fork, [pytg2](https://github.com/luckydonald/pytg2).
+
 ### Installation
 
 PyTG requires a patched copy of Telegram messenger CLI to make message parsing feasible. To install the patched Telegram messenger CLI:
