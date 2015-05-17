@@ -29,14 +29,12 @@ Python 2 uses ascii only bytestrings, causing much trouble when dealing with cha
 ## **Usage** ##
 
 ### How to *start* it up ###
-```python
-
-```
 Create a Telegram Instance. 
 This will manage the CLI process, and registers the Sender and Receiver for you.
 
 ```python
-tg = pytg2.Telegram(
+from pytg2 import Telegram
+tg = Telegram(
 	telegram="/path/to/telejson/bin/telegram-cli",
 	pubkey_file="/path/to/telejson/tg-server.pub")
 receiver = tg.receiver
