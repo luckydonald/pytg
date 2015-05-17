@@ -3,11 +3,24 @@ Python 3 (and 2.7)
 
 A Python package that communicates with the [Telegram messenger CLI](https://github.com/vysheng/tg).
 
+Works with Python  2.7 and 3    
+
 > I really recommend to use Python 3, because of it's build in unicode support.
-Python 2 uses ascii only bytestrings, causing much trouble when dealing with characters like öäüß or emojis.
+Python 2 uses ascii only bytestrings, causing much trouble when dealing with characters like öäüß or emojis.    
 ~ luckydonald
 
+## **Install**##
 
+ 1. Install the Telegram CLI (from @vysheng), follow the [official Instructions](https://github.com/vysheng/tg)
+ 2. Download (clone) this code from github.    
+    ```shell
+    $ git clone https://github.com/luckydonald/pytg2.git && cd pytg2
+    ```
+ 3. Install
+    ```shell
+    sudo python setup.py install 
+    ```
+ Done.
 
 ## **Usage** ##
 
@@ -24,7 +37,9 @@ receiver = tg.receiver
 sender = tg.sender
 ```
 
-You can instead do that by yourself, if you don't want to start the cli (already running maybe?) or only need the Receiver or the Sender.
+If you don't want pytg2 to start the cli for you, start it yourself with ```--json -P 4458``` (port 4458).
+You can then use the Receiver and/or the Sender like this: 
+
 
 ```python
 receiver = Receiver(host="localhost", port=4458)
@@ -92,7 +107,7 @@ Also a nice new feature is an automatic download of files. (more about this, as 
 
 ### Look at the examples
 See some example scripts to start with.
-They are in the [examples folder](https://github.com/luckydonald/pytg2/src)    
+They are in the [examples folder](https://github.com/luckydonald/pytg2/tree/master/examples)    
 * dump.py * is usefull to see, how the messages look like.    
 * ping.py * is usefull to see how to interact with pytg, send messages etc.    
 * dialog_list.py * shows you how to interact with the CLI and function returning stuff.    
@@ -106,66 +121,3 @@ You can help
 * by commiting patches
 
 Thanks!
-
-
-
-
-# **Instructions are not up to date!**
-They need to be updated. Proceed with caution.
-
-## **Installation**
-You have to install the patched telegram cli and pytg2.
-This manual covers the installation of both. Lets begin with the python library: 
-
-### 1. Install PyTG2 ###
-
-```
-THIS IS NOT UPDATED YET!!!
-```
-
-    
-
-Install the [DictObject](https://github.com/luckydonald/DictObject/). (instead of dict["foo"] you can also use dict.foo on the msg dict.)
-
-    $ pip install DictObject
-
-Install the future. (for Compatibility to both python 2.7 and 3)
-
-    $ sudo pip install future
-
-Clone PyTG 2 Repository
-
-    $ git clone --recursive https://github.com/luckydonald/pytg2.git && cd pytg2 && sudo python setup.py install
- 
-      
-### 2. Install Patched Telegram CLI
-PyTG requires a [patched version](https://github.com/luckydonald/tg-for-pytg2) of Telegram messenger CLI to make message parsing feasible.
- If you already did install the patched cli, you are done. Horray!    
-To install the patched Telegram messenger CLI ([luckydonald/tg-for-pytg2](https://github.com/luckydonald/tg-for-pytg2)):
-
-Clone GitHub Repository
-
-    $ git clone --recursive https://github.com/luckydonald/tg-for-pytg2.git && cd tg-for-pytg2
-        
-Then, run
-
-    $ ./configure --enable-liblua
-
-(You need that support because we want to use our replacement interface, it modifies only the lua part)
-
-Next, run
-
-    $ make
-
-Telegram messenger CLI has its own dependencies. See [luckydonald/tg-for-pytg2](https://github.com/luckydonald/tg-for-pytg2) for details.
-
-Once you build successfully, try to run
-
-    $ ./bin/telegram-cli
-
-Register your client, if required. Please note that PyTG2 does not support client registration yet.
-
-### 3. Eat a cookie.
-Thats actually optional.  
-You're Done with the installation! [Yay.](http://flutteryay.com/)
-
