@@ -10,8 +10,11 @@ Python 2 uses ascii only bytestrings, causing much, much trouble when dealing wi
 ~ luckydonald
 
 ## **URL Changes** or "How to update?"##
-Well, lot has happened recently. A huge change for the original users: merges, new functions, renames and and finally the changed url.
+Well, lot has happened recently. A huge change for the original users: merges, new functions,
+renames and and finally the changed url. Here is how to update your local git clone.
 ```shell
+# navigate into the clone
+cd pytg	 # not pytg/pytg!
 # change to the new url
 git remote set-url origin https://github.com/luckydonald/pytg.git
 # download the changes
@@ -25,7 +28,7 @@ If that failes at some point, just Install it from scratch.
  1. Install the Telegram CLI (from @vysheng), follow the [official Instructions](https://github.com/vysheng/tg)
  2. Get the latest code from github.    
     ```shell
-    $ git clone https://github.com/luckydonald/pytg.git && cd pytg
+    git clone https://github.com/luckydonald/pytg.git && cd pytg
     ```
  2.1. To update already existing code, navigate to the root inside the pytg folder, then
     ```shell
