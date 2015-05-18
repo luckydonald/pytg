@@ -1,6 +1,12 @@
 
 #Changelog.
 
+## Version 0.4.1: ##    
+**Big rename**:     
+```pytg2``` -> ```pytg```    
+Thats it.
+
+
 ## Version 0.4.0: ##
 official cli support.
 CLI fork not updated? That is a problem of the past!

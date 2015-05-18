@@ -6,11 +6,12 @@ from codecs import open # To use a consistent encoding
 from os import path
 here = path.abspath(path.dirname(__file__))
 
-long_description = """A Python module that connects to a Telegram messenger CLI, allowing to interact with Telegram users or groups."""
+long_description = """A Python module that connects to a Telegram messenger CLI, allowing to interact with Telegram users or groups.
+Report any issues at https://github.com/luckydonald/pytg/issues/"""
 
 setup(
 	name='pytg',
-	version='0.4.0',
+	version='0.4.1',
 	description='Connect to the Telegram CLI, receive and send Telegram messages.',
 	long_description=long_description,
 	# The project's main homepage.
@@ -47,7 +48,7 @@ setup(
 	'Topic :: Software Development :: Libraries'
 	],
 	# What does your project relate to?
-	keywords='telegram cli message send receive python secure fast',
+	keywords='telegram cli python message send receive python secure fast answer reply image voice picture location contacts typing multi messanger',
 	# You can just specify the packages manually here if your project is
 	# simple. Or you can use find_packages().
 	packages= ['pytg'], #find_packages(exclude=['contrib', 'docs', 'tests*']),
