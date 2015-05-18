@@ -35,8 +35,10 @@ CLI fork not updated? That is a problem of the past!
 		sender.send_msg("luckydonald", "test message", retry_connect= 10
 		``
 	
-	- ```send_photo()```: added optional attribute ```caption``` (unicode_string) (max length: 140) to ```send_photo```.
-	- ```send_video()```same goes with ```send_video```: added ```caption``` unicode_string (max length: 140), else it will fail.
+	- ```send_photo()```: added optional attribute ```caption``` (string, max length: 140).    
+	
+	- ```send_video()```: added optional```caption``` parameter (max length: 140).    
+		Example:    
 		```python
 		#send_photo <peer> <file> [caption]
 		sender.send_photo(peer, file)

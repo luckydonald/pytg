@@ -16,6 +16,10 @@ Python 2 uses ascii only bytestrings, causing much trouble when dealing with cha
     ```shell
     $ git clone https://github.com/luckydonald/pytg2.git && cd pytg2
     ```
+ 2.1. To update already existing code, navigate to the root inside the pytg2 folder, then
+    ```shell
+    $ git pull 
+    ```
  3. Install
     ```shell
     sudo python setup.py install 
