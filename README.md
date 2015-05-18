@@ -6,7 +6,7 @@ A Python package that communicates with the [Telegram messenger CLI](https://git
 Works with Python  2.7 and 3    
 
 > I really recommend to use Python 3, because of it's build in unicode support.
-Python 2 uses ascii only bytestrings, causing much trouble when dealing with characters like öäüß or emojis.    
+Python 2 uses ascii only bytestrings, causing much, much trouble when dealing with characters like öäüß or emojis. (Trust me, I've been there)     
 ~ luckydonald
 
 ## **Install**##
