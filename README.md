@@ -23,18 +23,19 @@ If that failes at some point, just Install it from scratch.
 ## **Install**##
 
  1. Install the Telegram CLI (from @vysheng), follow the [official Instructions](https://github.com/vysheng/tg)
- 2. Download (clone) this code from github.    
+ 2. Get the latest code from github.    
     ```shell
     $ git clone https://github.com/luckydonald/pytg.git && cd pytg
     ```
  2.1. To update already existing code, navigate to the root inside the pytg folder, then
     ```shell
-    $ git pull 
+    git pull 
     ```
  3. Install
     ```shell
     sudo python setup.py install 
     ```
+    
  Done.
 
 ## **Usage** ##
@@ -45,7 +46,8 @@ Create a Telegram Instance.
 This will manage the CLI process, and registers the Sender and Receiver for you.
 
 ```python
-tg = pytg.Telegram(
+from pytg import Telegram
+tg = Telegram(
 	telegram="/path/to/telejson/bin/telegram-cli",
 	pubkey_file="/path/to/telejson/tg-server.pub")
 receiver = tg.receiver
@@ -57,6 +59,8 @@ You can then use the Receiver and/or the Sender like this:
 
 
 ```python
+from pytg.sender import Sender
+from pytg.receiver import Receiver
 receiver = Receiver(host="localhost", port=4458)
 sender = Sender(host="localhost", port=4458)
 ```
@@ -112,7 +116,7 @@ Updates for telejson beta compatibility.
 This version never got offically released before the telejson fork got replaced by vysheng's native json implementation.
  
 ## **New in Version 0.3.0**
-Pytg (now since V0.4.1 called Pytg again) got overhauled to version 0.3.0, which will restructure heavily,
+Pytg2 (now since V0.4.1 called Pytg again) got overhauled to version 0.3.0, which will restructure heavily,
 BUT will decrease the CPU usage to around nothing.
 While the old versions need to parse the cli output directly, resuling in easy ways to exploit it, now it is safe, using json internal.
 Without the parsing we don't have to poll for new output ("Hey, got anything yet? And yet? And yet? ...") but just block until we got new output.
