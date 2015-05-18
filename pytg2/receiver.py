@@ -54,6 +54,8 @@ class Receiver(object):
 		self.host = host
 		self.port = port
 		self.append_json = append_json
+		self.s = None  # socket.
+
 	def start(self):
 		self._receiver_thread = threading.Thread(target=self._receiver, args=())
 		self._receiver_thread.daemon = True  # exit if script reaches end.
@@ -71,7 +73,10 @@ class Receiver(object):
 			self.s.settimeout(0)
 		if self.s:
 			self.s.close()
-		logger.debug("receiver thread existing: {}".format(self._receiver_thread.isAlive()))
+		if hasattr(self, "_receiver_thread"):
+			logger.debug("receiver thread existing: {}".format(self._receiver_thread.isAlive()))
+		else:
+			logger.debug("receiver thread existing: Not created.")
 		#self._new_messages.release()
 
 

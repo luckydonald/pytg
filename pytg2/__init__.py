@@ -29,8 +29,8 @@ class Telegram(object):
 			self.startCLI(telegram=telegram, pubkey_file=pubkey_file, custom_cli_args=custom_cli_args, port=port)
 		elif telegram is not None or pubkey_file is not None or custom_cli_args is not None:
 			logger.warn("cli related parameter given, but not cli and pubkey path not present.")
-		self.sender = Sender(host=host,port=port)
-		self.receiver = Receiver(host=host,port=port)
+		self.sender = Sender(host=host, port=port)
+		self.receiver = Receiver(host=host, port=port)
 
 		while self._proc is not None and self._proc.returncode is None:
 			self._proc.poll()
@@ -87,10 +87,17 @@ class Telegram(object):
 		:return: (int) returncode of the cli process.
 		:rtype int:
 		"""
+		logger.info("Closing Connections.")
+		logger.debug("Closing sender.")
+		if self.sender:
+			self.sender.terminate() # not let the cli end close first -> avoid bind: port already in use.
+		logger.debug("Closing sender.")
+		if self.receiver:
+			self.receiver.stop()
 		logger.info("Asking to CLI to stop.")
 		if self._proc is not None:
 			if self.sender._do_quit:
-				logger.warn("Sender already stopped. Unable to issue safe_quit or quit to exit the cli nicely.")
+				logger.debug("Sender already stopped. Unable to issue safe_quit or quit to exit via socket.")
 			else:
 				try:
 					self.sender.safe_quit()
@@ -107,6 +114,9 @@ class Telegram(object):
 				logger.debug("quit did not terminate.")
 				self.sender.stop() # quit and safe quit are done, we don't need the sender any longer.
 			#end if-else: self.sender._do_quit
+			if self._check_stopped(): return self._proc.returncode
+			#has not terminated yet.
+			self._proc.communicate('quit\n')  # report this error in the bugtracker!
 			if self._check_stopped(): return self._proc.returncode
 			try:
 				self._proc.terminate()

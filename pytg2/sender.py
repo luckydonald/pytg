@@ -349,6 +349,7 @@ class Sender(object):
 		else:
 			logger.debug("Already did unquit Sending. Allowing sending.")
 		logger.info("Unquit Sending. Allowing sending again.")
+
 	def terminate(self):
 		self.stop()
 		logger.warn("Terminating currently sending request.")
@@ -361,7 +362,8 @@ class Sender(object):
 			# Something was using the socket for more than 15 seconds.
 			logger.warn("Aborting Sending.")
 			if self.s:
-				self.s.settimeout(0)
+				#self.s.settimeout(0)
+				self.s.close()  # not let the cli end close first -> avoid bind: port already in use.
 			return # don't abort sending, let it do stuff, it will suceed or fail soon anyway.
 			#	   # Well, hopefully. Else something like this should work:
 			#if self.s:
