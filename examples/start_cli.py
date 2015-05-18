@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 __author__ = 'luckydonald'
 
-import pytg2
+import pytg
 
 """
 	This is more a TEST, not an example...
@@ -13,7 +13,7 @@ import pytg2
 def main():
 	import signal
 	signal.signal(signal.SIGINT, sigint_handler)
-	tg = pytg2.Telegram(telegram="/path/to/tg-for-pytg2/bin/telegram-cli", pubkey_file="/path/to/tg-for-pytg2/tg-server.pub")
+	tg = pytg.Telegram(telegram="/path/to/tg/bin/telegram-cli", pubkey_file="/path/to/tg/tg-server.pub")
 	tg.stopCLI()
 
 	import time

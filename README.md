@@ -1,5 +1,5 @@
-# **PyTG2** #
-#### Version 0.4.0 ####
+# **PyTg** #
+#### Version 0.4.1 ####
 
 A Python package that communicates with the [Telegram messenger CLI](https://github.com/vysheng/tg).
 
@@ -9,14 +9,25 @@ Works with Python  2.7 and 3
 Python 2 uses ascii only bytestrings, causing much, much trouble when dealing with characters like öäüß or emojis. (Trust me, I've been there)     
 ~ luckydonald
 
+## **URL Changes** or "How to update?"##
+Well, lot has happened recently. A huge change for the original users: merges, new functions, renames and and finally the changed url.
+```shell
+# change to the new url
+git remote set-url origin https://github.com/luckydonald/pytg.git
+# download the changes
+git pull
+# don't forget to install the newest official cli.
+```
+If that failes at some point, just Install it from scratch.
+
 ## **Install**##
 
  1. Install the Telegram CLI (from @vysheng), follow the [official Instructions](https://github.com/vysheng/tg)
  2. Download (clone) this code from github.    
     ```shell
-    $ git clone https://github.com/luckydonald/pytg2.git && cd pytg2
+    $ git clone https://github.com/luckydonald/pytg.git && cd pytg
     ```
- 2.1. To update already existing code, navigate to the root inside the pytg2 folder, then
+ 2.1. To update already existing code, navigate to the root inside the pytg folder, then
     ```shell
     $ git pull 
     ```
@@ -34,14 +45,14 @@ Create a Telegram Instance.
 This will manage the CLI process, and registers the Sender and Receiver for you.
 
 ```python
-tg = pytg2.Telegram(
+tg = pytg.Telegram(
 	telegram="/path/to/telejson/bin/telegram-cli",
 	pubkey_file="/path/to/telejson/tg-server.pub")
 receiver = tg.receiver
 sender = tg.sender
 ```
 
-If you don't want pytg2 to start the cli for you, start it yourself with ```--json -P 4458``` (port 4458).
+If you don't want pytg to start the cli for you, start it yourself with ```--json -P 4458``` (port 4458).
 You can then use the Receiver and/or the Sender like this: 
 
 
@@ -61,7 +72,7 @@ sender.send_msg("username", "Hello World!")
 
 You need a function as main loop.
 ```python
-@coroutine # from pytg2.utils import coroutine
+@coroutine # from pytg.utils import coroutine
 def main_loop():
 	while not QUIT:
 		msg = (yield) # it waits until it got a message, stored now in msg.
@@ -87,6 +98,8 @@ That's the basics. Have a look into the examples folder. For starters, I recomme
 * ping.py * is usefull to see how to interact with pytg, send messages etc.
 
 
+## **New in Version 0.4.1**
+It is named ```"pytg"``` again. Hooray!
 
 ## **New in Version 0.4.0**
 No need for telejson any more, you can now run with the offical telegram-cli!
@@ -99,7 +112,7 @@ Updates for telejson beta compatibility.
 This version never got offically released before the telejson fork got replaced by vysheng's native json implementation.
  
 ## **New in Version 0.3.0**
-Pytg2 got overhauled to version 0.3.0, which will restructure heavily,
+Pytg (now since V0.4.1 called Pytg again) got overhauled to version 0.3.0, which will restructure heavily,
 BUT will decrease the CPU usage to around nothing.
 While the old versions need to parse the cli output directly, resuling in easy ways to exploit it, now it is safe, using json internal.
 Without the parsing we don't have to poll for new output ("Hey, got anything yet? And yet? And yet? ...") but just block until we got new output.
@@ -111,7 +124,7 @@ Also a nice new feature is an automatic download of files. (more about this, as 
 
 ### Look at the examples
 See some example scripts to start with.
-They are in the [examples folder](https://github.com/luckydonald/pytg2/tree/master/examples)    
+They are in the [examples folder](https://github.com/luckydonald/pytg/tree/master/examples)    
 * dump.py * is usefull to see, how the messages look like.    
 * ping.py * is usefull to see how to interact with pytg, send messages etc.    
 * dialog_list.py * shows you how to interact with the CLI and function returning stuff.    
@@ -121,7 +134,7 @@ They are in the [examples folder](https://github.com/luckydonald/pytg2/tree/mast
 You can help
 
 * with testing
-* by [reporting issues](https://github.com/luckydonald/pytg2/issues)
+* by [reporting issues](https://github.com/luckydonald/pytg/issues)
 * by commiting patches
 
 Thanks!

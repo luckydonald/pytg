@@ -15,7 +15,7 @@ setup(
     name = 'pytg',
     description = 'Telegram messenger CLI wrapper 2',
     long_description = long_description,
-    url = 'https://bitbucket.org/luckydonald/pytg2',
+    url = 'https://bitbucket.org/luckydonald/pytg',
     cmdclass = {'build_py': build_py},
     version = '0.2.2',
     author = 'luckydonald (forked from E A Faisal)',

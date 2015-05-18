@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 __author__ = 'luckydonald'
-from pytg2.receiver import Receiver
-from pytg2.utils import coroutine
+from pytg.receiver import Receiver
+from pytg.utils import coroutine
 
 @coroutine
 def example_function(receiver):

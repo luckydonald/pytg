@@ -163,7 +163,7 @@ class Sender(object):
 			raise UnknownFunction(function_name)
 		command_name    = functions[function_name][FUNC_CMD]
 		arguments_types = functions[function_name][FUNC_ARGS]
-		""":type arguments_types: list of pytg2.argument_types.Argument"""
+		""":type arguments_types: list of pytg.argument_types.Argument"""
 		if len(arguments) > len(arguments_types):
 			raise ValueError(
 				"Error in function {function_name}: {expected_number} paramters expected, but {given_number} were given.".format(
@@ -174,7 +174,7 @@ class Sender(object):
 		new_args = []
 		error = None
 		for func_type in arguments_types:
-			""":type func_type: pytg2.argument_types.Argument"""
+			""":type func_type: pytg.argument_types.Argument"""
 			if i >= len(arguments): # if to many arguments
 				if not func_type.optional:
 					raise ValueError(

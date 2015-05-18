@@ -1,9 +1,9 @@
 # coding=utf-8
 from __future__ import unicode_literals
 __author__ = 'luckydonald'
-from pytg2.receiver import Receiver # get messages
-from pytg2.sender import Sender # send messages, and other querys.
-from pytg2.utils import coroutine
+from pytg.receiver import Receiver # get messages
+from pytg.sender import Sender # send messages, and other querys.
+from pytg.utils import coroutine
 
 def main():
 	# get a Receiver instance, to get messages.
@@ -48,7 +48,7 @@ def example_function(sender): # name "example_function" and given parameters are
 				continue # and again, because we want to process only text message.
 			# Everything in ptg2 will be unicode. If you use python 3 thats no problem,
 			# just if you use python 2 you have to be carefull! (better switch to 3)
-			# for convinience of py2 users there is a to_unicode(<string>) in pytg2.encoding
+			# for convinience of py2 users there is a to_unicode(<string>) in pytg.encoding
 			# for python 3 the using of it is not needed.
 			# But again, use python 3, as you have a chat with umlaute and emojis.
 			# This WILL brake your python 2 code at some point!
@@ -62,7 +62,7 @@ def example_function(sender): # name "example_function" and given parameters are
 					reply = u"You are not my Admin.\nMy Admin has id {admin_id} but you have {user_id}".format(admin_id=ADMIN_ID, user_id=msg.sender.id)
 					sender.send_msg(msg.sender.cmd, reply)
 	except GeneratorExit:
-		# the generator (pytg2) exited (got a KeyboardIterrupt).
+		# the generator (pytg) exited (got a KeyboardIterrupt).
 		pass
 	except KeyboardInterrupt:
 		# we got a KeyboardIterrupt(Ctrl+C)

@@ -6,11 +6,10 @@ from codecs import open # To use a consistent encoding
 from os import path
 here = path.abspath(path.dirname(__file__))
 
-long_description = """A Python module that connects to a Telegram messenger CLI, allowing to interact with Telegram users or groups.
-Please Note, this needs the version from http://bitbucket.org/luckydonald/tg-for-pytg2/."""
+long_description = """A Python module that connects to a Telegram messenger CLI, allowing to interact with Telegram users or groups."""
 
 setup(
-	name='pytg2',
+	name='pytg',
 	version='0.4.0',
 	description='Connect to the Telegram CLI, receive and send Telegram messages.',
 	long_description=long_description,
@@ -51,7 +50,7 @@ setup(
 	keywords='telegram cli message send receive python secure fast',
 	# You can just specify the packages manually here if your project is
 	# simple. Or you can use find_packages().
-	packages= ['pytg2'], #find_packages(exclude=['contrib', 'docs', 'tests*']),
+	packages= ['pytg'], #find_packages(exclude=['contrib', 'docs', 'tests*']),
 	# List run-time dependencies here. These will be installed by pip when your
 	# project is installed. For an analysis of "install_requires" vs pip's
 	# requirements files see:
