@@ -10,10 +10,11 @@ logger = logging.getLogger(__name__)
 
 
 class Argument(object):
-	def __init__(self, name, optional=False, multible=False):
+	def __init__(self, name, optional=False, multible=False, default=None):
 		self.name = name
 		self.optional = optional
 		self.multible = multible
+		self.default = default
 
 	def __str__(self):
 		string = self.name
