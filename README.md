@@ -11,7 +11,7 @@ Python 2 uses ascii only bytestrings, causing much, much trouble when dealing wi
 
 ## **URL Changes** or "How to update?"##
 Well, lot has happened recently. A huge change for the original users: merges, new functions,
-renames and and finally the changed url. Here is how to update your local git clone.
+renames and and finally the changed url. Here is how to update your local git clone. If you have not used pytg before, just skip to the Install part.
 ```shell
 # navigate into the clone
 cd pytg	 # not pytg/pytg!
@@ -19,31 +19,33 @@ cd pytg	 # not pytg/pytg!
 git remote set-url origin https://github.com/luckydonald/pytg.git
 # download the changes
 git pull
-# don't forget to install the newest official cli.
+# don't forget to install the newest official cli: https://github.com/vysheng/tg
 ```
 If that failes at some point, just Install it from scratch.
 
 ## **Install**##
+### Dependencies ###
+ - Install the Telegram CLI (from @vysheng), follow the [official Instructions](https://github.com/vysheng/tg)
 
- 1. Install the Telegram CLI (from @vysheng), follow the [official Instructions](https://github.com/vysheng/tg)
- 2. Get the latest code from github.    
+### Pytg ###
+ - a) Get the latest pytg code from github.
     ```shell
     git clone https://github.com/luckydonald/pytg.git && cd pytg
     ```
- 2.1. To update already existing code, navigate to the root inside the pytg folder, then
-    ```shell
-    git pull 
-    ```
- 3. Install
+     
+ - b) To update already existing code, navigate to the root inside the pytg folder, then ```git pull```
+ - Install
     ```shell
     sudo python setup.py install 
     ```
+    - The dependency "DictObject" should be installed automatically by this. If not, it is available on PyPI    
+     ```sudo pip install DictObject```
     
  Done.
 
 ## **Usage** ##
 
-### How to *start* it up ###
+### *Start* telegram ###
 
 Create a Telegram Instance.
 This will manage the CLI process, and registers the Sender and Receiver for you.
@@ -92,12 +94,13 @@ def main_loop():
 Last step is to register that function:
 
 ```python
-	# start the Receiver, so we can get messages!
-	receiver.start()
+# start the Receiver, so we can get messages!
+receiver.start()
 
-	# add "example_function" function as message listener. You can supply arguments here, like main_loop(foo, bar).
-	receiver.message(main_loop())  # now it will call the main_loop and yield the new messages.
-	
+# let "main_loop" get new message events.
+# You can supply arguments here, like main_loop(foo, bar).
+receiver.message(main_loop())
+# now it will call the main_loop function and yield the new messages.
 ```
 
 That's the basics. Have a look into the examples folder. For starters, I recommend:    
