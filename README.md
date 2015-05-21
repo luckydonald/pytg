@@ -53,8 +53,8 @@ This will manage the CLI process, and registers the Sender and Receiver for you.
 ```python
 from pytg import Telegram
 tg = Telegram(
-	telegram="/path/to/telejson/bin/telegram-cli",
-	pubkey_file="/path/to/telejson/tg-server.pub")
+	telegram="/path/to/tg/bin/telegram-cli",
+	pubkey_file="/path/to/tg/tg-server.pub")
 receiver = tg.receiver
 sender = tg.sender
 ```
