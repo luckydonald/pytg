@@ -32,58 +32,135 @@ FUNC_TIME = 3
 __all__ = ["Sender"]
 functions = {
 	# function to call      # actual telegram command  # required arguments  # expected return type (parser)  # timeout (None = global default)
-	"get_contact_list":		["contact_list",		[],																res.something, 	None],
-	"get_dialog_list": 		["dialog_list", 		[args.PositiveNumber("limit", optional=True), args.NonNegativeNumber("offset", optional=True)], res.something, 	None],
-	"rename_chat": 			["rename_chat", 		[args.Chat("chat"), args.UnicodeString("new_name")],			res.success_fail, None],
-	"send_msg": 			["msg", 				[args.Peer("peer"), args.UnicodeString("test")],				res.success_fail, None],
-	"send_typing": 			["send_typing", 		[args.Peer("peer")],							res.success_fail, None],
-	"send_typing_abort": 	["send_typing_abort", 	[args.Peer("peer")],													res.success_fail, None],
-	"send_photo": 			["send_photo", 			[args.Peer("peer"), args.File("file"), args.UnicodeString("caption", optional=True)],											res.success_fail, 60.0],
-	"send_video": 			["send_video", 			[args.Peer("peer"), args.File("file"), args.UnicodeString("caption", optional=True)],											res.success_fail, 60.0],
-	"send_audio": 			["send_audio", 			[args.Peer("peer"), args.File("file")],											res.success_fail, 60.0],
-	"send_document": 		["send_document", 		[args.Peer("peer"), args.File("file")],											res.success_fail, 60.0],
-	"send_file": 			["send_file", 			[args.Peer("peer"), args.File("file")],											res.success_fail, 60.0],
-	"send_text": 			["send_text", 			[args.Peer("peer"), args.File("file")],											res.success_fail, 60.0],
-	"send_location": 		["send_location", 		[args.Peer("peer"), args.Double("latitude"), args.Double("longitude")],							res.success_fail, None],
-	"load_photo": 			["load_photo", 			[args.MsgId("msg_id")],													res.something, 	60.0], #String saying something and a filepath
-	"load_video": 			["load_video", 			[args.MsgId("msg_id")],													res.something, 	60.0], #String saying something and a filepath
-	"load_video_thumb": 	["load_video_thumb", 	[args.MsgId("msg_id")],													res.something, 	60.0], #String saying something and a filepath
-	"load_audio": 			["load_audio", 			[args.MsgId("msg_id")],													res.something, 	60.0], #String saying something and a filepath
-	"load_document": 		["load_document", 		[args.MsgId("msg_id")],													res.something, 	60.0], #String saying something and a filepath
-	"load_document_thumb": 	["load_document_thumb", [args.MsgId("msg_id")],													res.something, 	60.0], #String saying something and a filepath
-	"fwd_msg": 				["fwd",		 			[args.Peer("peer"), args.MsgId("msg_id")],										res.success_fail, None],
-	"fwd_media": 			["fwd_media", 			[args.Peer("peer"), args.MsgId("msg_id")],										res.success_fail, None],
-	"chat_info": 			["chat_info", 			[args.Chat("chat")],													res.something, None],
-	"chat_set_photo": 		["chat_set_photo", 		[args.Chat("chat"), args.File("file")],								res.success_fail, None],
-	"chat_add_user": 		["chat_add_user", 		[args.Chat("chat"), args.User("user"), args.NonNegativeNumber("msgs_to_forward", optional=True)],	res.something, 	60.0],
-	"chat_del_user": 		["chat_del_user", 		[args.Chat("chat"), args.User("user")],											res.success_fail, None],
-	"create_secret_chat": 	["create_secret_chat", 	[args.User("user")],													res.success_fail, None],
-	"create_group_chat": 	["create_group_chat", 	[args.UnicodeString("name"), args.User("user", multible=True)],								res.success_fail, None],
-	"user_info": 			["user_info", 			[args.User("user")],													res.something, None],
-	"get_history": 			["history", 			[args.Peer("user"), args.PositiveNumber("limit", optional=True), args.NonNegativeNumber("offset", optional=True)],							res.something, None],
-	"add_contact": 			["add_contact", 		[args.UnicodeString("phone"), args.UnicodeString("first_name"), args.UnicodeString("last_name")], res.something, None], #returns the new name
-	"rename_contact": 		["rename_contact", 		[args.User("user"), args.UnicodeString("first_name"), args.UnicodeString("last_name")],			res.something, None], #returns the new name
-	"del_contact": 			["del_contact", 		[args.User("user")],													res.success_fail, None],
-	"msg_search": 			["search", 				[
+
+	# messages
+	# send messages
+	"send_text": 			("msg", 				[args.Peer("peer"), args.UnicodeString("test")],				res.success_fail, None),  # Sends text message to peer
+	"send_audio": 			("send_audio", 			[args.Peer("peer"), args.File("file")],											res.success_fail, 60.0),
+	"send_typing": 			("send_typing", 		[args.Peer("peer")],							res.success_fail, None),
+	"send_typing_abort": 	("send_typing_abort", 	[args.Peer("peer")],													res.success_fail, None),
+	"send_photo": 			("send_photo", 			[args.Peer("peer"), args.File("file"), args.UnicodeString("caption", optional=True)],											res.success_fail, 60.0),
+	"send_video": 			("send_video", 			[args.Peer("peer"), args.File("file"), args.UnicodeString("caption", optional=True)],											res.success_fail, 60.0),
+	"send_document": 		("send_document", 		[args.Peer("peer"), args.File("file")],											res.success_fail, 60.0),
+	"send_file": 			("send_file", 			[args.Peer("peer"), args.File("file")],											res.success_fail, 60.0),
+	"send_location": 		("send_location", 		[args.Peer("peer"), args.Double("latitude"), args.Double("longitude")],							res.success_fail, None),
+	"send_contact": 		("send_contact", 		[args.Peer("peer"), args.UnicodeString("phone"), args.UnicodeString("first_name"), args.UnicodeString("last_name")], res.something, 	60.0), #ret: formated message
+	"send_text_from_file": 			("send_text", 			[args.Peer("peer"), args.File("file")],											res.success_fail, 60.0),
+	"fwd": 					("fwd",		 				[args.Peer("peer"), args.MsgId("msg_id")],										res.success_fail, None),  # Forwards message to peer. Forward to secret chats is forbidden
+	"fwd_media": 			("fwd_media", 			[args.Peer("peer"), args.MsgId("msg_id")],										res.success_fail, None),  # Forwards message media to peer. Forward to secret chats is forbidden. Result slightly differs from fwd
+	"reply_text":			("reply", [args.MsgId("msg_id"), args.UnicodeString("text")], res.success_fail, None),  # Sends text reply to message
+	"reply_audio":			("reply_audio", [args.MsgId("msg_id"),args.File("file")], res.success_fail, None),  # Sends audio to peer
+	"reply_contact":		("reply_contact", [args.MsgId("msg_id"), args.UnicodeString("phone"), args.UnicodeString("first_name"), args.UnicodeString("last_name")], res.success_fail, None),  # Sends contact (not necessary telegram user)
+	"reply_document":		("reply_document", [args.MsgId("msg_id"), args.File("file")], res.success_fail, None),  # Sends document to peer
+	"reply_file":			("reply_file", [args.MsgId("msg_id"), args.File("file")], res.success_fail, None),  # Sends document to peer
+	"reply_location":		("reply_location", [args.MsgId("msg_id"), args.Double("latitude"), args.Double("longitude")], res.success_fail, None),  # Sends geo location
+	"reply_photo":			("reply_photo", [args.MsgId("msg_id"), args.File("file"), args.UnicodeString("caption", optional=True)], res.success_fail, None),  # Sends photo to peer
+	"reply_video":			("reply_video", [args.MsgId("msg_id"), args.File("file"), args.UnicodeString("caption", optional=True)], res.success_fail, None),  # Sends video to peer
+	"broadcast_text": 		("broadcast", [args.User("user", multible=True), args.UnicodeString("text")], res.success_fail, None),  # Sends text to several users at once
+
+	# message related
+	"message_delete": 		("delete_msg", 			[args.MsgId("msg_id")],													res.success_fail, None),  # Deletes message
+	"message_get":			("get_message", [args.NonNegativeNumber("msg_id")], res.something, None),  # Get message by id
+	"messages_search": 		("search", 				[
 														args.Peer("peer", optional=True),
 														args.NonNegativeNumber("limit", optional=True),
 														args.NonNegativeNumber("from", optional=True),
 														args.NonNegativeNumber("to", optional=True),
 														args.NonNegativeNumber("offset", optional=True),
 														args.UnicodeString("pattern")
-													],							res.something, None],
-	"mark_read": 			["mark_read", 			[args.Peer("peer")],													res.success_fail, None],
-	"set_profile_photo": 	["set_profile_photo", 	[args.File("file")],													res.something, 	60.0], #TODO
-	"set_profile_name": 	["set_profile_name", 	[args.UnicodeString("first_name"), args.UnicodeString("last_name")],	res.something, 	60.0], #ret: new name
-	"delete_msg": 			["delete_msg", 			[args.MsgId("msg_id")],													res.success_fail, None],
-	"accept_secret_chat": 	["accept_secret_chat", 	[args.SecretChat("secret_chat")],												res.success_fail, None],
-	"send_contact": 		["send_contact", 		[args.Peer("peer"), args.UnicodeString("phone"), args.UnicodeString("first_name"), args.UnicodeString("last_name")], res.something, 	60.0], #ret: formated message
-	"status_online": 		["status_online", 		[],																res.success_fail, None],
-	"status_offline": 		["status_offline", 		[],																res.success_fail, None],
-	"quit": 				["quit", 				[],																res.response_fails, None],
-	"safe_quit": 			["safe_quit",	 		[],																res.response_fails, None],
-	"raw": 					["", 					[args.UnescapedUnicodeString("command")],								res.raw, None]
-} 	# \{"(.*)",\ .*,\ \{\ (.*)\ \}\}, >> "$1": ["$1", [$2]],
+													],							res.something, None),
+
+	# load media
+	"load_audio": 			("load_audio", 			[args.MsgId("msg_id")],													res.something, 	60.0),  # Downloads file to downloads dirs. Prints file name after download end
+	"load_chat_photo":		("load_chat_photo", [args.Chat("chat")], res.success_fail, None),  # Downloads file to downloads dirs. Prints file name after download end
+	"load_file":  			("load_file", 			[args.MsgId("msg_id")],													res.something, 	60.0),  # Downloads file to downloads dirs. Prints file name after download end
+	"load_file_thumb":  	("load_file_thumb", 	[args.MsgId("msg_id")],													res.something, 	60.0),  # Downloads file to downloads dirs. Prints file name after download end
+	"load_document": 		("load_document", 		[args.MsgId("msg_id")],													res.something, 	60.0),  # Downloads file to downloads dirs. Prints file name after download end
+	"load_document_thumb":  ("load_document_thumb", [args.MsgId("msg_id")],													res.something, 	60.0),  # Downloads file to downloads dirs. Prints file name after download end
+	"load_photo":  			("load_photo", 			[args.MsgId("msg_id")],													res.something, 	60.0),  # Downloads file to downloads dirs. Prints file name after download end
+	"load_video":  			("load_video", 			[args.MsgId("msg_id")],													res.something, 	60.0),  # Downloads file to downloads dirs. Prints file name after download end
+	"load_video_thumb":  	("load_video_thumb", 	[args.MsgId("msg_id")],													res.something, 	60.0),  # Downloads file to downloads dirs. Prints file name after download end
+
+	# peer
+	"mark_read": 			("mark_read", 			[args.Peer("peer")],													res.success_fail, None),  # Marks messages with peer as read
+	"history": 				("history", 			[args.Peer("user"), args.PositiveNumber("limit", optional=True), args.NonNegativeNumber("offset", optional=True)],							res.something, None),  # Prints messages with this peer (most recent message lower). Also marks messages as read
+
+
+	# user
+	"user_info": 			("user_info", 			[args.User("user")],													res.something, None),
+	"load_user_photo":  	("load_user_photo", 	[args.User("user")],													res.something, 	60.0),  # Downloads file to downloads dirs. Prints file name after download end
+
+	#contacts
+	"contact_add": 			("add_contact", 		[args.UnicodeString("phone"), args.UnicodeString("first_name"), args.UnicodeString("last_name")], res.something, None),  # Tries to add user to contact list
+	"contact_add_by_card":	("import_card", 		[args.UnicodeString("card")], res.success_fail, None),  # Gets user by card and prints it name. You can then send messages to him as usual #todo: add args type
+	"contact_rename": 		("rename_contact", 		[args.User("user"), args.UnicodeString("first_name"), args.UnicodeString("last_name")],			res.something, None),  # Renames contact #returns the new name
+	"contact_delete": 		("del_contact", 		[args.User("user")],													res.success_fail, None),  # Deletes contact from contact list
+	"contacts_list": 		("contact_list", [], res.success_fail, None),  # Prints contact list
+	"contacts_search": 		("contact_search", [args.UnicodeString("user_name"), args.NonNegativeNumber("limit", optional=True)], res.success_fail, None),  # Searches contacts by username
+
+	# group chats
+	"chat_info": ("chat_info", [args.Chat("chat")],													res.something, None),  # Prints info about chat (id, members, admin, etc.)
+	"chat_set_photo": 		("chat_set_photo", 		[args.Chat("chat"), args.File("file")],								res.success_fail, None),  # Sets chat photo. Photo will be cropped to square
+	"chat_add_user": 		("chat_add_user", 		[args.Chat("chat"), args.User("user"), args.NonNegativeNumber("msgs_to_forward", optional=True)],	res.something, 	60.0),  # Adds user to chat. Sends him last msgs-to-forward message from this chat. Default 100
+	"chat_del_user": 		("chat_del_user", 		[args.Chat("chat"), args.User("user")],											res.success_fail, None),  # Deletes user from chat
+	"chat_rename": 			("rename_chat", 		[args.Chat("chat"), args.UnicodeString("new_name")],			res.success_fail, None), # Renames chat
+	"create_group_chat": 	("create_group_chat", 	[args.UnicodeString("name"), args.User("user", multible=True)],								res.success_fail, None),  # Creates group chat with users
+	"import_chat_link": 	("import_chat_link", [args.UnicodeString("hash")], res.success_fail, None),  # Joins to chat by link
+	"export_chat_link": 	("export_chat_link", [args.Chat("chat")], res.success_fail, None),  # Prints chat link that can be used to join to chat
+
+	# secret chats
+	"create_secret_chat": 	("create_secret_chat", 	[args.User("user")], res.success_fail, None),  # Starts creation of secret chat
+	"accept_secret_chat": 	("accept_secret_chat", 	[args.SecretChat("secret_chat")],												res.success_fail, None),
+	"set_ttl": 				("set_ttl", [args.NonNegativeNumber("secret_chat")], res.success_fail, None),  # Sets secret chat ttl. Client itself ignores ttl
+	"visualize_key": 		("visualize_key", [args.SecretChat("secret_chat")], res.success_fail, None),  # Prints visualization of encryption key (first 16 bytes sha1 of it in fact}
+
+	# own profile
+	"set_profile_name": 	("set_profile_name", 	[args.UnicodeString("first_name"), args.UnicodeString("last_name")],	res.something, 	60.0),  # Sets profile name.
+	"set_username": 		("set_username", 		[args.UnicodeString("name")], res.success_fail, None),  # Sets username.
+	"set_profile_photo": 	("set_profile_photo", 	[args.File("file")],													res.something, 	60.0),  # Sets profile photo. Photo will be cropped to square
+	"status_online": 		("status_online", 		[],																res.success_fail, None),  # Sets status as online
+	"status_offline": 		("status_offline", 		[],																res.success_fail, None),  # Sets status as offline
+	"export_card": 			("export_card", [], res.success_fail, None),  # Prints card that can be imported by another user with import_card method
+
+	# system
+	"quit": 				("quit", 				[],																res.response_fails, None),  # Quits immediately
+	"safe_quit": 			("safe_quit",	 		[],																res.response_fails, None), # Waits for all queries to end, then quits
+	"main_session": 		("main_session", [], res.success_fail, None),  # Sends updates to this connection (or terminal). Useful only with listening socket
+	"dialog_list": 			("dialog_list", [args.NonNegativeNumber("limit", optional=True, default=100), args.NonNegativeNumber("offset", optional=True, default=0)], res.success_fail, None),  # List of last conversations
+	"set_password": 		("set_password", [args.UnicodeString("hint", optional=True, default="empty")], res.success_fail, None),  # Sets password
+
+	# diversa
+	"raw": 					("", 					[args.UnescapedUnicodeString("command")], res.raw, None), # just send custom shit to the cli. Use, if there are no fitting functions, because I didn't update.
+	"help": 				("help", [], res.raw, None),  # Prints the help. (Needed for pytg itself!)
+
+	# these are commented out in the cli too:
+
+	#//"reply_text": ("reply_text", [args.MsgId("msg_id"), ca_number, ca_file_name_end, ca_none,"<msg-id> <file>"], res.success_fail, None),  # Sends contents of text file as plain text message
+	#//"restore_msg": ("restore_msg", [args.MsgId("msg_id"), ca_number, ca_none,"<msg-id>"], res.success_fail, None),  # Restores message. Only available shortly (one hour?) after deletion
+	#//"secret_chat_rekey": ("secret_chat_rekey", [args.SecretChat("secret_chat")], res.success_fail, None),  # generate new key for active secret chat
+	#"set": ("set", [ca_string, ca_number, ca_none,"<param> <value>"], res.success_fail, None),  # Sets value of param. Currently available: log_level, debug_verbosity, alarm, msg_num
+
+	#These are not concidered useful, so I implement other things first. If needed, create an issue, or send an pull-request.
+
+	#"show_license": ("show_license", [ca_none,""], res.success_fail, None),  # Prints contents of GPL license
+	#"stats": ("stats", [ca_none,""], res.success_fail, None),  # For debug purpose
+	#"view_audio": ("view_audio", [ca_number, ca_none,"<msg-id>"], res.success_fail, None),  # Downloads file to downloads dirs. Then tries to open it with system default action
+	#"view_chat_photo": ("view_chat_photo", [ca_chat, ca_none,"<chat>"], res.success_fail, None),  # Downloads file to downloads dirs. Then tries to open it with system default action
+	#"view_document": ("view_document", [ca_number, ca_none,"<msg-id>"], res.success_fail, None),  # Downloads file to downloads dirs. Then tries to open it with system default action
+	#"view_document_thumb": ("view_document_thumb", [ca_number, ca_none,"<msg-id>"], res.success_fail, None),  # Downloads file to downloads dirs. Then tries to open it with system default action
+	#"view_file": ("view_file", [ca_number, ca_none,"<msg-id>"], res.success_fail, None),  # Downloads file to downloads dirs. Then tries to open it with system default action
+	#"view_file_thumb": ("view_file_thumb", [ca_number, ca_none,"<msg-id>"], res.success_fail, None),  # Downloads file to downloads dirs. Then tries to open it with system default action
+	#"view_photo": ("view_photo", [ca_number, ca_none,"<msg-id>"], res.success_fail, None),  # Downloads file to downloads dirs. Then tries to open it with system default action
+	#"view_user_photo": ("view_user_photo", [ca_user, ca_none,"<user>"], res.success_fail, None),  # Downloads file to downloads dirs. Then tries to open it with system default action
+	#"view_video": ("view_video", [ca_number, ca_none,"<msg-id>"], res.success_fail, None),  # Downloads file to downloads dirs. Then tries to open it with system default action
+	#"view_video_thumb": ("view_video_thumb", [ca_number, ca_none,"<msg-id>"], res.success_fail, None),  # Downloads file to downloads dirs. Then tries to open it with system default action
+	#"view": ("view", [ca_number, ca_none,"<msg-id>"], res.success_fail, None),  # Tries to view message contents
+
+}
+# regex to transform the C function list of the CLI to the one for pytg (in Python, obviously)
+##^\s*(?://)?\s*\{"(.*?)", \{\s*((?:ca_(?:[a-z_A-Z]+)(?:(?:,|\s+\|)\s+)?)+)\},\s+[a-z_A-Z]+,\s+"(?:(?:\1\s*(.*?)\\t)?)(.+?)",\s+NULL}(,?)$##
+#  replace with:
+##\t"$1": ("$1", [$2,"$3"], res.success_fail, None)$5  # $4##
 
 
 _ANSWER_SYNTAX = b("ANSWER ")
