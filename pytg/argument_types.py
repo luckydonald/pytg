@@ -10,6 +10,7 @@ logger = logging.getLogger(__name__)
 
 
 class Argument(object):
+	type="unknown-argument-type"
 	def __init__(self, name, optional=False, multible=False, default=None):
 		self.name = name
 		self.optional = optional
@@ -31,6 +32,7 @@ class Argument(object):
 
 
 class Nothing(Argument):
+	type="None"
 	def parse(self, value):
 		value = super(Nothing, self).parse(value)
 		if not value is None:
@@ -39,6 +41,7 @@ class Nothing(Argument):
 
 
 class UnescapedUnicodeString(Argument):
+	type="String"
 	"""
 	Used for unicodes stings which will not be escaped.
 	"""
@@ -61,6 +64,7 @@ class UnicodeString(UnescapedUnicodeString):
 
 
 class Peer(UnescapedUnicodeString):
+	type="Peer"
 	def parse(self, value):
 		value = super(Peer, self).parse(value)
 		if " " in value:
@@ -69,21 +73,25 @@ class Peer(UnescapedUnicodeString):
 
 
 class Chat(Peer):
+	type="Chat"
 	def parse(self, value):
 		return super(Chat, self).parse(value)
 
 
 class User(Peer):
+	type="User"
 	def parse(self, value):
 		return super(User, self).parse(value)
 
 
 class SecretChat(Peer):
+	type="SecretChat"
 	def parse(self, value):
 		return super(SecretChat, self).parse(value)
 
 
 class Number(Argument):
+	type="int"
 	def parse(self, value):
 		super(Number, self).parse(value)
 		if isinstance(encoding.native_type, encoding.text_type):
@@ -96,6 +104,7 @@ class Number(Argument):
 
 
 class Double(Argument):
+	type="float"
 	def parse(self, value):
 		value = super(Double, self).parse(value)
 		if not isinstance(value, float):
@@ -103,6 +112,7 @@ class Double(Argument):
 		return value
 
 class NonNegativeNumber(Number):
+	type="int >= 0"
 	def parse(self, value):
 		value = super(NonNegativeNumber, self).parse(value)
 		if value < 0:
@@ -111,6 +121,7 @@ class NonNegativeNumber(Number):
 
 
 class PositiveNumber(NonNegativeNumber):
+	type="int > 0"
 	def parse(self, value):
 		value = super(PositiveNumber, self).parse(value)
 		if value <= 0:
@@ -119,6 +130,7 @@ class PositiveNumber(NonNegativeNumber):
 
 
 class File(UnicodeString):
+	type="string"
 	def parse(self, value):
 		if not path.isfile(encoding.native_type(value)):
 			raise ArgumentParseError("File path \"{path}\" not valid.".format(path=value))
@@ -127,6 +139,7 @@ class File(UnicodeString):
 
 
 class MsgId(PositiveNumber):
+	type="message-id"
 	def parse(self, value):
 		return super(MsgId, self).parse(value)
 

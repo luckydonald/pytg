@@ -9,6 +9,7 @@ from .encoding import to_binary as b
 from .encoding import text_type, binary_type
 from .exceptions import UnknownFunction, ConnectionError, NoResponse, IllegalResponseException
 from .fix_msg_array import fix_message
+from .this_py_version import set_docstring
 
 import json
 import atexit
@@ -169,6 +170,7 @@ _LINE_BREAK = b("\n")
 class Sender(object):
 	_do_quit = False
 	default_answer_timeout = 1.0 # how long it should wait for a answer. DANGER: if set to None it will block!
+
 	def __init__(self, host, port):
 		"""
 
@@ -183,6 +185,7 @@ class Sender(object):
 		self.debug = False
 		self._socked_used = threading.Semaphore(1)  # start unblocked.
 		atexit.register(self.terminate)
+		self._register_all_functions()
 
 	def execute_function(self, function_name, *arguments, **kwargs):
 		"""
@@ -283,13 +286,13 @@ class Sender(object):
 			i += 1
 		return command_name, new_args
 
-	def __getattr__(self, attr):
-		if attr in functions:
-			command = self.Command(attr, self)
-			setattr(self, attr, command)
-			return command
-		else:
-			return object.__getattribute__(self, attr)
+	#def __getattr__(self, attr):
+	#	if attr in functions:
+	#		command = self.Command(attr, self)
+	#		setattr(self, attr, command)
+	#		return command
+	#	else:
+	#		return object.__getattribute__(self, attr)
 
 	def _do_command(self, function_sting, *argmts, **kwargs):
 		arg_string = " ".join([u(x) for x in argmts])
@@ -445,3 +448,39 @@ class Sender(object):
 			#	   # Well, hopefully. Else something like this should work:
 			#if self.s:
 			#	self.s.close()
+
+#class Sender(object): pass
+def _register_all_functions():
+	if hasattr(Sender, "did_register_all_functions"):
+		raise AssertionError("Sender class already did register all custom functions.")
+	setattr(Sender, "did_register_all_functions", True)
+	for function, meta in functions.items():  # slow in python 2:  http://stackoverflow.com/a/3294899
+		def command_alias(self, *args, **kwargs):
+			self.sender_instance.execute_function(self._name, *args, **kwargs)
+		command_alias._name = function
+		arguments = []
+		cli_args = []
+		args_description = []
+		for current_arg in meta[FUNC_ARGS]:
+			assert isinstance(current_arg, args.Argument)
+			arguments.append(current_arg.name)
+			cli_args.append(str(current_arg))
+			args_description.append("`{arg_name}`: {optional}, needs a {arg_class} (type: {type}), and may {allow_multible} be repeated.".format(arg_name=current_arg.name,
+									optional="optional" if current_arg.optional else "mandatory",
+									arg_class=current_arg.__class__.__name__,
+									allow_multible="not" if not current_arg.multible else "",
+									type=current_arg.type))
+		if len(args_description) == 0:
+			argument_description = "No arguments."
+		else:
+			argument_description = "Arguments:\n{args_description}".format(args_description="\n".join(args_description))
+		docstring = "Function to interact with the cli.\n\n" \
+					"`def {func_name}({arguments})`\n\n" \
+					"{argument_description}\n" \
+					"# will be send to the cli as `{cli_command}{cli_args}`".format(func_name=function, arguments=", ".join(arguments), cli_args=" ".join(cli_args), cli_command=meta[FUNC_CMD] + (" " if len(cli_args)>0 else ""), argument_description=argument_description)
+		set_docstring(command_alias, docstring)
+		setattr(Sender, function, command_alias)
+
+_register_all_functions()
+
+#help(Sender)
