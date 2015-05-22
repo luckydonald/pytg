@@ -28,6 +28,7 @@ If that failes at some point, just Install it from scratch.
  - Install the Telegram CLI (from @vysheng), follow the [official Instructions](https://github.com/vysheng/tg)
 
 ### Pytg ###
+ (Information about current beta version(s) can be found on the [Beta-Branches Wiki page](https://github.com/luckydonald/pytg/wiki/Beta-Branches))
  - a) Get the latest pytg code from github.
     ```shell
     git clone https://github.com/luckydonald/pytg.git && cd pytg
