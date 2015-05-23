@@ -10,9 +10,14 @@ else: # python 3
 
 
 import types
-if not is3:
+if not is3: #py2
 	def set_docstring(func, doctring):
 		func.func_doc = doctring
+	def set_kwdefaults(func, kwdefaults):
+		func.func_kwdefaults = kwdefaults
+
 else: #py3
 	def set_docstring(func, doctring):
 		func.__doc__ = doctring
+	def set_kwdefaults(func, kwdefaults):
+		func.__kwdefaults__ = kwdefaults

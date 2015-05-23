@@ -41,10 +41,10 @@ class Nothing(Argument):
 
 
 class UnescapedUnicodeString(Argument):
-	type="String"
 	"""
 	Used for unicodes stings which will not be escaped.
 	"""
+	type="str"
 	pass
 
 
@@ -52,6 +52,7 @@ class UnicodeString(UnescapedUnicodeString):
 	"""
 	Used for unicodes stings which will be escaped, and wrapped in 'simple quotes'
 	"""
+	type="str"
 	def parse(self, value):
 		value = super(UnicodeString, self).parse(value)
 		value = escape(value)
@@ -64,7 +65,7 @@ class UnicodeString(UnescapedUnicodeString):
 
 
 class Peer(UnescapedUnicodeString):
-	type="Peer"
+	type="str"
 	def parse(self, value):
 		value = super(Peer, self).parse(value)
 		if " " in value:
@@ -73,19 +74,19 @@ class Peer(UnescapedUnicodeString):
 
 
 class Chat(Peer):
-	type="Chat"
+	type="str"
 	def parse(self, value):
 		return super(Chat, self).parse(value)
 
 
 class User(Peer):
-	type="User"
+	type="str"
 	def parse(self, value):
 		return super(User, self).parse(value)
 
 
 class SecretChat(Peer):
-	type="SecretChat"
+	type="str"
 	def parse(self, value):
 		return super(SecretChat, self).parse(value)
 
@@ -130,7 +131,7 @@ class PositiveNumber(NonNegativeNumber):
 
 
 class File(UnicodeString):
-	type="string"
+	type="str"
 	def parse(self, value):
 		if not path.isfile(encoding.native_type(value)):
 			raise ArgumentParseError("File path \"{path}\" not valid.".format(path=value))
@@ -139,28 +140,6 @@ class File(UnicodeString):
 
 
 class MsgId(PositiveNumber):
-	type="message-id"
+	type="int"
 	def parse(self, value):
 		return super(MsgId, self).parse(value)
-
-
-def validate_input(function_name, arguments, arguments_types):
-	logger.warn("validate_input() is deprecated!")
-	raise NotImplementedError()
-
-	if (len(arguments) != len(arguments_types)):
-		raise ValueError("Error in function {function_name}: {expected_number} paramters expected, but {given_number} were given.".format(function_name=function_name, expected_number=len(arguments_types), given_number=len(args)))
-	i = 0
-	new_args = []
-	for arg in arguments:
-		func_type = arguments_types[i]
-		# arg is the given one, which should be func_type.
-		if not func_type(arg):
-			raise ValueError("Error in function {function_name}: parameter {number} is not type {type}.".format(function_name=function_name, number=i, type=func_type.__name__))
-		if func_type == UnicodeString:
-			new_args.append(encoding.to_unicode(escape(arg)))
-		else:
-			new_args.append(encoding.to_unicode(str(arg)))
-		i += 1
-	# end for
-	return new_args
