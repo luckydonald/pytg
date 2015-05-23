@@ -9,7 +9,7 @@ from .encoding import to_binary as b
 from .encoding import text_type, binary_type
 from .exceptions import UnknownFunction, ConnectionError, NoResponse, IllegalResponseException
 from .fix_msg_array import fix_message
-from .this_py_version import set_docstring, set_kwdefaults
+from .this_py_version import set_docstring, set_kwdefaults, get_dict_items
 
 import json
 import atexit
@@ -487,7 +487,7 @@ class Sender(object):
 		Display help about a command. Without given arguments this list all dynamic commands.
 		"""
 		if len(args) == 0:
-			for func, doc in Sender.registered_functions.items():  # slow in python 2:  http://stackoverflow.com/a/3294899
+			for func, doc in get_dict_items(Sender.registered_functions):
 				print("\n| {func}\n|\t{doc}\n|".format(func=func, doc=doc.replace("\n", "\n|\t")))
 		for arg in args:
 			if isinstance(arg, str):
@@ -506,7 +506,7 @@ def _register_all_functions():
 	if hasattr(Sender, "registered_functions"):
 		raise AssertionError("Sender class already did register all custom functions.")
 	setattr(Sender, "registered_functions", OrderedDict())
-	for function, meta in functions.items():  # slow in python 2:  http://stackoverflow.com/a/3294899
+	for function, meta in get_dict_items(functions):  # slow in python 2:  http://stackoverflow.com/a/3294899
 		def command_alias(self, *args, _command_name=None, **kwargs):
 			"""
 			:param args:

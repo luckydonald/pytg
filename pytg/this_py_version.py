@@ -15,9 +15,13 @@ if not is3: #py2
 		func.func_doc = doctring
 	def set_kwdefaults(func, kwdefaults):
 		func.func_kwdefaults = kwdefaults
+	def get_dict_items(dict):
+		return dict.viewitems()
 
 else: #py3
 	def set_docstring(func, doctring):
 		func.__doc__ = doctring
 	def set_kwdefaults(func, kwdefaults):
 		func.__kwdefaults__ = kwdefaults
+	def get_dict_items(dict):
+		return dict.items()
