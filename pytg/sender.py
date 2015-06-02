@@ -38,7 +38,9 @@ functions = OrderedDict()
 	# function to call      		# actual telegram command, [required arguments], expected return parser, timeout (None = global default), Description
 # messages
 # send messages
-functions["send_text"]			= ("msg", [args.Peer("peer"), args.UnicodeString("test")], res.success_fail, None, "Sends text message to peer")
+functions["msg"]				= ("msg", [args.Peer("peer"), args.UnicodeString("test")], res.success_fail, None, "Sends text message to peer")
+functions["send_msg"] 			= functions["msg"]
+functions["send_text"] 			= functions["msg"]
 functions["send_audio"]			= ("send_audio", [args.Peer("peer"), args.File("file")], res.success_fail, 60.0, "")
 functions["send_typing"]		= ("send_typing", [args.Peer("peer")], res.success_fail, None, "")
 functions["send_typing_abort"]	= ("send_typing_abort", [args.Peer("peer")], res.success_fail, None, "")
@@ -173,6 +175,7 @@ functions["cli_help"]			= ("help", [], res.raw, None, "Prints the help. (Needed 
 _ANSWER_SYNTAX = b("ANSWER ")
 _LINE_BREAK = b("\n")
 
+
 class Sender(object):
 	"""
 	Provides wrappers for the CLI commands.
@@ -198,8 +201,7 @@ class Sender(object):
 		self._socked_used = threading.Semaphore(1)  # start unblocked.
 		atexit.register(self.terminate)
 
-
-	def execute_function(self, function_name, *arguments, **kwargs):
+	def execute_function(self, function_name, *arguments, reply_id=None, enable_preview=None, **kwargs):
 		"""
 		Execute a function.
 		Will check a bit, if the parameters looks fitting.
@@ -210,8 +212,14 @@ class Sender(object):
 
 		Now you may apply your arguments for that command.
 
+		:keyword reply_id: The message id which this command is a reply to. (will be ignored on non-sending commands)
+		:type    reply_id: int or None
+
+		:keyword enable_preview: If the URL found in a message should have a preview. Defaults to False. (Will be ignored by the CLI with non-sending commands)
+		:type    enable_preview: bool
+
 		:keyword retry_connect: How often it should try to reconnect (-1 = infinite times) or fail if it can't establish the first connection. (default is 2)
-		:type retry_connect: int
+		:type    retry_connect: int
 
 		:return: parsed result/exception
 		:rtype: Object or IllegalResponseException
@@ -228,9 +236,9 @@ class Sender(object):
 		result_timeout = functions[function_name][FUNC_TIME]
 		try:
 			if result_timeout:
-				result = self._do_command(command_name, *new_args, answer_timeout=result_timeout, retry_connect=retry_connect)
+				result = self._do_command(command_name, *new_args, answer_timeout=result_timeout, retry_connect=retry_connect, enable_preview=enable_preview, reply_id=reply_id)
 			else:
-				result = self._do_command(command_name, *new_args, answer_timeout=self.default_answer_timeout, retry_connect=retry_connect)
+				result = self._do_command(command_name, *new_args, answer_timeout=self.default_answer_timeout, retry_connect=retry_connect, enable_preview=enable_preview, reply_id=reply_id)
 		except ConnectionError as err:
 			raise
 		except NoResponse as err:
@@ -317,15 +325,26 @@ class Sender(object):
 			i += 1
 		return command_name, new_args
 
-	def _do_command(self, cli_command, *args, **kwargs):
+	def _do_command(self, cli_command, *args, reply_id=None, enable_preview=None, **kwargs):
 		"""
 		This function will join the cli_command with the given parameters (dynamic *args),
 		and execute _do_send(request,**kwargs)
+
+		:keyword reply_id: The message id which this command is a reply to. (will be ignored by the CLI with non-sending commands)
+		:type    reply_id: int or None
+		:keyword enable_preview: If the URL found in a message should have a preview. (will be ignored by the CLI with non-sending commands)
+		:type    enable_preview: bool
 		:keyword retry_connect: How often the initial connection should be retried. default: 2. Negative number means infinite.
-		:type  retry_connect: int
+		:type    retry_connect: int
 		"""
+		reply_part = ""
+		if reply_id:
+			if not isinstance(reply_id, int):
+				raise AttributeError("reply_id keyword argument is not integer.")
+			reply_part = "[reply=%i]" % reply_id
+		preview_part = "[enable_preview]" if enable_preview else "[disable_preview]"
 		arg_string = " ".join([u(x) for x in args])
-		request = " ".join([cli_command,  arg_string])
+		request = " ".join([reply_part, preview_part, cli_command,  arg_string])
 		request = "".join([request, "\n"]) #TODO can this be deleted?
 		result = self._do_send(request, **kwargs)
 		return result
@@ -481,22 +500,28 @@ class Sender(object):
 			#	   # Well, hopefully. Else something like this should work:
 			#if self.s:
 			#	self.s.close()
+
 	@staticmethod
 	def help(*args):
 		"""
 		Display help about a command. Without given arguments this list all dynamic commands.
 		"""
+		print("Command help:")
 		if len(args) == 0:
 			for func, doc in get_dict_items(Sender.registered_functions):
-				print("\n| {func}\n|\t{doc}\n|".format(func=func, doc=doc.replace("\n", "\n|\t")))
+				print("| {func}\n|\t{doc}\n|".format(func=func, doc=doc.replace("\n", "\n|\t")))
 		for arg in args:
 			if isinstance(arg, str):
 				if arg in Sender.registered_functions:
-					print("\n| {func}\n|\t{doc}\n|".format(func=arg, doc=Sender.registered_functions[arg].replace("\n", "\n|\t")))
+					print("| {func}\n|\t{doc}\n|".format(func=arg, doc=Sender.registered_functions[arg].replace("\n", "\n|\t")))
 
 
-#class Sender(object):
-#	pass
+"""
+class Sender(object):
+	pass
+"""  # """ # ignore me, I a sender dummy class for tests, easiable copy-paste-able.
+
+
 def _register_all_functions():
 	"""
 	This function registers all the cli functions found in the functions dict to the Sender class.
@@ -507,15 +532,15 @@ def _register_all_functions():
 		raise AssertionError("Sender class already did register all custom functions.")
 	setattr(Sender, "registered_functions", OrderedDict())
 	for function, meta in get_dict_items(functions):  # slow in python 2:  http://stackoverflow.com/a/3294899
-		def command_alias(self, *args, _command_name=None, **kwargs):
+		def command_alias(self, *args, ___command_name=None, **kwargs):
 			"""
-			:param args:
-			:param _command_name:  DO NOT USE.
-			:param kwargs:
+			:param args: arguments.
+			:param ___command_name:  DO NOT USE.
+			:param kwargs: keyword arguments.
 			:return: parsed function (most of the time the resulting json)
 			:rtype: DictObject
 			"""
-			return self.execute_function(_command_name, *args, **kwargs)
+			return self.execute_function(___command_name, *args, **kwargs)
 		command_alias._name = function
 		arguments = []
 		cli_args = []
@@ -524,14 +549,14 @@ def _register_all_functions():
 			assert isinstance(current_arg, args.Argument)
 			arguments.append(current_arg.name)
 			cli_args.append(str(current_arg))
-			args_description.append("`{arg_name}`: {optional}, needs a {arg_class} (type: {type}), and may {allow_multible} be repeated.".format(
+			args_description.append("\t`{arg_name}`: {optional}, needs a {arg_class} (type: {type}), and may {allow_multible} be repeated.".format(
 									arg_name=current_arg.name,
 									optional="optional" if current_arg.optional else "mandatory",
 									arg_class=current_arg.__class__.__name__,
 									allow_multible="not" if not current_arg.multible else "",
 									type=current_arg.type))
 		if len(args_description) == 0:
-			argument_description = "No arguments."
+			argument_description = "\tNo arguments."
 		else:
 			argument_description = "\n".join(args_description)
 		if meta[FUNC_DESC]:
@@ -543,9 +568,12 @@ def _register_all_functions():
 					"{description}\n" \
 					"Arguments:\n" \
 					"{argument_description}\n" \
+					"\n" \
 					"Keyword arguments:\n" \
-					"`retry_connect`: optional, how often the initial connection should be retried. Default: 2. Negative number means infinite.\n" \
-					"`_command_name`: Do not change this!" \
+					"\t`reply_id`: optional, the message id (int) which this command is a reply to. Default: None. (Will be ignored by the CLI with non-sending commands.)\n" \
+					"\t`enable_preview`: optional, if the URL found in a message should have a preview. Default: False. (Will be ignored by the CLI with non-sending commands.)\n" \
+					"\t`retry_connect`: optional, how often the initial connection should be retried. Default: 2. Negative number means infinite.\n" \
+					"\t`___command_name` do NOT use! A internaly required keyword argument with a specific default value. Don't change (set/override) this kwarg's value." \
 					"".format(
 			description=description,
 			func_name=function,
@@ -553,7 +581,7 @@ def _register_all_functions():
 			argument_description=argument_description)
 		Sender.registered_functions[function] = docstring
 		set_docstring(command_alias, docstring)
-		set_kwdefaults(command_alias, {"_command_name": function})
+		set_kwdefaults(command_alias, {"___command_name": function})
 		setattr(command_alias, "cli_command", meta[FUNC_CMD] + (" " if len(cli_args)>0 else "") + " ".join(cli_args))
 		setattr(Sender, function, command_alias)
 _register_all_functions()
