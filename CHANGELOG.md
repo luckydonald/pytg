@@ -6,6 +6,16 @@
 ```pytg2``` -> ```pytg```    
 Thats it.
 
+## Version 0.4.1 ##
+
+for documentation, see:
+```python
+help(pytg.sender.Sender)
+```
+
+- added reply and preview capabilities.    
+- added commands.    
+
 
 ## Version 0.4.0: ##
 official cli support.
