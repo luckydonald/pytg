@@ -10,10 +10,12 @@ logger = logging.getLogger(__name__)
 
 
 class Argument(object):
-	def __init__(self, name, optional=False, multible=False):
+	type="unknown-argument-type"
+	def __init__(self, name, optional=False, multible=False, default=None):
 		self.name = name
 		self.optional = optional
 		self.multible = multible
+		self.default = default
 
 	def __str__(self):
 		string = self.name
@@ -30,6 +32,7 @@ class Argument(object):
 
 
 class Nothing(Argument):
+	type="None"
 	def parse(self, value):
 		value = super(Nothing, self).parse(value)
 		if not value is None:
@@ -41,6 +44,7 @@ class UnescapedUnicodeString(Argument):
 	"""
 	Used for unicodes stings which will not be escaped.
 	"""
+	type="str"
 	pass
 
 
@@ -48,6 +52,7 @@ class UnicodeString(UnescapedUnicodeString):
 	"""
 	Used for unicodes stings which will be escaped, and wrapped in 'simple quotes'
 	"""
+	type="str"
 	def parse(self, value):
 		value = super(UnicodeString, self).parse(value)
 		value = escape(value)
@@ -60,6 +65,7 @@ class UnicodeString(UnescapedUnicodeString):
 
 
 class Peer(UnescapedUnicodeString):
+	type="str"
 	def parse(self, value):
 		value = super(Peer, self).parse(value)
 		if " " in value:
@@ -68,21 +74,25 @@ class Peer(UnescapedUnicodeString):
 
 
 class Chat(Peer):
+	type="str"
 	def parse(self, value):
 		return super(Chat, self).parse(value)
 
 
 class User(Peer):
+	type="str"
 	def parse(self, value):
 		return super(User, self).parse(value)
 
 
 class SecretChat(Peer):
+	type="str"
 	def parse(self, value):
 		return super(SecretChat, self).parse(value)
 
 
 class Number(Argument):
+	type="int"
 	def parse(self, value):
 		super(Number, self).parse(value)
 		if isinstance(encoding.native_type, encoding.text_type):
@@ -95,6 +105,7 @@ class Number(Argument):
 
 
 class Double(Argument):
+	type="float"
 	def parse(self, value):
 		value = super(Double, self).parse(value)
 		if not isinstance(value, float):
@@ -102,6 +113,7 @@ class Double(Argument):
 		return value
 
 class NonNegativeNumber(Number):
+	type="int >= 0"
 	def parse(self, value):
 		value = super(NonNegativeNumber, self).parse(value)
 		if value < 0:
@@ -110,6 +122,7 @@ class NonNegativeNumber(Number):
 
 
 class PositiveNumber(NonNegativeNumber):
+	type="int > 0"
 	def parse(self, value):
 		value = super(PositiveNumber, self).parse(value)
 		if value <= 0:
@@ -118,6 +131,7 @@ class PositiveNumber(NonNegativeNumber):
 
 
 class File(UnicodeString):
+	type="str"
 	def parse(self, value):
 		if not path.isfile(encoding.native_type(value)):
 			raise ArgumentParseError("File path \"{path}\" not valid.".format(path=value))
@@ -126,27 +140,6 @@ class File(UnicodeString):
 
 
 class MsgId(PositiveNumber):
+	type="int"
 	def parse(self, value):
 		return super(MsgId, self).parse(value)
-
-
-def validate_input(function_name, arguments, arguments_types):
-	logger.warn("validate_input() is deprecated!")
-	raise NotImplementedError()
-
-	if (len(arguments) != len(arguments_types)):
-		raise ValueError("Error in function {function_name}: {expected_number} paramters expected, but {given_number} were given.".format(function_name=function_name, expected_number=len(arguments_types), given_number=len(args)))
-	i = 0
-	new_args = []
-	for arg in arguments:
-		func_type = arguments_types[i]
-		# arg is the given one, which should be func_type.
-		if not func_type(arg):
-			raise ValueError("Error in function {function_name}: parameter {number} is not type {type}.".format(function_name=function_name, number=i, type=func_type.__name__))
-		if func_type == UnicodeString:
-			new_args.append(encoding.to_unicode(escape(arg)))
-		else:
-			new_args.append(encoding.to_unicode(str(arg)))
-		i += 1
-	# end for
-	return new_args

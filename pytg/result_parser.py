@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from DictObject import DictObjectList
+
 __author__ = 'luckydonald'
 
 from .encoding import to_unicode as u
@@ -29,7 +31,7 @@ def success_fail(json):
 	if json.result == u("SUCCESS"):
 		return True
 	if json.result == u("FAIL"):
-		return False
+		return json
 	raise IllegalResponseException("Found: {}".format(json))
 
 def response_fails(exception=None, *args):
@@ -40,3 +42,13 @@ def response_fails(exception=None, *args):
 	if isinstance(exception, NoResponse):
 		return
 	raise IllegalResponseException("Wrong exception: {exc}".format(exc=str(type(exception))))
+
+class ResultParser(object):
+	pass
+
+class List(ResultParser):
+	def __call__(self, json):
+		if isinstance(json, DictObjectList):
+			return json
+		else:
+			raise IllegalResponseException("Not a list: {json}".format(json=str(json)))
