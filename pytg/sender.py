@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+import functools
+
 __author__ = 'luckydonald'
 
 from . import result_parser as res
@@ -9,7 +11,7 @@ from .encoding import to_binary as b
 from .encoding import text_type, binary_type
 from .exceptions import UnknownFunction, ConnectionError, NoResponse, IllegalResponseException
 from .fix_msg_array import fix_message
-from .this_py_version import set_docstring, set_kwdefaults, get_dict_items
+from .this_py_version import set_docstring, set_kwdefaults, get_dict_items, is3
 
 import json
 import atexit
@@ -38,30 +40,30 @@ functions = OrderedDict()
 	# function to call      		# actual telegram command, [required arguments], expected return parser, timeout (None = global default), Description
 # messages
 # send messages
-functions["msg"]				= ("msg", [args.Peer("peer"), args.UnicodeString("test")], res.success_fail, None, "Sends text message to peer")
+functions["msg"]				= ("msg", [args.Peer("peer"), args.UnicodeString("test")], res.success_fail, 60.0, "Sends text message to peer")
 functions["send_msg"] 			= functions["msg"]
 functions["send_text"] 			= functions["msg"]
-functions["send_audio"]			= ("send_audio", [args.Peer("peer"), args.File("file")], res.success_fail, 60.0, "")
+functions["send_audio"]			= ("send_audio", [args.Peer("peer"), args.File("file")], res.success_fail, 120.0, "")
 functions["send_typing"]		= ("send_typing", [args.Peer("peer")], res.success_fail, None, "")
 functions["send_typing_abort"]	= ("send_typing_abort", [args.Peer("peer")], res.success_fail, None, "")
-functions["send_photo"]			= ("send_photo", [args.Peer("peer"), args.File("file"), args.UnicodeString("caption", optional=True)], res.success_fail, 60.0, "")
-functions["send_video"]			= ("send_video", [args.Peer("peer"), args.File("file"), args.UnicodeString("caption", optional=True)], res.success_fail, 60.0, "")
-functions["send_document"]		= ("send_document", [args.Peer("peer"), args.File("file")], res.success_fail, 60.0, "")
-functions["send_file"] 			= ("send_file", [args.Peer("peer"), args.File("file")], res.success_fail, 60.0, "")
+functions["send_photo"]			= ("send_photo", [args.Peer("peer"), args.File("file"), args.UnicodeString("caption", optional=True)], res.success_fail, 120.0, "")
+functions["send_video"]			= ("send_video", [args.Peer("peer"), args.File("file"), args.UnicodeString("caption", optional=True)], res.success_fail, 120.0, "")
+functions["send_document"]		= ("send_document", [args.Peer("peer"), args.File("file")], res.success_fail, 120.0, "")
+functions["send_file"] 			= ("send_file", [args.Peer("peer"), args.File("file")], res.success_fail, 120.0, "")
 functions["send_location"]		= ("send_location", [args.Peer("peer"), args.Double("latitude"), args.Double("longitude")], res.success_fail, None, "")
 functions["send_contact"]		= ("send_contact", [args.Peer("peer"), args.UnicodeString("phone"), args.UnicodeString("first_name"), args.UnicodeString("last_name")], res.something, 60.0, "ret: formated message")
 functions["send_text_from_file"]= ("send_text", [args.Peer("peer"), args.File("file")], res.success_fail, 60.0, "")
 functions["fwd"]				= ("fwd", [args.Peer("peer"), args.MsgId("msg_id")], res.success_fail, None, "Forwards message to peer. Forward to secret chats is forbidden")
 functions["fwd_media"]			= ("fwd_media", [args.Peer("peer"), args.MsgId("msg_id")], res.success_fail, None, "Forwards message media to peer. Forward to secret chats is forbidden. Result slightly differs from fwd")
 functions["reply_text"]			= ("reply", [args.MsgId("msg_id"), args.UnicodeString("text")], res.success_fail, None, "Sends text reply to message")
-functions["reply_audio"]		= ("reply_audio", [args.MsgId("msg_id"),args.File("file")], res.success_fail, None, "Sends audio to peer")
-functions["reply_contact"]		= ("reply_contact", [args.MsgId("msg_id"), args.UnicodeString("phone"), args.UnicodeString("first_name"), args.UnicodeString("last_name")], res.success_fail, None, "Sends contact (not necessary telegram user)")
+functions["reply_audio"]		= ("reply_audio", [args.MsgId("msg_id"),args.File("file")], res.success_fail, 120.0, "Sends audio to peer")
+functions["reply_contact"]		= ("reply_contact", [args.MsgId("msg_id"), args.UnicodeString("phone"), args.UnicodeString("first_name"), args.UnicodeString("last_name")], res.success_fail, 120.0, "Sends contact (not necessary telegram user)")
 functions["reply_document"]		= ("reply_document", [args.MsgId("msg_id"), args.File("file")], res.success_fail, None, "Sends document to peer")
-functions["reply_file"]			= ("reply_file", [args.MsgId("msg_id"), args.File("file")], res.success_fail, None, "Sends document to peer")
+functions["reply_file"]			= ("reply_file", [args.MsgId("msg_id"), args.File("file")], res.success_fail, 120.0, "Sends document to peer")
 functions["reply_location"]		= ("reply_location", [args.MsgId("msg_id"), args.Double("latitude"), args.Double("longitude")], res.success_fail, None, "Sends geo location")
-functions["reply_photo"]		= ("reply_photo", [args.MsgId("msg_id"), args.File("file"), args.UnicodeString("caption", optional=True)], res.success_fail, None, "Sends photo to peer")
-functions["reply_video"]		= ("reply_video", [args.MsgId("msg_id"), args.File("file"), args.UnicodeString("caption", optional=True)], res.success_fail, None, "Sends video to peer")
-functions["broadcast_text"]		= ("broadcast", [args.User("user", multible=True), args.UnicodeString("text")], res.success_fail, None, "Sends text to several users at once")
+functions["reply_photo"]		= ("reply_photo", [args.MsgId("msg_id"), args.File("file"), args.UnicodeString("caption", optional=True)], res.success_fail, 120.0, "Sends photo to peer")
+functions["reply_video"]		= ("reply_video", [args.MsgId("msg_id"), args.File("file"), args.UnicodeString("caption", optional=True)], res.success_fail, 120.0, "Sends video to peer")
+functions["broadcast_text"]		= ("broadcast", [args.User("user", multible=True), args.UnicodeString("text")], res.success_fail, 60.0, "Sends text to several users at once")
 
 # message related
 functions["message_delete"]		= ("delete_msg", [args.MsgId("msg_id")], res.success_fail, None, "Deletes message")
@@ -76,15 +78,15 @@ functions["messages_search"]	= ("search", [
 											],							res.something, None, "")
 
 # load media
-functions["load_audio"]			= ("load_audio", [args.MsgId("msg_id")], res.something, 60.0, "Downloads file to downloads dirs. Prints file name after download end")
-functions["load_chat_photo"]	= ("load_chat_photo", [args.Chat("chat")], res.success_fail, None, "Downloads file to downloads dirs. Prints file name after download end")
-functions["load_file"]			= ("load_file", [args.MsgId("msg_id")], res.something, 60.0, "Downloads file to downloads dirs. Prints file name after download end")
-functions["load_file_thumb"]	= ("load_file_thumb", [args.MsgId("msg_id")], res.something, 60.0, "Downloads file to downloads dirs. Prints file name after download end")
-functions["load_document"]		= ("load_document", [args.MsgId("msg_id")], res.something, 60.0, "Downloads file to downloads dirs. Prints file name after download end")
-functions["load_document_thumb"]= ("load_document_thumb", [args.MsgId("msg_id")], res.something, 60.0, "Downloads file to downloads dirs. Prints file name after download end")
-functions["load_photo"]			= ("load_photo", [args.MsgId("msg_id")], res.something, 60.0, "Downloads file to downloads dirs. Prints file name after download end")
-functions["load_video"]			= ("load_video", [args.MsgId("msg_id")], res.something, 60.0, "Downloads file to downloads dirs. Prints file name after download end")
-functions["load_video_thumb"]	= ("load_video_thumb", [args.MsgId("msg_id")], res.something, 60.0, "Downloads file to downloads dirs. Prints file name after download end")
+functions["load_audio"]			= ("load_audio", [args.MsgId("msg_id")], res.something, 120.0, "Downloads file to downloads dirs. Prints file name after download end")
+functions["load_chat_photo"]	= ("load_chat_photo", [args.Chat("chat")], res.success_fail, 120.0, "Downloads file to downloads dirs. Prints file name after download end")
+functions["load_file"]			= ("load_file", [args.MsgId("msg_id")], res.something, 120.0, "Downloads file to downloads dirs. Prints file name after download end")
+functions["load_file_thumb"]	= ("load_file_thumb", [args.MsgId("msg_id")], res.something, 120.0, "Downloads file to downloads dirs. Prints file name after download end")
+functions["load_document"]		= ("load_document", [args.MsgId("msg_id")], res.something, 120.0, "Downloads file to downloads dirs. Prints file name after download end")
+functions["load_document_thumb"]= ("load_document_thumb", [args.MsgId("msg_id")], res.something, 120.0, "Downloads file to downloads dirs. Prints file name after download end")
+functions["load_photo"]			= ("load_photo", [args.MsgId("msg_id")], res.something, 120.0, "Downloads file to downloads dirs. Prints file name after download end")
+functions["load_video"]			= ("load_video", [args.MsgId("msg_id")], res.something, 120.0, "Downloads file to downloads dirs. Prints file name after download end")
+functions["load_video_thumb"]	= ("load_video_thumb", [args.MsgId("msg_id")], res.something, 120.0, "Downloads file to downloads dirs. Prints file name after download end")
 
 # peer
 functions["mark_read"]			= ("mark_read", [args.Peer("peer")], res.success_fail, None, "Marks messages with peer as read")
@@ -93,7 +95,7 @@ functions["history"]			= ("history", [args.Peer("user"), args.PositiveNumber("li
 
 # user
 functions["user_info"]			= ("user_info", [args.User("user")], res.something, None, "")
-functions["load_user_photo"]	= ("load_user_photo", [args.User("user")], res.something, 60.0, "Downloads file to downloads dirs. Prints file name after download end")
+functions["load_user_photo"]	= ("load_user_photo", [args.User("user")], res.something, 120.0, "Downloads file to downloads dirs. Prints file name after download end")
 
 #contacts
 functions["contact_add"]		= ("add_contact", [args.UnicodeString("phone"), args.UnicodeString("first_name"), args.UnicodeString("last_name")], res.something, None, "Tries to add user to contact list")
@@ -105,7 +107,7 @@ functions["contacts_search"]	= ("contact_search", [args.UnicodeString("user_name
 
 # group chats
 functions["chat_info"]			= ("chat_info", [args.Chat("chat")], res.something, None, "Prints info about chat (id, members, admin, etc.)")
-functions["chat_set_photo"]		= ("chat_set_photo", [args.Chat("chat"), args.File("file")], res.success_fail, None, "Sets chat photo. Photo will be cropped to square")
+functions["chat_set_photo"]		= ("chat_set_photo", [args.Chat("chat"), args.File("file")], res.success_fail, 120,0, "Sets chat photo. Photo will be cropped to square")
 functions["chat_add_user"]		= ("chat_add_user", [args.Chat("chat"), args.User("user"), args.NonNegativeNumber("msgs_to_forward", optional=True)], res.something, 60.0, "Adds user to chat. Sends him last msgs-to-forward message from this chat. Default 100")
 functions["chat_del_user"]		= ("chat_del_user", [args.Chat("chat"), args.User("user")], res.success_fail, None, "Deletes user from chat")
 functions["chat_rename"]		= ("rename_chat", [args.Chat("chat"), args.UnicodeString("new_name")], res.success_fail, None, "Renames chat")
@@ -122,7 +124,7 @@ functions["visualize_key"]		= ("visualize_key", [args.SecretChat("secret_chat")]
 # own profile
 functions["set_profile_name"]	= ("set_profile_name", [args.UnicodeString("first_name"), args.UnicodeString("last_name")], res.something, 60.0, "Sets profile name.")
 functions["set_username"]		= ("set_username", [args.UnicodeString("name")], res.success_fail, None, "Sets username.")
-functions["set_profile_photo"]	= ("set_profile_photo", [args.File("file")], res.something, 60.0, "Sets profile photo. Photo will be cropped to square")
+functions["set_profile_photo"]	= ("set_profile_photo", [args.File("file")], res.something, 120.0, "Sets profile photo. Photo will be cropped to square")
 functions["status_online"]		= ("status_online", 		[],																res.success_fail, None, "Sets status as online")
 functions["status_offline"]		= ("status_offline", 		[],																res.success_fail, None, "Sets status as offline")
 functions["export_card"]		= ("export_card", [], res.success_fail, None, "Prints card that can be imported by another user with import_card method")
@@ -135,7 +137,7 @@ functions["dialog_list"]		= ("dialog_list", [args.NonNegativeNumber("limit", opt
 functions["set_password"]		= ("set_password", [args.UnicodeString("hint", optional=True, default="empty")], res.success_fail, None, "Sets password")
 
 # diversa
-functions["raw"]				= ("", 					[args.UnescapedUnicodeString("command")], res.raw, None, "just send custom shit to the cli. Use, if there are no fitting functions, because I didn't update.")
+functions["raw"]				= ("", 					[args.UnescapedUnicodeString("command")], res.raw, 120.0, "just send custom shit to the cli. Use, if there are no fitting functions, because I didn't update.")
 functions["cli_help"]			= ("help", [], res.raw, None, "Prints the help. (Needed for pytg itself!)")
 
 	# these are commented out in the cli too:
@@ -201,11 +203,13 @@ class Sender(object):
 		self._socked_used = threading.Semaphore(1)  # start unblocked.
 		atexit.register(self.terminate)
 
-	def execute_function(self, function_name, *arguments, reply_id=None, enable_preview=None, **kwargs):
+	def _execute_function(self, function_name, *arguments, **kwargs):
 		"""
 		Execute a function.
 		Will check a bit, if the parameters looks fitting.
 		If you specify retry_connect=int keyword.
+
+		This is wrapped by .execute_function() to support both py3 and py2 syntax.
 
 		:param function_name: The function name.
 		:type  function_name: str
@@ -227,9 +231,17 @@ class Sender(object):
 		:raises pytg.exceptions.NoResponse: If the CLI answer command timed out.
 		"""
 		command_name, new_args = self._validate_input(function_name, arguments)
-		retry_connect = 2 #default value
+		reply_id=None
+		# python 2 fix
+		if "reply_id" in kwargs:
+			reply_id = kwargs["reply_id"]
+		enable_preview=None
+		if "enable_preview" in kwargs:
+			enable_preview = kwargs["enable_preview"]
+		retry_connect=2,
 		if "retry_connect" in kwargs:
 			retry_connect = kwargs["retry_connect"]
+
 		if self._do_quit and not "quit" in command_name:
 			raise AssertionError("Socket already terminated.")
 		result_parser = functions[function_name][FUNC_RES]
@@ -263,6 +275,30 @@ class Sender(object):
 				return IllegalResponseException("Parsing of answer failed, maybe not valid json?\nMessage: >{}<".format(result))  #TODO: This is *very* bad code.
 			return result_parser(message)
 		return result_parser(result) # raw()
+
+	# def execute_function:
+	try:
+		def execute_function(self, function_name, *arguments, reply_id=None, enable_preview=None, retry_connect=2, **kwargs): # python 3 syntax.
+			"""
+			Wraps around _execute_function with python 3 syntax.
+			See documentation there.
+			"""
+			kwargs["reply_id"]= reply_id
+			kwargs["enable_preview"] = enable_preview
+			kwargs["retry_connect"] = retry_connect
+			return self._execute_function(function_name, *arguments, **kwargs)
+		functools.update_wrapper(execute_function,_execute_function)
+	try:
+		pass
+	except SyntaxError: # python 2
+		def execute_function(self, function_name, *arguments, **kwargs): # python 3 syntax.
+			"""
+			Wraps around _execute_function with python 2 syntax.
+			See documentation there.
+			"""
+			return self._execute_function(function_name, *arguments, **kwargs)
+		functools.update_wrapper(execute_function, _execute_function) # update docstring to use the helpfull one.
+	# end def execute_function
 
 
 	@staticmethod
@@ -325,7 +361,7 @@ class Sender(object):
 			i += 1
 		return command_name, new_args
 
-	def _do_command(self, cli_command, *args, reply_id=None, enable_preview=None, **kwargs):
+	def _do_command(self, cli_command, *args, reply_id=None, enable_preview=None, answer_timeout=default_answer_timeout, retry_connect=2):
 		"""
 		This function will join the cli_command with the given parameters (dynamic *args),
 		and execute _do_send(request,**kwargs)
@@ -346,7 +382,7 @@ class Sender(object):
 		arg_string = " ".join([u(x) for x in args])
 		request = " ".join([reply_part, preview_part, cli_command,  arg_string])
 		request = "".join([request, "\n"]) #TODO can this be deleted?
-		result = self._do_send(request, **kwargs)
+		result = self._do_send(request, answer_timeout=answer_timeout, retry_connect=retry_connect)
 		return result
 
 	def _do_send(self, command, answer_timeout=default_answer_timeout, retry_connect=2):
@@ -369,7 +405,7 @@ class Sender(object):
 			else:
 				retry_connect = 0
 		elif retry_connect is None:
-			retry_connect = 0
+			retry_connect = 0 # not forever.
 		else:
 			raise ValueError("retry_connect is not type int, bool or None.")
 		retry_connect_original = retry_connect
