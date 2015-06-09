@@ -1,7 +1,8 @@
 # **PyTg** #
 #### Version 0.4.1 ####
 
-A Python package that communicates with the [Telegram messenger CLI](https://github.com/vysheng/tg).
+A Python package that communicates with the [Telegram messenger CLI](https://github.com/vysheng/tg).    
+(**Note:** This will soon updated to wrap around the cli's python interface, too, to have the same commands independent of how you connect with the cli.)
 
 Works with Python  2.7 and 3    
 
