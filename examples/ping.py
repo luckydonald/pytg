@@ -42,6 +42,8 @@ def example_function(sender): # name "example_function" and given parameters are
 									# (if we are offline it might not receive the messages instantly,
 									#  but eventually we will get them)
 			print(msg)
+			if msg.event != "message":
+				continue # is not a message.
 			if msg.own: # the bot has send this message.
 				continue # we don't want to process this message.
 			if msg.text == None:  # we have media instead.
