@@ -5,13 +5,14 @@ from setuptools import setup, find_packages # Always prefer setuptools over dist
 from codecs import open # To use a consistent encoding
 from os import path
 here = path.abspath(path.dirname(__file__))
+from pytg import VERSION
 
 long_description = """A Python module that connects to a Telegram messenger CLI, allowing to interact with Telegram users or groups.
 Report any issues at https://github.com/luckydonald/pytg/issues/"""
 
 setup(
 	name='pytg',
-	version='0.4.1',
+	version=VERSION,
 	description='Connect to the Telegram CLI, receive and send Telegram messages.',
 	long_description=long_description,
 	# The project's main homepage.
