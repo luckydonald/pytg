@@ -11,7 +11,7 @@ from .encoding import to_binary as b
 from .encoding import text_type, binary_type
 from .exceptions import UnknownFunction, ConnectionError, NoResponse, IllegalResponseException
 from .fix_msg_array import fix_message
-from .this_py_version import set_docstring, set_kwdefaults, get_dict_items, is3
+from .this_py_version import set_docstring, get_dict_items
 
 import json
 import atexit
@@ -203,7 +203,7 @@ class Sender(object):
 		self._socked_used = threading.Semaphore(1)  # start unblocked.
 		atexit.register(self.terminate)
 
-	def _execute_function(self, function_name, *arguments, **kwargs):
+	def execute_function(self, function_name, *arguments, **kwargs):
 		"""
 		Execute a function.
 		Will check a bit, if the parameters looks fitting.
@@ -238,7 +238,7 @@ class Sender(object):
 		enable_preview=None
 		if "enable_preview" in kwargs:
 			enable_preview = kwargs["enable_preview"]
-		retry_connect=2,
+		retry_connect=2
 		if "retry_connect" in kwargs:
 			retry_connect = kwargs["retry_connect"]
 
@@ -248,9 +248,9 @@ class Sender(object):
 		result_timeout = functions[function_name][FUNC_TIME]
 		try:
 			if result_timeout:
-				result = self._do_command(command_name, *new_args, answer_timeout=result_timeout, retry_connect=retry_connect, enable_preview=enable_preview, reply_id=reply_id)
+				result = self._do_command(command_name, new_args, answer_timeout=result_timeout, retry_connect=retry_connect, enable_preview=enable_preview, reply_id=reply_id)
 			else:
-				result = self._do_command(command_name, *new_args, answer_timeout=self.default_answer_timeout, retry_connect=retry_connect, enable_preview=enable_preview, reply_id=reply_id)
+				result = self._do_command(command_name, new_args, answer_timeout=self.default_answer_timeout, retry_connect=retry_connect, enable_preview=enable_preview, reply_id=reply_id)
 		except ConnectionError as err:
 			raise
 		except NoResponse as err:
@@ -275,31 +275,6 @@ class Sender(object):
 				return IllegalResponseException("Parsing of answer failed, maybe not valid json?\nMessage: >{}<".format(result))  #TODO: This is *very* bad code.
 			return result_parser(message)
 		return result_parser(result) # raw()
-
-	# def execute_function:
-	try:
-		def execute_function(self, function_name, *arguments, reply_id=None, enable_preview=None, retry_connect=2, **kwargs): # python 3 syntax.
-			"""
-			Wraps around _execute_function with python 3 syntax.
-			See documentation there.
-			"""
-			kwargs["reply_id"]= reply_id
-			kwargs["enable_preview"] = enable_preview
-			kwargs["retry_connect"] = retry_connect
-			return self._execute_function(function_name, *arguments, **kwargs)
-		functools.update_wrapper(execute_function,_execute_function)
-	try:
-		pass
-	except SyntaxError: # python 2
-		def execute_function(self, function_name, *arguments, **kwargs): # python 3 syntax.
-			"""
-			Wraps around _execute_function with python 2 syntax.
-			See documentation there.
-			"""
-			return self._execute_function(function_name, *arguments, **kwargs)
-		functools.update_wrapper(execute_function, _execute_function) # update docstring to use the helpfull one.
-	# end def execute_function
-
 
 	@staticmethod
 	def _validate_input(function_name, arguments):
@@ -344,7 +319,7 @@ class Sender(object):
 				#end if optional
 			#end if to many arguments
 			arg = arguments[i]
-			logger.debug("Parsing {function_name}: Argument {arg} - {type} ({opt})".format(function_name=function_name, arg=arg, type=str(func_type), opt=("optional" if hasattr(func_type, "_optional") else "needed")))
+			logger.debug("Parsing {function_name}: Argument {arg} - {type} ({opt})".format(function_name=n(function_name), arg=n(arg), type=func_type, opt=("optional" if hasattr(func_type, "_optional") else "needed")))
 			# arg is the given one, which should be func_type.
 
 			arg_value = None
@@ -357,11 +332,11 @@ class Sender(object):
 					continue  # do not increment i, we are still processing the same arg.
 				raise ValueError("Error in function {function_name}: parameter #{number} {param} is not type {type}. ({error})".format(
 					function_name=function_name, number=i, type=func_type.__class__.__name__, param=str(func_type), error=str(err)))
-			new_args.append(u(str(arg_value)))
+			new_args.append(u(arg_value))
 			i += 1
 		return command_name, new_args
 
-	def _do_command(self, cli_command, *args, reply_id=None, enable_preview=None, answer_timeout=default_answer_timeout, retry_connect=2):
+	def _do_command(self, cli_command, args, reply_id=None, enable_preview=None, answer_timeout=default_answer_timeout, retry_connect=2):
 		"""
 		This function will join the cli_command with the given parameters (dynamic *args),
 		and execute _do_send(request,**kwargs)
@@ -554,7 +529,8 @@ class Sender(object):
 
 """
 class Sender(object):
-	pass
+	def execute_function(*args, **kwargs):
+		print(args, kwargs)
 """  # """ # ignore me, I a sender dummy class for tests, easiable copy-paste-able.
 
 
@@ -568,16 +544,11 @@ def _register_all_functions():
 		raise AssertionError("Sender class already did register all custom functions.")
 	setattr(Sender, "registered_functions", OrderedDict())
 	for function, meta in get_dict_items(functions):  # slow in python 2:  http://stackoverflow.com/a/3294899
-		def command_alias(self, *args, ___command_name=None, **kwargs):
-			"""
-			:param args: arguments.
-			:param ___command_name:  DO NOT USE.
-			:param kwargs: keyword arguments.
-			:return: parsed function (most of the time the resulting json)
-			:rtype: DictObject
-			"""
-			return self.execute_function(___command_name, *args, **kwargs)
-		command_alias._name = function
+		def command_alias_wrapper(command_name):
+			def command_alias(self,*args, **kwargs):
+				return self.execute_function(command_name, *args, **kwargs)
+			return command_alias
+
 		arguments = []
 		cli_args = []
 		args_description = []
@@ -609,18 +580,14 @@ def _register_all_functions():
 					"\t`reply_id`: optional, the message id (int) which this command is a reply to. Default: None. (Will be ignored by the CLI with non-sending commands.)\n" \
 					"\t`enable_preview`: optional, if the URL found in a message should have a preview. Default: False. (Will be ignored by the CLI with non-sending commands.)\n" \
 					"\t`retry_connect`: optional, how often the initial connection should be retried. Default: 2. Negative number means infinite.\n" \
-					"\t`___command_name` do NOT use! A internaly required keyword argument with a specific default value. Don't change (set/override) this kwarg's value." \
 					"".format(
 			description=description,
 			func_name=function,
 			arguments=", ".join(arguments),
 			argument_description=argument_description)
 		Sender.registered_functions[function] = docstring
-		set_docstring(command_alias, docstring)
-		set_kwdefaults(command_alias, {"___command_name": function})
-		setattr(command_alias, "cli_command", meta[FUNC_CMD] + (" " if len(cli_args)>0 else "") + " ".join(cli_args))
-		setattr(Sender, function, command_alias)
+		command_func = command_alias_wrapper(function)
+		set_docstring(command_func, docstring)
+		setattr(command_func, "cli_command", meta[FUNC_CMD] + (" " if len(cli_args)>0 else "") + " ".join(cli_args))
+		setattr(Sender, function, command_func)
 _register_all_functions()
-
-
-#help(Sender)
