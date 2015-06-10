@@ -2,25 +2,23 @@
 __author__ = 'luckydonald'
 
 from collections import deque
-from socket import SHUT_RDWR
 import threading
 import socket # connect to telegram cli.
-import time # wait for retry
-from DictObject import DictObject
 import json
-from .utils import coroutine, suppress_context
 from types import GeneratorType
-from . import encoding
+from errno import EINTR, ECONNREFUSED
+
+from DictObject import DictObject
+
+from .utils import coroutine
 from . import fix_plain_output
 from .encoding import to_unicode as u
 from .encoding import to_binary as b
 from .encoding import to_native as n
 from .exceptions import ConnectionError
 from .fix_msg_array import fix_message
-
-from socket import error as socket_error
-from errno import ECONNABORTED, EADDRINUSE, EINTR, ECONNREFUSED
 import logging
+
 
 logger = logging.getLogger(__name__)
 
@@ -47,6 +45,7 @@ class Receiver(object):
 	_queue = deque()
 	_new_messages = threading.Semaphore(0)
 	_queue_access = threading.Lock()
+
 	def __init__(self, host="localhost", port=4458, append_json=False):
 		"""
 		:param append_json: if the dict should contain the original json.
@@ -56,7 +55,22 @@ class Receiver(object):
 		self.append_json = append_json
 		self.s = None  # socket.
 
+	def queued_messages(self):
+		"""
+		Informs how many messages are still in the queue, waiting to be processed.
+
+		:return: integer, the messages currently in queue.
+		:rtype: int
+		"""
+		with self._queue_access:
+			return len(deque)
+
 	def start(self):
+		"""
+		Starts the receiver.
+		When started, messages will be queued.
+		:return:
+		"""
 		self._receiver_thread = threading.Thread(target=self._receiver, args=())
 		self._receiver_thread.daemon = True  # exit if script reaches end.
 		self._receiver_thread.start()

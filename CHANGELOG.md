@@ -1,7 +1,13 @@
 
 #Changelog.
 
-## Version 0.4.1: ##    
+## Version 0.4.1b: ##
+- added ```Receiver.queued_messages()```, showing how many messages are waiting in the queue.
+
+## Version 0.4.1a: ##
+- fixed ```Sender``` not working with python 2. (https://github.com/luckydonald/pytg/issues/26, thanks @Meisolsson.)
+
+## Version 0.4.1``` ```: ##    
 **Big rename**:     
 ```pytg2``` -> ```pytg```    
 Thats it.

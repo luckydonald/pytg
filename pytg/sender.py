@@ -1,7 +1,18 @@
 # -*- coding: utf-8 -*-
-import functools
-
 __author__ = 'luckydonald'
+
+import json      # parse cli's json
+import socket    # connect with cli
+import atexit    # shutdown nicely
+import inspect   # resultparser exceptions
+import logging   # well, logging. Duh.
+import threading # so we don't miss messages.
+from time import sleep # waiting on reconnect
+from collections import OrderedDict # keep the the functions dict in order
+from errno import ECONNREFUSED, EINTR # socket errors
+from socket import error as socket_error # socket errors
+
+from DictObject import DictObject  # pack the result as object.
 
 from . import result_parser as res
 from . import argument_types as args
@@ -13,18 +24,6 @@ from .exceptions import UnknownFunction, ConnectionError, NoResponse, IllegalRes
 from .fix_msg_array import fix_message
 from .this_py_version import set_docstring, get_dict_items
 
-import json
-import atexit
-import socket # connect to telegram cli.
-import inspect
-import threading
-from time import sleep
-from DictObject import DictObject
-from collections import OrderedDict
-from errno import ECONNREFUSED, EINTR
-from socket import error as socket_error
-
-import logging
 logger = logging.getLogger(__name__)
 
 SOCKET_SIZE = 1 << 25

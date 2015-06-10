@@ -1,17 +1,18 @@
 # -*- coding: utf-8 -*-
 __author__ = 'luckydonald'
 
-from .exceptions import NoResponse, IllegalResponseException
-from .encoding import to_unicode as u
-from time import sleep
-
 import atexit
 import logging
+from time import sleep
+
+from .exceptions import NoResponse, IllegalResponseException
+from .encoding import to_unicode as u
+
 logger = logging.getLogger(__name__)
 
 
 __all__ = ["receiver", "sender", "Telegram"]
-VERSION = "0.4.1a"
+VERSION = "0.4.1b"
 
 class Telegram(object):
 	"""
