@@ -63,7 +63,7 @@ class Receiver(object):
 		:rtype: int
 		"""
 		with self._queue_access:
-			return len(deque)
+			return len(self._queue)
 
 	def start(self):
 		"""
@@ -71,7 +71,7 @@ class Receiver(object):
 		When started, messages will be queued.
 		:return:
 		"""
-		self._receiver_thread = threading.Thread(target=self._receiver, args=())
+		self._receiver_thread = threading.Thread(name="Receiver (pytg)", target=self._receiver, args=())
 		self._receiver_thread.daemon = True  # exit if script reaches end.
 		self._receiver_thread.start()
 
