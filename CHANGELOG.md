@@ -1,6 +1,15 @@
 
 #Changelog.
 
+## Version 0.5.0: ##
+- Real objects for messages. ```pytg.types.Messages```. Documentated.    
+	You can look in ```pytg/types``` and have a look at all the attributes a class has.
+- ```tgl``` support.    
+	This means, you can use this without sockets, but with the cli's ```--python script.py``` importing ```pytg``` as usual. *Hooray!*
+	This has the plus that you still have the same well documented API, and you can easily browse the code, without need to launch the cli every time.
+- You can still use it with the sockets, now with the brand new ```Message``` object as well.    
+	Whatever you plan to use, you can benefit from the new structure.
+
 ## Version 0.4.1b: ##
 - added ```Receiver.queued_messages()```, showing how many messages are waiting in the queue.
 
