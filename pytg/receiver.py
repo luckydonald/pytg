@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+
 __author__ = 'luckydonald'
 
 from collections import deque
@@ -10,6 +11,7 @@ from errno import EINTR, ECONNREFUSED
 
 from DictObject import DictObject
 
+from .types import Message
 from .utils import coroutine
 from . import fix_plain_output
 from .encoding import to_unicode as u
@@ -210,15 +212,36 @@ class Receiver(object):
 			raise TypeError('Target must be GeneratorType')
 		try:
 			while not self._do_quit:
-				self._new_messages.acquire() # waits until at least 1 message is in the queue.
+				self._new_messages.acquire()  # waits until at least 1 message is in the queue.
 				with self._queue_access:
-					message = self._queue.popleft() #pop oldest item
+					message = self._queue.popleft()  # pop oldest item
+					msg = message
+					#msg = new_message(message)
 					logger.debug('Messages waiting in queue: %d', len(self._queue))
-				function.send(message)
+				function.send(msg)
 		except GeneratorExit:
 			pass
 		except KeyboardInterrupt:
 			raise StopIteration
 	#end def
 #end class
+
+
+def new_peer(peer):
+	pass
+
+def new_fwd(date, peer):
+	pass
+
+def new_media(media):
+	pass
+
+def new_message(msg):
+	if msg == None:
+		logging.debug("Message was None.")
+		return None
+	return Message(msg["id"], msg["date"], new_peer(msg["from"]), new_peer(msg["to"]), msg["out"], msg.mention, msg["unread"],
+				   msg.service, msg["flags"], fwd=new_fwd(msg.fwd_date, msg.fwd_src), reply=new_message(msg.reply),
+				   media=new_media(msg.media), text=msg.text)
+
 
