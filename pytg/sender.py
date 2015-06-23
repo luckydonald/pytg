@@ -39,7 +39,7 @@ functions = OrderedDict()
 	# function to call      		# actual telegram command, [required arguments], expected return parser, timeout (None = global default), Description
 # messages
 # send messages
-functions["msg"]				= ("msg", [args.Peer("peer"), args.UnicodeString("test")], res.success_fail, 60.0, "Sends text message to peer")
+functions["msg"]				= ("msg", [args.Peer("peer"), args.UnicodeString("text")], res.success_fail, 60.0, "Sends text message to peer")
 functions["send_msg"] 			= functions["msg"]
 functions["send_text"] 			= functions["msg"]
 functions["send_audio"]			= ("send_audio", [args.Peer("peer"), args.File("file")], res.success_fail, 120.0, "")
@@ -102,7 +102,8 @@ functions["contact_add_by_card"]= ("import_card", [args.UnicodeString("card")], 
 functions["contact_rename"]		= ("rename_contact", [args.User("user"), args.UnicodeString("first_name"), args.UnicodeString("last_name")], res.something, None, "Renames contact #returns the new name")
 functions["contact_delete"]		= ("del_contact", [args.User("user")], res.success_fail, None, "Deletes contact from contact list")
 functions["contacts_list"]		= ("contact_list", [], res.success_fail, None, "Prints contact list")
-functions["contacts_search"]	= ("contact_search", [args.UnicodeString("user_name"), args.NonNegativeNumber("limit", optional=True)], res.success_fail, None, "Searches contacts by username")
+functions["contact_search"]		= ("contact_search", [args.Username("username"), args.NonNegativeNumber("limit", optional=True)], res.success_fail, None, "Searches contacts by username")
+functions["contact_by_username"]= functions["contact_search"]
 
 # group chats
 functions["chat_info"]			= ("chat_info", [args.Chat("chat")], res.something, None, "Prints info about chat (id, members, admin, etc.)")
@@ -122,7 +123,7 @@ functions["visualize_key"]		= ("visualize_key", [args.SecretChat("secret_chat")]
 
 # own profile
 functions["set_profile_name"]	= ("set_profile_name", [args.UnicodeString("first_name"), args.UnicodeString("last_name")], res.something, 60.0, "Sets profile name.")
-functions["set_username"]		= ("set_username", [args.UnicodeString("name")], res.success_fail, None, "Sets username.")
+functions["set_username"]		= ("set_username", [args.Username("username")], res.success_fail, None, "Sets username.")
 functions["set_profile_photo"]	= ("set_profile_photo", [args.File("file")], res.something, 120.0, "Sets profile photo. Photo will be cropped to square")
 functions["status_online"]		= ("status_online", 		[],																res.success_fail, None, "Sets status as online")
 functions["status_offline"]		= ("status_offline", 		[],																res.success_fail, None, "Sets status as offline")
@@ -347,15 +348,16 @@ class Sender(object):
 		:keyword retry_connect: How often the initial connection should be retried. default: 2. Negative number means infinite.
 		:type    retry_connect: int
 		"""
-		reply_part = ""
+		request_parts = []
 		if reply_id:
 			if not isinstance(reply_id, int):
 				raise AttributeError("reply_id keyword argument is not integer.")
-			reply_part = "[reply=%i]" % reply_id
-		preview_part = "[enable_preview]" if enable_preview else "[disable_preview]"
-		arg_string = " ".join([u(x) for x in args])
-		request = " ".join([reply_part, preview_part, cli_command,  arg_string])
-		request = "".join([request, "\n"]) #TODO can this be deleted?
+			request_parts.append("[reply=%i]" % reply_id)  # reply_part
+		request_parts.append("[enable_preview]" if enable_preview else "[disable_preview]")  # preview_part
+		request_parts.append(cli_command)
+		request_parts.append(" ".join([u(x) for x in args]))  # arg_string
+		request = " ".join(request_parts)
+		# Linebreak moved to self._do_send(...)
 		result = self._do_send(request, answer_timeout=answer_timeout, retry_connect=retry_connect)
 		return result
 
@@ -386,7 +388,8 @@ class Sender(object):
 
 		if not isinstance(command, (text_type, binary_type)):
 			raise TypeError("Command to send is not a unicode(?) string. (Instead of %s you used %s.) " % (str(text_type), str(type(command))))
-		logger.debug("Sending command >%s<" % n(command))
+		command_binary = b(command)
+		logger.debug("Sending command with length {len}: >{command}<".format(command=n(command), len=len(command_binary)))
 		with self._socked_used:
 			while not self._do_quit:
 				if self.s:
@@ -411,7 +414,8 @@ class Sender(object):
 					raise error
 				logger.debug("Socket Connected.")
 				try:
-					self.s.sendall(b(command))
+					self.s.sendall(command_binary)
+					self.s.send(_LINE_BREAK)
 				except Exception as error:
 					self.s.close()
 					raise error #retry?

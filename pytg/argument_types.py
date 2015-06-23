@@ -7,8 +7,9 @@ from .exceptions import ArgumentParseError
 from os import path # file checking.
 import logging
 logger = logging.getLogger(__name__)
+import re
 
-
+__all__ = ["Argument", "Nothing", "UnescapedUnicodeString", "UnicodeString", "Username", "Peer", "Chat", "User", "SecretChat", "Number", "Double", "NonNegativeNumber", "PositiveNumber", "File", "MsgId"]
 class Argument(object):
 	type="unknown-argument-type"
 	def __init__(self, name, optional=False, multible=False, default=None):
@@ -61,7 +62,16 @@ class UnicodeString(UnescapedUnicodeString):
 		return value
 
 
+_username_regex = re.compile(r"^@?(?P<username>[a-z](?:[a-z0-9]|_(?!_)){3,}[a-z0-9])$", re.UNICODE | re.IGNORECASE)  # https://regex101.com/r/eV1oV1/
 
+
+class Username(UnescapedUnicodeString):
+	type="str"
+	def parse(self, value):
+		value = super(Username, self).parse(value)
+		if not _username_regex.match(value):
+			raise ArgumentParseError("Illegal username format.")  # Allowed characters: a-z (not case sensitiv), 0-9 and underscore. Also don't start or end with underscore, don't start with numbers, not multible underscores.
+		return value
 
 
 class Peer(UnescapedUnicodeString):

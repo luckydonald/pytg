@@ -1,5 +1,9 @@
 
 #Changelog.
+Version 0.5.1:
+ - renamed ```sender.contacts_search``` to ```contact_search```
+ - added alias ```contact_by_username``` resolving to ```contact_search```
+ - added Username argument parser
 
 ## Version 0.5.0: ##
 - Real objects for messages. ```pytg.types.Messages```. Documentated.    
