@@ -17,7 +17,7 @@ except ImportError:
 
 logging.basicConfig(level=logging.DEBUG)
 
-from ..types import Message, Forward, User, Chat, Peer, UserStatus, Location, TGL, Reply
+from pytg.types import Message, Forward, User, Chat, Peer, UserStatus, Location, TGL, Reply
 
 
 def new_userstatus(user_status):
@@ -81,12 +81,3 @@ def new_media(media, message_id):
 		logging.warning("Unhandled media type: {type}".format(type=media["type"]))
 	if media is None:
 		return None
-
-
-def on_msg_receive(msg):
-	print(msg)
-	message = new_message(msg)
-	print(message)
-
-tgl.set_on_msg_receive(on_msg_receive)
-
