@@ -28,11 +28,11 @@ class Receiver(PublicInterface):
 		self._add_message(obj)
 
 	def start(self):
-		tgl.on_msg_receive(self._get_message)
-		tgl.on_binlog_replay_end(self._enable_listeneng)
+		tgl.set_on_msg_receive(self._get_message)
+		tgl.set_on_binlog_replay_end(self._enable_listeneng)
 
 	def stop(self):
-		tgl.on_msg_receive()
+		tgl.set_on_msg_receive()
 
 	def __init__(self):
 		super(Receiver, self).__init__()
