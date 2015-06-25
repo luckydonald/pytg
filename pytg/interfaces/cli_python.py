@@ -17,7 +17,7 @@ except ImportError:
 
 logging.basicConfig(level=logging.DEBUG)
 
-from pytg.types import Message, Forward, User, Chat, Peer, UserStatus, Location
+from ..types import Message, Forward, User, Chat, Peer, UserStatus, Location, TGL, Reply
 
 
 def new_userstatus(user_status):
@@ -33,15 +33,21 @@ def new_userstatus(user_status):
 	assert isinstance(user_status, dict)
 	assert "when" in user_status
 	assert "online" in user_status
-	return UserStatus(user_status["online"], user_status["when"])
+	return UserStatus(TGL, user_status["online"], user_status["when"])
 
 
 def new_peer(peer):
 	assert isinstance(peer, tgl.Peer)
 	if peer.type_name == Peer.USER:
-		return User(peer.id, peer.name, peer.first_name, peer.last_name, peer.phone, peer.username, new_userstatus(peer.user_status))
+		return User(TGL, peer.id, peer.name, peer.first_name, peer.last_name, peer.phone, peer.username, new_userstatus(peer.user_status))
 	elif peer.type_name == Peer.CHAT:
-		return Chat(peer.id, peer.name, peer.user_list, None)
+		return Chat(TGL, peer.id, peer.name, peer.user_list, 0)
+
+
+def new_reply(id, message):
+	if id is None:
+		return None
+	return Reply(TGL, id, message)
 
 
 def new_message(msg):
@@ -49,22 +55,24 @@ def new_message(msg):
 		logging.debug("Message was None.")
 		return None
 	assert isinstance(msg, tgl.Msg)
-	return Message(msg.id, msg.date, new_peer(msg.src), new_peer(msg.dest), msg.out, msg.mention, msg.unread,
-				   msg.service, msg.flags, fwd=new_fwd(msg.fwd_date, msg.fwd_src), reply=new_message(msg.reply),
+	return Message(TGL, msg.id, msg.date, new_peer(msg.src), new_peer(msg.dest), msg.out, msg.mention, msg.unread,
+				   msg.service, msg.flags, fwd=new_fwd(msg.fwd_date, msg.fwd_src), reply=new_reply(msg.reply_id,msg.reply),
 				   media=new_media(msg.media), text=msg.text)
 
 
 def new_fwd(fwd_date, fwd_src):
-	return Forward(fwd_date, fwd_src)
+	return Forward(TGL, fwd_date, fwd_src)
 
 
 def new_media(media):
+	if media is None:
+		return None
 	assert isinstance(media, dict)
 	assert "type" in media
 	if media["type"] == "geo":	# {'latitude': 53.779889, 'type': 'geo', 'longitude': -1.755313}
 		assert "latitude" in media
 		assert "longitude" in media
-		return Location(media["latitude"], media["longitude"])
+		return Location(TGL, media["latitude"], media["longitude"])
 	elif media["type"] == "":
 		pass
 	elif media["type"] == "":
