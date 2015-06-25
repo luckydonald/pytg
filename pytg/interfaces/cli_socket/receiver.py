@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 __author__ = 'luckydonald'
 
-from collections import deque
 import threading
 import socket # connect to telegram cli.
 import json
@@ -10,12 +9,13 @@ from errno import EINTR, ECONNREFUSED
 
 from DictObject import DictObject
 
-from .utils import coroutine
-from . import fix_plain_output
-from .encoding import to_unicode as u
-from .encoding import to_binary as b
-from .encoding import to_native as n
-from .exceptions import ConnectionError
+from ..access import PublicInterface
+from ...utils import coroutine
+from ... import fix_plain_output
+from ...encoding import to_unicode as u
+from ...encoding import to_binary as b
+from ...encoding import to_native as n
+from ...exceptions import ConnectionError
 
 import logging
 
@@ -32,34 +32,21 @@ _REGISTER_SESSION = b("main_session\n")
 _ANSWER_SYNTAX = b("ANSWER ")
 _LINE_BREAK = b("\n")
 
-class Receiver(object):
+class Receiver(PublicInterface):
 	"""
 	Start telegram client somewhere.
 	$ ./bin/telegram-cli -P 4458 -W --json
-	Get a telegram
-	>>> tg = Receiver()
-	>>> tg.start()
-
 	"""
 
 	def __init__(self, host="localhost", port=4458, append_json=False):
 		"""
-		:param append_json: if the dict should contain the original json.
+		:keyword append_json: if the dict should contain the original json.
+		:type    append_json: bool
 		"""
 		self.host = host
 		self.port = port
 		self.append_json = append_json
 		self.s = None  # socket.
-
-	def queued_messages(self):
-		"""
-		Informs how many messages are still in the queue, waiting to be processed.
-
-		:return: integer, the messages currently in queue.
-		:rtype: int
-		"""
-		with self._queue_access:
-			return len(self._queue)
 
 	def start(self):
 		"""
@@ -114,7 +101,7 @@ class Receiver(object):
 			answer = EMPTY_RAW_BYTE
 			completed = -1 # -1 = answer size yet unknown, >0 = got remaining answer size
 			while not self._do_quit: # read loop
-				while 1: #retry if CTRL+C'd
+				while 1: # retry if CTRL+C'd
 					try:
 						self.s.setblocking(True)
 						answer = self.s.recv(1)
@@ -133,7 +120,7 @@ class Receiver(object):
 							logger.exception("Uncatched exception in reading answer from cli.")
 							self.s.close()
 							break # to the retry connection look again.
-				#end while: ctrl+c protection
+				# end while: ctrl+c protection
 				if completed == 0:
 					logger.debug("Hit end.")
 					if answer != _LINE_BREAK:
@@ -150,74 +137,23 @@ class Receiver(object):
 						logger.warn("Striped text was empty.")
 					answer = EMPTY_RAW_BYTE
 					buffer = EMPTY_RAW_BYTE
-					#completed = 0 (unchanged)
+					#completed == 0 (still unchanged)
 					continue
 				buffer += answer
-				# logger.debug("{!s:<2.2s}: {!s}".format(repr(answer)[1:-1]), buffer)# Fixed mallformatting of sting.
 				if completed < -1 and buffer[:len(_ANSWER_SYNTAX)] != _ANSWER_SYNTAX[:len(buffer)]:
 					raise ArithmeticError("Server response does not fit. (Got >{}<)".format(buffer))
 				if completed <= -1 and buffer.startswith(_ANSWER_SYNTAX) and buffer.endswith(_LINE_BREAK):
 					completed = int(n(buffer[len(_ANSWER_SYNTAX):-1])) #TODO regex.
 					buffer = EMPTY_RAW_BYTE
 				completed -= 1
-			#end while: read loop
+			# end while: read loop
 			if self.s:
 				self.s.close()
 				self.s = None
-		#end while not ._do_quit: retry connection
+		# end while not ._do_quit: retry connection
 		if self.s:
 			self.s.close()
 			self.s = None
-
-	def _add_message(self, text):
-		"""
-		Appends a message to the message queue.
-
-		:type text: builtins.str
-		:return:
-		"""
-		json_dict = {}
-		logger.debug("Received Message: \"{str}\"".format(str=text))
-		with self._queue_access:
-			self._queue.append(text) # change me!
-			self._new_messages.release()
-
-
-	#end def
-
-	@coroutine
-	def message(self, function):
-		if not isinstance(function, GeneratorType):
-			raise TypeError('Target must be GeneratorType')
-		try:
-			while not self._do_quit:
-				self._new_messages.acquire()  # waits until at least 1 message is in the queue.
-				with self._queue_access:
-					text = self._queue.popleft()  # pop oldest item
-					try:
-						json_dict = json.loads(text)
-					except ValueError as e:
-						for check in fix_plain_output.all:
-							m = check[0].match(text)
-							if m:
-								json_dict = DictObject(manual_result=m.groupdict(), type=check[1])
-								logger.warn("Manually parsed output! This should be json!\nMessage:>{}<".format(text))
-								break
-						else:
-							logger.warn("Received message could not be parsed.\nMessage:>{}<".format(text), exc_info=True)
-							return
-					if self.append_json:
-						json_dict=DictObject.objectify(json_dict).merge_dict({u("json"): text})
-					#message = DictObject.objectify(json_dict)
-					#message = fix_message(message)
-					msg = new_event(json_dict)
-					#msg = new_message(message)
-					logger.debug('Messages waiting in queue: %d', len(self._queue))
-				function.send(msg)
-		except GeneratorExit:
-			pass
-		except KeyboardInterrupt:
-			raise StopIteration
-	#end def
-#end class
+	# end def _receiver(...)
+# end class
 

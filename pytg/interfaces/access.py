@@ -26,6 +26,28 @@ class PublicInterface(object):
 		self._new_messages = threading.Semaphore(0)
 		self._queue_access = threading.Lock()
 
+	def _add_message(self, raw_event):
+		"""
+		Appends a message to the message queue.
+
+		:type text: builtins.str
+		:return:
+		"""
+		json_dict = {}
+		logger.debug("Received Message: \"{str}\"".format(str=text))
+		with self._queue_access:
+			self._queue.append(raw_event) # change me!
+			self._new_messages.release()
+
+	def queued_messages(self):
+		"""
+		Informs how many messages are still in the queue, waiting to be processed.
+
+		:return: integer, the messages currently in queue.
+		:rtype: int
+		"""
+		with self._queue_access:
+			return len(self._queue)
 
 	@coroutine
 	def for_each_event(self, function):
@@ -37,13 +59,13 @@ class PublicInterface(object):
 				with self._queue_access:
 					raw_event = self._queue.popleft()  # pop oldest item
 					msg = self.interface.new_event(raw_event)
-					#msg = new_message(message)
 					logger.debug('Messages waiting in queue: %d', len(self._queue))
 				function.send(msg)
 		except GeneratorExit:
 			pass
 		except KeyboardInterrupt:
 			raise StopIteration
+
 
 
 class MessageConstructorSuperclass(object):
