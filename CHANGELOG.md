@@ -1,11 +1,18 @@
-
 #Changelog.
-Version 0.5.1:
- - renamed ```sender.contacts_search``` to ```contact_search```
- - added alias ```contact_by_username``` resolving to ```contact_search```
- - added Username argument parser
 
-## Version 0.5.0: ##
+
+##### Version 0.5.1:
+- Added compatibility for cli's python! Hooray! # TODO: Not yet :sad:    
+
+- Changes in Sender:    
+ 	- renamed ```sender.contacts_search``` to ```contact_search```    
+ 	- added alias ```contact_by_username``` resolving to ```contact_search```    
+ 	- added Username argument parser
+ 	
+- Changes in Reciever     
+ 	- added Message types, instead of boring old json ```dict``` wrapped in a ```DictObject```. See ```pytg.types```.    
+ 
+#### Version 0.5.0: ##
 - Real objects for messages. ```pytg.types.Messages```. Documentated.    
 	You can look in ```pytg/types``` and have a look at all the attributes a class has.
 - ```tgl``` support.    
@@ -14,18 +21,19 @@ Version 0.5.1:
 - You can still use it with the sockets, now with the brand new ```Message``` object as well.    
 	Whatever you plan to use, you can benefit from the new structure.
 
-## Version 0.4.1b: ##
+##### Version 0.4.1b: ##
 - added ```Receiver.queued_messages()```, showing how many messages are waiting in the queue.
 
-## Version 0.4.1a: ##
+##### Version 0.4.1a: ##
 - fixed ```Sender``` not working with python 2. (https://github.com/luckydonald/pytg/issues/26, thanks @Meisolsson.)
 
-## Version 0.4.1``` ```: ##    
+#### Version 0.4.1``` ```:        
+
 **Big rename**:     
 ```pytg2``` -> ```pytg```    
 Thats it.
 
-## Version 0.4.1 ##
+##### Version 0.4.1 ##
 
 for documentation, see:
 ```python
@@ -36,9 +44,10 @@ help(pytg.sender.Sender)
 - added commands.    
 
 
-## Version 0.4.0: ##
+#### Version 0.4.0: ##
 official cli support.
-CLI fork not updated? That is a problem of the past!
+CLI fork not updated? That is a problem of the past!    
+
 > It was fun to develop that json bridge by myself though, and It hurts a bit too left that behind :cry:.
 > But: I learned a lot about C and git on that journy, and are letting my experience with json flow back into the original cli.
 > Everybody will profit from this.
