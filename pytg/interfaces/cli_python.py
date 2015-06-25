@@ -88,6 +88,5 @@ def on_msg_receive(msg):
 	message = new_message(msg)
 	print(message)
 
-
 tgl.set_on_msg_receive(on_msg_receive)
 
