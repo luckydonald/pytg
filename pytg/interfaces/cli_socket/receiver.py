@@ -9,6 +9,7 @@ from errno import EINTR, ECONNREFUSED
 
 from DictObject import DictObject
 
+from .message_constructor import MessageConstructor
 from ..access import PublicInterface
 from ...utils import coroutine
 from ... import fix_plain_output
@@ -18,8 +19,6 @@ from ...encoding import to_native as n
 from ...exceptions import ConnectionError
 
 import logging
-
-
 logger = logging.getLogger(__name__)
 
 SOCKET_SIZE = 1 << 25
@@ -43,6 +42,8 @@ class Receiver(PublicInterface):
 		:keyword append_json: if the dict should contain the original json.
 		:type    append_json: bool
 		"""
+		super(Receiver, self).__init__()
+		self.message_constructor = MessageConstructor()
 		self.host = host
 		self.port = port
 		self.append_json = append_json

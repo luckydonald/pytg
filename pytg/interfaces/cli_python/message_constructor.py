@@ -7,14 +7,6 @@ logger = logging.getLogger(__name__)
 import tgl
 import sys
 
-sys.path.append("/path/to/pycharm_debugger/pycharm-debug-py3k.egg")
-sys.path.append("/path/to/pytg")
-try:
-	import pydevd
-	pydevd.settrace('localhost', port=4457, stdoutToServer=True, stderrToServer=True, suspend=False)
-except ImportError:
-	logger.debug("Failed to import debugger.")
-
 logging.basicConfig(level=logging.DEBUG)
 
 from ...types import Message, Forward, User, Chat, Peer, UserStatus, Location, TGL, Reply

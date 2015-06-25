@@ -11,20 +11,14 @@ from types import GeneratorType
 from ..utils import coroutine
 
 class PublicInterface(object):
-	def __init__(self, interface):
-		"""
-		:param interface: The Telegram interface to use.
-		:type  interface: MessageConstructorSuperclass
-		"""
+	def __init__(self):
 		super(PublicInterface, self).__init__()
-		if not isinstance(interface, MessageConstructorSuperclass):
-			raise TypeError("Parameter interface is not type MessageConstructorSuperclass, but type {type}".format(
-				type=type(interface)))
-		self.interface = interface
+		self.message_constructor = None
 		self._do_quit = False
 		self._queue = deque()
 		self._new_messages = threading.Semaphore(0)
 		self._queue_access = threading.Lock()
+		self._receiver_thread = None
 
 	def _add_message(self, raw_event):
 		"""
@@ -34,10 +28,34 @@ class PublicInterface(object):
 		:return:
 		"""
 		json_dict = {}
-		logger.debug("Received Message: \"{str}\"".format(str=text))
+		logger.debug("Received Message: \"{str}\"".format(str=raw_event))
 		with self._queue_access:
 			self._queue.append(raw_event) # change me!
 			self._new_messages.release()
+
+	def start(self):
+		"""
+		Starts the receiver.
+		When started, messages will be queued.
+		:return:
+		"""
+		self._receiver_thread = threading.Thread(name="Receiver (pytg)", target=self._receiver, args=())
+		self._receiver_thread.daemon = True  # exit if script reaches end.
+		self._receiver_thread.start()
+
+	def stop(self):
+		"""
+		Shuts down the receivers.
+		No more messages will be queued.
+		"""
+		self._do_quit = True
+		self._receiver_thread.join()
+
+	def _receiver(self):
+		"""
+		Function which will be started in a new thread to queue messages.
+		This function should enqueue all new messages with self._add_message(obj)
+		"""
 
 	def queued_messages(self):
 		"""
@@ -53,12 +71,13 @@ class PublicInterface(object):
 	def for_each_event(self, function):
 		if not isinstance(function, GeneratorType):
 			raise TypeError('Target must be GeneratorType')
+		function
 		try:
 			while not self._do_quit:
 				self._new_messages.acquire()  # waits until at least 1 message is in the queue.
 				with self._queue_access:
 					raw_event = self._queue.popleft()  # pop oldest item
-					msg = self.interface.new_event(raw_event)
+					msg = self.message_constructor.new_event(raw_event)
 					logger.debug('Messages waiting in queue: %d', len(self._queue))
 				function.send(msg)
 		except GeneratorExit:

@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import json
 
 __author__ = 'luckydonald'
 
@@ -63,7 +64,9 @@ class MessageConstructor(MessageConstructorSuperclass):
 			return None
 		return Reply(TYPE_SOCKET, id, message)
 	
-	def new_event(self, msg):
+	def new_event(self, text):
+		logger.debug("New message: {msg}".format(msg=text))
+		msg = json.loads(text)
 		assert "event" in msg
 		if msg["event"] == "online-status":
 			logger.warn("online-status event not implemented")

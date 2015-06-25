@@ -36,5 +36,4 @@ def coroutine(func):
 			return
 		except KeyboardInterrupt:
 			raise StopIteration
-
 	return start
