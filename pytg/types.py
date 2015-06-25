@@ -1,10 +1,3 @@
-
-
-#{"id": 40771,
-# "fwd_date":
-#	 1434125526, "event": "message", "flags": 257, "fwd_from": {"id": 10717954, "last_name": "", "type": "user", "username": "luckydonald", "first_name": "luckydonald", "print_name": "luckydonald", "flags": 257, "phone": "4917631763460"}, "out": false, "date": 1434125539, "to": {"id": 77994709, "last_name": "", "type": "user", "username": "derpybot", "first_name": "Derpybot", "print_name": "Derpybot", "flags": 264, "phone": "4915902296258"}, "service": false, "from": {"id": 10717954, "last_name": "", "type": "user", "username": "luckydonald", "first_name": "luckydonald", "print_name": "luckydonald", "flags": 257, "phone": "4917631763460"}, "unread": true, "text": "!sad"}
-
-
 class PytgObjectOrigin(object):
 	def __init__(self, type):
 		super(PytgObjectOrigin).__init__()
@@ -260,7 +253,7 @@ class User(Peer):
 		:param status: More informations about the user status, currently in a dict.
 		:type  status: UserStatus
 		"""
-		super(User).__init__(origin, id, Peer.USER, name)
+		super(User, self).__init__(origin, id, Peer.USER, name)
 		self.first_name = first_name	# tgl.Peer.first_name
 		self.last_name = last_name		# tgl.Peer.last_name
 		self.phone = phone				# tgl.Peer.phone
@@ -277,16 +270,16 @@ class Chat(Peer):
 		:type  origin: PytgObjectOrigin
 
 		:param user_list: A list of user ids in that chat. List can be empty if not cached yet. Use chat_info() first.
-		:type  user_list: dict of int
+		:type  user_list: list of int
 
 		:param user_count: How many users are in the chat, to check if the user_list array was loaded completely.
 		:type  user_count: int
 
-		:param admin_id: Who is admin_id in that chat.
+		:param admin_id: Id of user who is admin in that chat.
 		:type  admin_id: int
 
 		"""
-		super(Chat).__init__(origin, id, Peer.CHAT, name)
+		super(Chat, self).__init__(origin, id, Peer.CHAT, name)
 		if user_list is not None and not isinstance(user_list, list):
 			raise TypeError("Parameter user_list is not type list, but type {type}".format(type=type(user_list)))
 		if not isinstance(admin_id, int):
@@ -323,7 +316,7 @@ class Location(Media):
 		:param longitude: the longitude of the location.
 		:type  longitude: float
 		"""
-		super(Location).__init__(origin, message_id, "geo")
+		super(Location, self).__init__(origin, message_id, "geo")
 		if not isinstance(latitude, (float, int)):
 			raise TypeError("Parameter latitude is not type (float, int)")
 		if not isinstance(longitude, (int, float)):
