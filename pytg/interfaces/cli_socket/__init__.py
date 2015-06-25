@@ -6,8 +6,8 @@ logger = logging.getLogger(__name__)
 
 
 
-from ..types import Message, Reply, UserStatus, Peer, User, Chat, Forward, Location, Photo
-from ..types import SOCKET as TYPE_SOCKET
+from pytg.types import Message, Reply, UserStatus, Peer, User, Chat, Forward, Location, Photo
+from pytg.types import SOCKET as TYPE_SOCKET
 
 #from pytg.types import Message, Reply, UserStatus, Peer, User, Chat, Forward, Location, Photo
 #from pytg.types import SOCKET as TYPE_SOCKET

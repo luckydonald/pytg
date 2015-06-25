@@ -1,6 +1,4 @@
 # -*- coding: utf-8 -*-
-from pytg.interfaces.cli_socket import new_event
-
 __author__ = 'luckydonald'
 
 from collections import deque
@@ -18,7 +16,8 @@ from .encoding import to_unicode as u
 from .encoding import to_binary as b
 from .encoding import to_native as n
 from .exceptions import ConnectionError
-from .fix_msg_array import fix_message
+from .interfaces.cli_socket import new_event
+
 import logging
 
 
