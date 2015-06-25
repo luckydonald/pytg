@@ -27,7 +27,11 @@ class PytgObject(object):
 			raise TypeError("parameter origin is not type PytgObjectOrigin")
 		self.origin = origin
 
+	def __repr__(self):
+		return "{type}({values})".format(type=self.__class__.__name__, values=", ".join(["{key}={value}".format(key=k,value=v) for k,v in self.__dict__.items()]))
 
+	def __contains__(self, item):
+		return item in self.__dict__
 
 class Forward(PytgObject):
 	"""

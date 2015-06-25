@@ -9,13 +9,17 @@ logger = logging.getLogger(__name__)
 from ..types import Message, Reply, UserStatus, Peer, User, Chat, Forward, Location, Photo
 from ..types import SOCKET as TYPE_SOCKET
 
+#from pytg.types import Message, Reply, UserStatus, Peer, User, Chat, Forward, Location, Photo
+#from pytg.types import SOCKET as TYPE_SOCKET
 
 def new_peer(peer):
 	if peer["type"] == Peer.USER:
 		phone = peer["phone"] if "phone" in peer else None
 		return User(TYPE_SOCKET, peer["id"], peer["print_name"], peer["first_name"], peer["last_name"], phone, peer["username"], None)
 	elif peer["type"] == Peer.CHAT:
-		return Chat(TYPE_SOCKET, peer["id"], peer["print_name"], None, peer["admin_id"]["id"])
+		users_list = []
+		logger.debug("WARNING: Chat.user_list not supported in cli_socket.")
+		return Chat(TYPE_SOCKET, peer["id"], peer["print_name"], users_list, peer["members_num"], peer["admin"]["id"])
 
 
 def new_fwd(fwd_date, fwd_src):
@@ -54,6 +58,12 @@ def new_reply(id, message):
 		return None
 	return Reply(TYPE_SOCKET, id, message)
 
+def new_event(msg):
+	assert "event" in msg
+	if msg["event"] == "online-status":
+		logger.warn("online-status event not implemented")
+	elif msg["event"] == "message":
+		return new_message(msg)
 
 def new_message(msg):
 	if msg == None:
@@ -93,4 +103,5 @@ def new_userstatus(user_status):
 	return UserStatus(TYPE_SOCKET, user_status["online"], user_status["when"])
 
 
-
+#msg = {'to': {'type': 'chat', 'title': 'Bot Dev Test Group', 'members_num': 14, 'print_name': 'Bot_Dev_Test_Group', 'id': 19269926, 'admin': {'print_name': 'user#0', 'id': 0, 'type': 'user'}, 'flags': 256}, 'out': False, 'from': {'type': 'user', 'first_name': 'otouto', 'print_name': 'otouto', 'id': 66603334, 'username': 'otouto', 'last_name': '', 'flags': 256}, 'media': {'type': 'photo', 'caption': ''}, 'date': 1435254027, 'event': 'message', 'id': 42124, 'service': False, 'unread': True, 'flags': 257}
+#new_message(msg)

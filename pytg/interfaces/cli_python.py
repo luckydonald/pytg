@@ -13,7 +13,7 @@ try:
 	import pydevd
 	pydevd.settrace('localhost', port=4457, stdoutToServer=True, stderrToServer=True, suspend=False)
 except ImportError:
-	logger.debug("Failed to import debuffer.")
+	logger.debug("Failed to import debugger.")
 
 logging.basicConfig(level=logging.DEBUG)
 
@@ -57,14 +57,14 @@ def new_message(msg):
 	assert isinstance(msg, tgl.Msg)
 	return Message(TGL, msg.id, msg.date, new_peer(msg.src), new_peer(msg.dest), msg.out, msg.mention, msg.unread,
 				   msg.service, msg.flags, fwd=new_fwd(msg.fwd_date, msg.fwd_src), reply=new_reply(msg.reply_id,msg.reply),
-				   media=new_media(msg.media), text=msg.text)
+				   media=new_media(msg.id, msg.media), text=msg.text)
 
 
 def new_fwd(fwd_date, fwd_src):
 	return Forward(TGL, fwd_date, fwd_src)
 
 
-def new_media(media):
+def new_media(media, message_id):
 	if media is None:
 		return None
 	assert isinstance(media, dict)
@@ -72,7 +72,7 @@ def new_media(media):
 	if media["type"] == "geo":	# {'latitude': 53.779889, 'type': 'geo', 'longitude': -1.755313}
 		assert "latitude" in media
 		assert "longitude" in media
-		return Location(TGL, media["latitude"], media["longitude"])
+		return Location(TGL, message_id, media["latitude"], media["longitude"])
 	elif media["type"] == "":
 		pass
 	elif media["type"] == "":
@@ -87,7 +87,6 @@ def on_msg_receive(msg):
 	print(msg)
 	message = new_message(msg)
 	print(message)
-	message = message
 
 
 tgl.set_on_msg_receive(on_msg_receive)

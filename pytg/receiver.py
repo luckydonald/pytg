@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from pytg.interfaces.cli_socket import new_event
 
 __author__ = 'luckydonald'
 
@@ -182,25 +183,9 @@ class Receiver(object):
 		:return:
 		"""
 		json_dict = {}
-		try:
-			logger.debug("Received Message: \"{str}\"".format(str=text))
-			json_dict = json.loads(text)
-			message = DictObject.objectify(json_dict)
-			message = fix_message(message)
-		except ValueError as e:
-			for check in fix_plain_output.all:
-				m = check[0].match(text)
-				if m:
-					message = DictObject(manual_result=m.groupdict(), type=check[1])
-					logger.warn("Manually parsed output! This should be json!\nMessage:>{}<".format(text))
-					break
-			else:
-				logger.warn("Received message could not be parsed.\nMessage:>{}<".format(text), exc_info=True)
-				return
-		if self.append_json:
-			message.merge_dict({u("json"): text})
+		logger.debug("Received Message: \"{str}\"".format(str=text))
 		with self._queue_access:
-			self._queue.append(json_dict) # change me!
+			self._queue.append(text) # change me!
 			self._new_messages.release()
 
 
@@ -214,8 +199,24 @@ class Receiver(object):
 			while not self._do_quit:
 				self._new_messages.acquire()  # waits until at least 1 message is in the queue.
 				with self._queue_access:
-					message = self._queue.popleft()  # pop oldest item
-					msg = message
+					text = self._queue.popleft()  # pop oldest item
+					try:
+						json_dict = json.loads(text)
+					except ValueError as e:
+						for check in fix_plain_output.all:
+							m = check[0].match(text)
+							if m:
+								json_dict = DictObject(manual_result=m.groupdict(), type=check[1])
+								logger.warn("Manually parsed output! This should be json!\nMessage:>{}<".format(text))
+								break
+						else:
+							logger.warn("Received message could not be parsed.\nMessage:>{}<".format(text), exc_info=True)
+							return
+					if self.append_json:
+						json_dict=DictObject.objectify(json_dict).merge_dict({u("json"): text})
+					#message = DictObject.objectify(json_dict)
+					#message = fix_message(message)
+					msg = new_event(json_dict)
 					#msg = new_message(message)
 					logger.debug('Messages waiting in queue: %d', len(self._queue))
 				function.send(msg)
