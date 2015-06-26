@@ -64,16 +64,16 @@ class MessageConstructor(MessageConstructorSuperclass):
 			return None
 		return Reply(TYPE_SOCKET, id, message)
 	
-	def new_event(self, text):
+	def new_event(self, text, queued_events):
 		logger.debug("New message: {msg}".format(msg=text))
 		msg = json.loads(text)
 		assert "event" in msg
 		if msg["event"] == "online-status":
 			logger.warn("online-status event not implemented")
 		elif msg["event"] == "message":
-			return self.new_message(msg)
+			return self.new_message(msg, queued_events)
 	
-	def new_message(self, msg):
+	def new_message(self, msg, queued_events):
 		if msg == None:
 			logging.debug("Message was None.")
 			return None
@@ -89,7 +89,7 @@ class MessageConstructor(MessageConstructorSuperclass):
 		text = msg["text"] if "text" in msg else None
 		media = self.new_media(msg["media"], msg["id"]) if "media" in msg else None
 		return Message(TYPE_SOCKET, msg["id"], msg["date"], self.new_peer(msg["from"]), self.new_peer(msg["to"]), msg["out"], mention, msg["unread"],
-					   msg["service"], msg["flags"], fwd=forward, reply=reply,
+					   msg["service"], msg["flags"], queued_events, fwd=forward, reply=reply,
 					   media=media, text=text
 		)
 	# end def

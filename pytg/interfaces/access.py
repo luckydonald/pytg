@@ -117,7 +117,8 @@ class PublicInterface(object):
 			return
 		with self._queue_access:
 			raw_event = self._queue.popleft()  # pop oldest item
-			msg = self.message_constructor.new_event(raw_event)
+			queued_events = len(self._queue)
+			msg = self.message_constructor.new_event(raw_event, queued_events)
 			logger.debug('Messages waiting in queue: %d', len(self._queue))
 			if msg is None:
 				return
@@ -126,5 +127,5 @@ class PublicInterface(object):
 
 
 class MessageConstructorSuperclass(object):
-	def new_event(self, raw_event):
+	def new_event(self, raw_event, queued_events):
 		raise NotImplementedError("new_event() is not implemented")

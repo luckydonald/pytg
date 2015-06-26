@@ -45,23 +45,23 @@ class MessageConstructor(MessageConstructorSuperclass):
 		return Reply(TGL, id, message)
 	
 	
-	def new_message(self, msg):
+	def new_message(self, msg, queued_events):
 		if msg == None:
 			logging.debug("Message was None.")
 			return None
 		assert isinstance(msg, tgl.Msg)
 		return Message(TGL, msg.id, msg.date, self.new_peer(msg.src), self.new_peer(msg.dest), msg.out, msg.mention, msg.unread,
-					   msg.service, msg.flags, fwd=self.new_fwd(msg.fwd_date, msg.fwd_src), reply=self.new_reply(msg.reply_id,msg.reply),
+					   msg.service, msg.flags, queued_events, fwd=self.new_fwd(msg.fwd_date, msg.fwd_src), reply=self.new_reply(msg.reply_id,msg.reply),
 					   media=self.new_media(msg.media, msg.id), text=msg.text)
 	
 	
 	def new_fwd(self, fwd_date, fwd_src):
 		return Forward(TGL, fwd_date, fwd_src)
 
-	def new_event(self, raw_event):
+	def new_event(self, raw_event, queued_events):
 		try:
 			if isinstance(raw_event, tgl.Msg):
-				return self.new_message(raw_event)
+				return self.new_message(raw_event, queued_events)
 			else:
 				raise NotImplementedError("event type {t} is undefined.".format(t=type(raw_event)))
 		except:

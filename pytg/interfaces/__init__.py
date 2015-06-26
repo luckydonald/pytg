@@ -16,3 +16,4 @@ if has_tgl:  # means we are run in tgl.
 	logger.debug("cli_python as automatic interface")
 else:  # else socket.
 	from . import cli_socket as automatic
+automatic = automatic

@@ -138,7 +138,7 @@ class Message(PytgObject):
 	A Message someone sent.
 	See __init__ for variables.
 	"""
-	def __init__(self, origin, id, date, sender, receiver, own, mention, unread, service, flags, fwd=None, reply=None, media=None, text=None):
+	def __init__(self, origin, id, date, sender, receiver, own, mention, unread, service, flags, queued_events, fwd=None, reply=None, media=None, text=None):
 		"""
 		:param origin: Where the message is from. Either TGL or SOCKET.
 		:type  origin: PytgObjectOrigin
@@ -170,6 +170,9 @@ class Message(PytgObject):
 		:param flags: Attributes used internally in the cli. You probably want to ignore that.
 		:type  flags: int
 
+		:param queued_events: The currently queued messages. Set to 0 if there is no such information.
+		:type  queued_events: int
+
 		:param fwd: Contains infos about from who an when this message was forwarded.
 		:type  fwd: Forward | None
 
@@ -198,6 +201,8 @@ class Message(PytgObject):
 		self.text = text			# tgl.Msg.text
 		self.unread = unread		# tgl.Msg.unread
 		self.flags = flags			# tgl.Msg.flags
+		self.queued_events = queued_events
+
 
 
 class Peer(PytgObject):
