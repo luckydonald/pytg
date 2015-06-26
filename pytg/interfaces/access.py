@@ -8,11 +8,14 @@ import threading
 from collections import deque
 from types import GeneratorType
 
-from ..utils import coroutine
+from ..utils import coroutine, skip_yield
+
 
 class PublicInterface(object):
-	def __init__(self):
+	def __init__(self, *args, **kwargs):
 		super(PublicInterface, self).__init__()
+		if len(args)+len(kwargs) > 0:
+			logger.debug("Called Public interface. The interface got unused parameters: args {args} and kwargs {kwargs}.".format(args=args, kwargs=kwargs))
 		self.message_constructor = None
 		self._do_quit = False
 		self._queue = deque()
@@ -20,6 +23,7 @@ class PublicInterface(object):
 		self._queue_access = threading.Lock()
 		self._receiver_thread = None
 		self._block_generator_routine = True  # so the cli-python disable that. It needs active polling.
+		self._main_thread = None
 
 	def _add_message(self, raw_event):
 		"""
@@ -68,8 +72,28 @@ class PublicInterface(object):
 		with self._queue_access:
 			return len(self._queue)
 
+	def register_event_loop(self, function):
+		"""
+		Apply your function here. The function must contain a while loop,
+		and receive the events from the yield statement.
+
+		:param function: The function which contains the proccessing loop.
+		:return: None
+		"""
+		skip_yield(function)
+		self._main_thread = threading.Thread(name="Main Thread (pytg, via PublicInterface)", target=self._routine_wrapper, args=(function,))
+		self._main_thread.daemon = False  # exit if script reaches end.
+		self._main_thread.start()
+
 	@coroutine
-	def for_each_event(self, function):
+	def _routine_wrapper(self, function):
+		"""
+		While loop which will send the messages to the routine.
+		Waits blocking until we get new message in the queue.
+
+		:param function:
+		:return:
+		"""
 		if not isinstance(function, GeneratorType):
 			raise TypeError('Target must be GeneratorType')
 		try:
@@ -81,6 +105,12 @@ class PublicInterface(object):
 			raise StopIteration
 
 	def _routine(self, function):
+		"""
+		This gives an item from the queue to the routine's yield.
+
+		:param function:
+		:return:
+		"""
 		if self._do_quit:
 			raise GeneratorExit("do_quit=True")
 		if not self._new_messages.acquire(blocking=self._block_generator_routine): # waits until at least 1 message is in the queue.
@@ -89,6 +119,8 @@ class PublicInterface(object):
 			raw_event = self._queue.popleft()  # pop oldest item
 			msg = self.message_constructor.new_event(raw_event)
 			logger.debug('Messages waiting in queue: %d', len(self._queue))
+			if msg is None:
+				return
 		function.send(msg)
 
 

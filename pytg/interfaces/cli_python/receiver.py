@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+
 __author__ = 'luckydonald'
 
 import threading
@@ -9,6 +10,7 @@ import tgl
 
 from .message_constructor import MessageConstructor
 from ..access import PublicInterface
+from ...utils import skip_yield
 
 
 class Receiver(PublicInterface):
@@ -35,17 +37,29 @@ class Receiver(PublicInterface):
 		pass
 
 	def _routine_wrapper(self, function):
+		"""
+		prepare a wrapper function for self._routine where the needed parameters are already filled in.
+
+		:param function: the generator function given to register_event_loop, which is needed to call self._routine(function)
+		"""
 		def _wrap():
+			"""
+			called by tgl's on_loop.
+			"""
 			self._routine(function)
 		return _wrap
 
-	def for_each_event(self, function):
-		#assert self._routine_func is None # there is not already a function registered.
-		#self._routine_func = function
+	def register_event_loop(self, function):
+		"""
+		Apply your function here. The function must contain a while loop,
+		and receive the events from the yield statement.
+
+		:param function: The function which contains the proccessing loop.
+		:return: None
+		"""
+		skip_yield(function)
 		tgl.set_on_loop(self._routine_wrapper(function))
-		#self._main_tread = threading.Thread(name="Main Thread (pytg, via cli's tgl)", target=self._routine, args=(function,))
-		#self._main_tread.daemon = False  # exit if script reaches end.
-		#self._main_tread.start()
+
 
 	def _receiver(self):
 		tgl.set_on_msg_receive(self._get_message)
@@ -54,7 +68,7 @@ class Receiver(PublicInterface):
 	#def stop(self):
 	#	tgl.set_on_msg_receive()
 
-	def __init__(self):
+	def __init__(self, *args, foobar=False, **kwargs):
 		super(Receiver, self).__init__()
 		self._can_listen = False
 		self.message_constructor = MessageConstructor()

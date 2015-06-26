@@ -37,12 +37,12 @@ class Receiver(PublicInterface):
 	$ ./bin/telegram-cli -P 4458 -W --json
 	"""
 
-	def __init__(self, host="localhost", port=4458, append_json=False):
+	def __init__(self, *args, host="localhost", port=4458, append_json=False, **kwargs):
 		"""
 		:keyword append_json: if the dict should contain the original json.
 		:type    append_json: bool
 		"""
-		super(Receiver, self).__init__()
+		super(Receiver, self).__init__(*args,**kwargs)
 		self.message_constructor = MessageConstructor()
 		self.host = host
 		self.port = port

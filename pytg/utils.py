@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from types import GeneratorType
+
 __author__ = 'luckydonald'
 
 CHARS_UNESCAPED = ["\\", "\n", "\r", "\t", "\b", "\a", "'"]
@@ -16,6 +18,21 @@ def escape(string):
 	return string.join(["'", "'"])  # wrap with single quotes.
 
 
+def skip_yield(function):
+	if not isinstance(function, GeneratorType):
+		raise TypeError("Function is not type GeneratorType, but type {type}".format(type=type(function)))
+	try:
+		try:
+			next(function)
+		except NameError:  # not defined, python 2
+			function.next()
+		return function
+	except StopIteration:
+		return
+	except KeyboardInterrupt:
+		raise StopIteration
+
+
 def coroutine(func):
 	"""
 	Skips to the first yield when the generator is created.
@@ -25,15 +42,6 @@ def coroutine(func):
 	"""
 
 	def start(*args, **kwargs):
-		try:
-			cr = func(*args, **kwargs)
-			try:
-				next(cr)
-			except NameError:  # not defined, python 2
-				cr.next()
-			return cr
-		except StopIteration:
-			return
-		except KeyboardInterrupt:
-			raise StopIteration
+		cr = func(*args, **kwargs)
+		skip_yield(cr)
 	return start

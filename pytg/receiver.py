@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 __author__ = 'luckydonald'
 
+raise DeprecationWarning("This is replaced by pytg.interfaces.automatic.receiver!")
+
 from collections import deque
 import threading
 import socket # connect to telegram cli.
@@ -18,6 +20,7 @@ from .encoding import to_native as n
 from .exceptions import ConnectionError
 
 import logging
+
 
 
 logger = logging.getLogger(__name__)
@@ -200,14 +203,14 @@ class Receiver(object):
 						for check in fix_plain_output.all:
 							m = check[0].match(text)
 							if m:
-								json_dict = DictObject(manual_result=m.groupdict(), type=check[1])
+								json_dict = {"manual_result":m.groupdict(), "type":check[1]}
 								logger.warn("Manually parsed output! This should be json!\nMessage:>{}<".format(text))
 								break
 						else:
 							logger.warn("Received message could not be parsed.\nMessage:>{}<".format(text), exc_info=True)
 							return
 					if self.append_json:
-						json_dict=DictObject.objectify(json_dict).merge_dict({u("json"): text})
+						json_dict["json"]= text
 					#message = DictObject.objectify(json_dict)
 					#message = fix_message(message)
 					msg = new_event(json_dict)
