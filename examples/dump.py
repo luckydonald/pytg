@@ -10,7 +10,7 @@ sys.path.append("/path/to/pycharm_debugger/pycharm-debug-py3k.egg")
 sys.path.append("/path/to/pytg")
 try:
 	import pydevd
-	pydevd.settrace('localhost', port=4457, stdoutToServer=True, stderrToServer=True, suspend=True)
+	pydevd.settrace('localhost', port=4457, stdoutToServer=True, stderrToServer=True, suspend=False)
 except ImportError:
 	logger.warning("Failed to import debugger.")
 
@@ -25,19 +25,32 @@ def example_function(receiver):
 		while True:
 			msg = (yield)
 			print('Full dump: {array}'.format(array=str( msg )))
+		# end while
+		print("loop ended.")
+		receiver.stop()
 	except KeyboardInterrupt:
 		receiver.stop()
 		print("Exiting")
+	except GeneratorExit:
+		# continues here, after exiting while loop in example_function()
+		receiver.stop()
 
 logging.basicConfig(level=logging.DEBUG)
 if pytg.has_tgl: # prefer tgl.
 	from pytg.interfaces.cli_python.receiver import Receiver
+	print("using python")
 	receiver = Receiver()
 else:
 	from pytg.interfaces.cli_socket.receiver import Receiver
+	print("using socket")
 	receiver = Receiver(port=4458) #get a Receiver Connector instance
 receiver.start() #start the Connector.
+
+
+import os
+print(os.getcwd())
+
 print("ololll!")
 receiver.for_each_event(example_function(receiver)) # add "example_function" function as listeners. You can supply arguments here (like receiver).
-# continues here, after exiting while loop in example_function()
-receiver.stop()
+print("ololll2!")
+

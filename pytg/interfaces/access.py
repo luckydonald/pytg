@@ -19,6 +19,7 @@ class PublicInterface(object):
 		self._new_messages = threading.Semaphore(0)
 		self._queue_access = threading.Lock()
 		self._receiver_thread = None
+		self._block_generator_routine = True  # so the cli-python disable that. It needs active polling.
 
 	def _add_message(self, raw_event):
 		"""
@@ -71,19 +72,24 @@ class PublicInterface(object):
 	def for_each_event(self, function):
 		if not isinstance(function, GeneratorType):
 			raise TypeError('Target must be GeneratorType')
-		function
 		try:
 			while not self._do_quit:
-				self._new_messages.acquire()  # waits until at least 1 message is in the queue.
-				with self._queue_access:
-					raw_event = self._queue.popleft()  # pop oldest item
-					msg = self.message_constructor.new_event(raw_event)
-					logger.debug('Messages waiting in queue: %d', len(self._queue))
-				function.send(msg)
+				self._routine(function)
 		except GeneratorExit:
 			pass
 		except KeyboardInterrupt:
 			raise StopIteration
+
+	def _routine(self, function):
+		if self._do_quit:
+			raise GeneratorExit("do_quit=True")
+		if not self._new_messages.acquire(blocking=self._block_generator_routine): # waits until at least 1 message is in the queue.
+			return
+		with self._queue_access:
+			raw_event = self._queue.popleft()  # pop oldest item
+			msg = self.message_constructor.new_event(raw_event)
+			logger.debug('Messages waiting in queue: %d', len(self._queue))
+		function.send(msg)
 
 
 
