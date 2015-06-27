@@ -7,7 +7,6 @@ import logging
 logger = logging.getLogger(__name__)
 
 import tgl
-
 from .message_constructor import MessageConstructor
 from ..access import PublicInterface
 from ...utils import skip_yield

@@ -7,9 +7,11 @@ logger = logging.getLogger(__name__)
 
 import pytg
 from pytg import interfaces
+from pytg.interfaces import bot_api
 
 def main():
-	receiver = interfaces.automatic.receiver.Receiver(port=4458)  # get a Receiver Connector instance
+	#receiver = interfaces.automatic.receiver.Receiver(port=4458)  # get a Receiver Connector instance
+	receiver = bot_api.receiver.Receiver(api_key="108721382:AAHIMqoPVzy4GhxWwEPw0tKuYSJitp2mxZY")  # get a Receiver Connector instance
 	# If you use interfaces.automatic pytg will choose the best connection for you.
 	# you can still provide all the parameters you'd give to the Receiver of one of the
 	# interfaces (cli_python or interfaces.cli_socket). "Wrong" parameters will be ignored.

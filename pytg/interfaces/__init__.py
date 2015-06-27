@@ -17,3 +17,5 @@ if has_tgl:  # means we are run in tgl.
 else:  # else socket.
 	from . import cli_socket as automatic
 automatic = automatic
+
+__all__ = ["automatic", "cli_socket", "cli_python", "bot_api"]

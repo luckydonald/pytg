@@ -5,6 +5,7 @@ class PytgObjectOrigin(object):
 
 	def __repr__(self, *args, **kwargs):
 		return "PytgObjectOrigin({type})".format(type=self.type)
+BOT_API_POLL = PytgObjectOrigin("bot-api polling")
 TGL = PytgObjectOrigin("tgl")
 SOCKET = PytgObjectOrigin("socket")
 PytgObjectOrigin.TGL = TGL
@@ -233,6 +234,7 @@ class Peer(PytgObject):
 		self.id = id				# tgl.Peer.id
 		self.type_str = type_str	# tgl.Peer.type_name
 		self.name = name			# tgl.Peer.name
+		self.cmd = Peer.CHAT + "#" + str(id)
 
 
 class User(Peer):
@@ -275,7 +277,7 @@ class Chat(Peer):
 		"""
 		A group chat. Is subclass of Peer.
 
-		:param origin: Where the message is from. Either TGL or SOCKET.
+		:param origin: Where the message is from. Either TGL, SOCKET or BOT_API_POLL.
 		:type  origin: PytgObjectOrigin
 
 		:param user_list: A list of user ids in that chat. List can be empty if not cached yet. Use chat_info() first.

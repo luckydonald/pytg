@@ -1,6 +1,11 @@
 #Changelog.
 
-### Version 0.5.2:
+### Version 0.5.3:    
+- Added bot_api polling
+- GroupChat ID's are now negative, regardless the interface.
+	- Users are still positive.
+
+### Version 0.5.2 (unreleased):
 - Added compatibility for cli's python! Hooray!
 	- This works so good, you can have them both with the same cli!
 - Removed the @coroutine from the loop.

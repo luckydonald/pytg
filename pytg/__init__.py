@@ -5,7 +5,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-VERSION = "0.5.2dev0" # dev version.
+VERSION = "0.5.3dev0" # dev version.
 
 try:
 	import tgl

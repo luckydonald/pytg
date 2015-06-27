@@ -36,7 +36,7 @@ class MessageConstructor(MessageConstructorSuperclass):
 		if peer.type_name == Peer.USER:
 			return User(TGL, peer.id, peer.name, peer.first_name, peer.last_name, peer.phone, peer.username, self.new_userstatus(peer.user_status))
 		elif peer.type_name == Peer.CHAT:
-			return Chat(TGL, peer.id, peer.name, peer.user_list, peer.user_num, 0)
+			return Chat(TGL, peer.id * (-1), peer.name, peer.user_list, peer.user_num, 0)
 	
 	
 	def new_reply(self, id, message):

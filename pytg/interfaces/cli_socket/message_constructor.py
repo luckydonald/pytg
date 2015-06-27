@@ -25,7 +25,7 @@ class MessageConstructor(MessageConstructorSuperclass):
 		elif peer["type"] == Peer.CHAT:
 			users_list = []
 			logger.debug("WARNING: Chat.user_list not supported in cli_socket.")
-			return Chat(TYPE_SOCKET, peer["id"], peer["print_name"], users_list, peer["members_num"], peer["admin"]["id"])
+			return Chat(TYPE_SOCKET, peer["id"] * (-1), peer["print_name"], users_list, peer["members_num"], peer["admin"]["id"])
 	
 	
 	def new_fwd(self, fwd_date, fwd_src):
