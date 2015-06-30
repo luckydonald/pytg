@@ -2,7 +2,8 @@
 #### Version 0.4.1 ####
 
 A Python package that communicates with the [Telegram messenger CLI](https://github.com/vysheng/tg).    
-(**Note:** This will soon updated to wrap around the cli's python interface, too, to have the same commands independent of how you connect with the cli.)
+**Note:** I am currently heavily working on an interface supporting the cli via socket (as before), the CLI via it build in python (aka. tgl) and brand new, the [Telegram bot api](https://github.com/luckydonald/pytgbot) as well.
+Receiving messages is already possible with all three (even simultaneously)
 
 Works with Python  2.7 and 3    
 
