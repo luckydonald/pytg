@@ -107,7 +107,7 @@ functions["contacts_search"]	= ("contact_search", [args.UnicodeString("user_name
 # group chats
 functions["chat_info"]			= ("chat_info", [args.Chat("chat")], res.something, None, "Prints info about chat (id, members, admin, etc.)")
 functions["chat_set_photo"]		= ("chat_set_photo", [args.Chat("chat"), args.File("file")], res.success_fail, 120,0, "Sets chat photo. Photo will be cropped to square")
-functions["chat_add_user"]		= ("chat_add_user", [args.Chat("chat"), args.User("user"), args.NonNegativeNumber("msgs_to_forward", optional=True)], res.something, 60.0, "Adds user to chat. Sends him last msgs-to-forward message from this chat. Default 100")
+functions["chat_add_user"]		= ("chat_add_user", [args.Chat("chat"), args.User("user"), args.NonNegativeNumber("msgs_to_forward", optional=True)], res.success_fail, 60.0, "Adds user to chat. Sends him last msgs-to-forward message from this chat. Default 100")
 functions["chat_del_user"]		= ("chat_del_user", [args.Chat("chat"), args.User("user")], res.success_fail, None, "Deletes user from chat")
 functions["chat_rename"]		= ("rename_chat", [args.Chat("chat"), args.UnicodeString("new_name")], res.success_fail, None, "Renames chat")
 functions["create_group_chat"]	= ("create_group_chat", [args.UnicodeString("name"), args.User("user", multible=True)], res.success_fail, None, "Creates group chat with users")
