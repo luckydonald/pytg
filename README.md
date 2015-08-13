@@ -42,8 +42,10 @@ If that failes at some point, just Install it from scratch.
     ```shell
     sudo python setup.py install 
     ```
-    - The dependency "DictObject" should be installed automatically by this. If not, it is available on PyPI    
+    - The dependency "DictObject" should be installed automatically by this. If not, it is available on PyPI:    
      ```sudo pip install DictObject```
+    - Same goes for "luckydonaldUtils":    
+     ```sudo pip install luckydonald-utils```
     
  Done.
 

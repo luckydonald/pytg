@@ -1,6 +1,10 @@
 
 #Changelog.
 
+## Version 0.4.1d: ##
+- Bug Fix: 
+
+
 ## Version 0.4.1c: ##
 - Bug Fix: encoding.to_binary and to_unicode now transform other datatypes (like int) into that type as well.  Fixes [issue #32](https://github.com/luckydonald/pytg/issues/32), and that closes [issue 31](https://github.com/luckydonald/pytg/issues/31)
 

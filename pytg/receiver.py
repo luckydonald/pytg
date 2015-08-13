@@ -8,13 +8,13 @@ import json
 from types import GeneratorType
 from errno import EINTR, ECONNREFUSED
 
+from luckydonaldUtils.encoding import to_unicode as u
+from luckydonaldUtils.encoding import to_binary as b
+from luckydonaldUtils.encoding import to_native as n
 from DictObject import DictObject
 
 from .utils import coroutine
 from . import fix_plain_output
-from .encoding import to_unicode as u
-from .encoding import to_binary as b
-from .encoding import to_native as n
 from .exceptions import ConnectionError
 from .fix_msg_array import fix_message
 import logging

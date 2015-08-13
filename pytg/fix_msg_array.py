@@ -4,7 +4,7 @@ __author__ = 'luckydonald'
 import logging
 logger = logging.getLogger(__name__)
 
-from .encoding import to_unicode as u
+from luckydonaldUtils.encoding import to_unicode as u
 
 ENCR_CHAT_PREFIX = "!_user@"
 TGL_PEER_CHAT = u("chat")

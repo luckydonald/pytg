@@ -6,13 +6,13 @@ import logging
 from time import sleep
 
 from .exceptions import NoResponse, IllegalResponseException
-from .encoding import to_unicode as u
+from luckydonaldUtils.encoding import to_unicode as u
 
 logger = logging.getLogger(__name__)
 
 
 __all__ = ["receiver", "sender", "Telegram"]
-VERSION = "0.4.1c"
+VERSION = "0.4.1d"
 
 class Telegram(object):
 	"""

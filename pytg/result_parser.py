@@ -3,7 +3,7 @@ from DictObject import DictObjectList
 
 __author__ = 'luckydonald'
 
-from .encoding import to_unicode as u
+from luckydonaldUtils.encoding import to_unicode as u
 from .exceptions import IllegalResponseException, NoResponse
 import logging
 

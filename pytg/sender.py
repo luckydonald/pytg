@@ -13,13 +13,13 @@ from errno import ECONNREFUSED, EINTR # socket errors
 from socket import error as socket_error # socket errors
 
 from DictObject import DictObject  # pack the result as object.
+from luckydonaldUtils.encoding import to_unicode as u
+from luckydonaldUtils.encoding import to_binary as b
+from luckydonaldUtils.encoding import to_native as n
+from luckydonaldUtils.encoding import text_type, binary_type
 
 from . import result_parser as res
 from . import argument_types as args
-from .encoding import to_native as n
-from .encoding import to_unicode as u
-from .encoding import to_binary as b
-from .encoding import text_type, binary_type
 from .exceptions import UnknownFunction, ConnectionError, NoResponse, IllegalResponseException
 from .fix_msg_array import fix_message
 from .this_py_version import set_docstring, get_dict_items

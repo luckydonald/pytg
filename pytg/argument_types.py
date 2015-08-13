@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 __author__ = 'luckydonald'
 
-from . import encoding
+from luckydonaldUtils import encoding
 from .utils import escape  # validate_input
 from .exceptions import ArgumentParseError
 from os import path # file checking.
