@@ -2,8 +2,9 @@
 #Changelog.
 
 ## Version 0.4.1d: ##
-- Bug Fix: Now imports encoding functions from luckydonaldUtils (```pip install luckydonald-utils```) . The file is almost the same, but changed to fix [issue #39](https://github.com/luckydonald/pytg/issues/39).
-
+- Bug Fix: Unicode error on Python 3.0 - 3.2 [issue #39](https://github.com/luckydonald/pytg/issues/39), also exported the encoding functions to a sepreate package called ```luckydonaldUtils``` (```pip install luckydonald-utils```).
+- Bug Fix: Result_parser method for the chat_add_user command. Thanks @juanprq 
+- Bug Fix: Exception on calling sender.contacts_list(). Thanks @vonabarak 
 
 ## Version 0.4.1c: ##
 - Bug Fix: encoding.to_binary and to_unicode now transform other datatypes (like int) into that type as well.  Fixes [issue #32](https://github.com/luckydonald/pytg/issues/32), and that closes [issue 31](https://github.com/luckydonald/pytg/issues/31)
@@ -12,14 +13,14 @@
 - added ```Receiver.queued_messages()```, showing how many messages are waiting in the queue.
 
 ## Version 0.4.1a: ##
-- fixed ```Sender``` not working with python 2. (https://github.com/luckydonald/pytg/issues/26, thanks @Meisolsson.)
+- fixed ```Sender``` not working with python 2. ([issue #26](https://github.com/luckydonald/pytg/issues/26), thanks @Meisolsson.)
 
 ## Version 0.4.1``` ```:     
 **Big rename**:     
 ```pytg2``` -> ```pytg```    
 Thats it.
 
-## Version 0.4.1 ##
+## Version 0.4.1: ##
 
 for documentation, see:
 ```python
@@ -62,7 +63,7 @@ CLI fork not updated? That is a problem of the past!
 		```retry_connect=True``` or ```retry_connect= -1``` means to retry infinite times. (this was the default before.)
 		```python
 		sender.send_msg("luckydonald", "test message", retry_connect= 10
-		``
+		```
 	
 	- ```send_photo()```: added optional attribute ```caption``` (string, max length: 140).    
 	
