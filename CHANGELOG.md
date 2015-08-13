@@ -2,7 +2,7 @@
 #Changelog.
 
 ## Version 0.4.1d: ##
-- Bug Fix: 
+- Bug Fix: Now imports encoding functions from luckydonaldUtils (```pip install luckydonald-utils```) . The file is almost the same, but changed to fix [issue #39](https://github.com/luckydonald/pytg/issues/39).
 
 
 ## Version 0.4.1c: ##
