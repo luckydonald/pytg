@@ -4,7 +4,7 @@ __author__ = 'luckydonald'
 def main():
 	from pytg.sender import Sender
 	x = Sender("127.0.0.1", 4458)
-	res = x.get_dialog_list()
+	res = x.dialog_list()
 	print("Got: >%s<" % res)
 
 
