@@ -91,6 +91,12 @@ class SecretChat(Peer):
 		return super(SecretChat, self).parse(value)
 
 
+class Channel(Peer):
+	type="str"
+	def parse(self, value):
+		return super(Channel, self).parse(value)
+
+
 class Number(Argument):
 	type="int"
 	def parse(self, value):

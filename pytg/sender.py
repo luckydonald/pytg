@@ -120,6 +120,20 @@ functions["accept_secret_chat"]	= ("accept_secret_chat", [args.SecretChat("secre
 functions["set_ttl"]			= ("set_ttl", [args.NonNegativeNumber("secret_chat")], res.success_fail, None, "Sets secret chat ttl. Client itself ignores ttl")
 functions["visualize_key"]		= ("visualize_key", [args.SecretChat("secret_chat")], res.success_fail, None, "Prints visualization of encryption key (first 16 bytes sha1 of it in fact)")
 
+# channels
+functions["channel_get_admins"]		= ("channel_get_admins", [args.Channel("channel"), args.NonNegativeNumber("limit", optional=True), args.NonNegativeNumber("offset", optional=True)], res.List(), None, "Gets channel admins")
+functions["channel_get_members"]		= ("channel_get_members", [args.Channel("channel"), args.NonNegativeNumber("limit", optional=True), args.NonNegativeNumber("offset", optional=True)], res.List(), None, "Gets channel members")
+functions["channel_info"]		= ("channel_info", [args.Channel("channel")], res.something, None, "Prints info about channel (id, members, admin, etc.)")
+functions["channel_invite"]		= ("channel_invite", [args.Channel("channel"), args.User("user")], res.success_fail, None, "Invites user to channel")
+functions["channel_join"]		= ("channel_join", [args.Channel("channel")], res.success_fail, None, "Joins to channel")
+functions["channel_kick"]		= ("channel_kick", [args.Channel("channel"), args.User("user")], res.success_fail, None, "Kicks user from channel")
+functions["channel_leave"]		= ("channel_leave", [args.Channel("channel")], res.success_fail, None, "Leaves from channel")
+functions["channel_list"]		= ("channel_list", [args.NonNegativeNumber("limit", optional=True, default=100), args.NonNegativeNumber("offset", optional=True, default=0)], res.List(), None, "List of last channels")
+functions["channel_set_about"]		= ("channel_set_about", [args.Channel("channel"), args.UnicodeString("about")], res.success_fail, None, "Sets channel about info.")
+# functions["channel_set_admin"]		= ("channel_set_admin", <channel> <admin> <type>  Sets channel admin. 0 - not admin, 1 - moderator, 2 - editor
+functions["channel_set_username"]		= ("channel_set_username", [args.Channel("channel"), args.UnicodeString("name")], res.success_fail, None, "Sets channel username info.")
+functions["channel_set_photo"]		= ("channel_set_photo", [args.Channel("channel"), args.File("file")], res.something, 120.0, "Sets channel photo. Photo will be cropped to square")
+
 # own profile
 functions["set_profile_name"]	= ("set_profile_name", [args.UnicodeString("first_name"), args.UnicodeString("last_name")], res.something, 60.0, "Sets profile name.")
 functions["set_username"]		= ("set_username", [args.UnicodeString("name")], res.success_fail, None, "Sets username.")
