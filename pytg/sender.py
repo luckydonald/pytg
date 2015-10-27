@@ -224,6 +224,9 @@ class Sender(object):
 		:keyword retry_connect: How often it should try to reconnect (-1 = infinite times) or fail if it can't establish the first connection. (default is 2)
 		:type    retry_connect: int
 
+		:keyword custom_timeout: How long, in seconds, the command should timeout. Set to None to use the default timeout (who can be the default_answer_timeout or the command-specific timeout)
+		:type    custom_timeout: int or None
+
 		:return: parsed result/exception
 		:rtype: Object or IllegalResponseException
 
@@ -240,6 +243,9 @@ class Sender(object):
 		retry_connect=2
 		if "retry_connect" in kwargs:
 			retry_connect = kwargs["retry_connect"]
+		custom_timeout = None
+		if "custom_timeout" in kwargs:
+			custom_timeout = kwargs["custom_timeout"]
 
 		if self._do_quit and not "quit" in command_name:
 			raise AssertionError("Socket already terminated.")
@@ -247,9 +253,9 @@ class Sender(object):
 		result_timeout = functions[function_name][FUNC_TIME]
 		try:
 			if result_timeout:
-				result = self._do_command(command_name, new_args, answer_timeout=result_timeout, retry_connect=retry_connect, enable_preview=enable_preview, reply_id=reply_id)
+				result = self._do_command(command_name, new_args, answer_timeout=result_timeout if custom_timeout is None else custom_timeout, retry_connect=retry_connect, enable_preview=enable_preview, reply_id=reply_id)
 			else:
-				result = self._do_command(command_name, new_args, answer_timeout=self.default_answer_timeout, retry_connect=retry_connect, enable_preview=enable_preview, reply_id=reply_id)
+				result = self._do_command(command_name, new_args, answer_timeout=self.default_answer_timeout if custom_timeout is None else custom_timeout, retry_connect=retry_connect, enable_preview=enable_preview, reply_id=reply_id)
 		except ConnectionError as err:
 			raise
 		except NoResponse as err:
