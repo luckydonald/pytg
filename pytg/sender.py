@@ -224,8 +224,11 @@ class Sender(object):
 		:keyword retry_connect: How often it should try to reconnect (-1 = infinite times) or fail if it can't establish the first connection. (default is 2)
 		:type    retry_connect: int
 
-		:return: parsed result/exception
-		:rtype: Object or IllegalResponseException
+		:keyword result_timeout: How long, in seconds, we wait for the cli to answer the send command. Set to None to use the global default timeout (`Sender.default_answer_timeout`) instead of the default timeout for the given command. To use the default timeout for that command omit this parameter. 
+		:type    result_timeout: int or None
+
+		:return: parsed result or raises an exception
+		:rtype: Object or IllegalResponseException 
 
 		:raises pytg.exceptions.NoResponse: If the CLI answer command timed out.
 		"""
@@ -245,6 +248,8 @@ class Sender(object):
 			raise AssertionError("Socket already terminated.")
 		result_parser = functions[function_name][FUNC_RES]
 		result_timeout = functions[function_name][FUNC_TIME]
+		if "result_timeout" in kwargs:
+			result_timeout = kwargs["result_timeout"]
 		try:
 			if result_timeout:
 				result = self._do_command(command_name, new_args, answer_timeout=result_timeout, retry_connect=retry_connect, enable_preview=enable_preview, reply_id=reply_id)
