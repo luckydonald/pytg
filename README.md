@@ -1,14 +1,12 @@
 # **PyTg** #
-#### Version 0.4.1 ####
+#### Version 0.4.1e ####
 
-A Python package that communicates with the [Telegram messenger CLI](https://github.com/vysheng/tg).    
-**Note:** I am currently heavily working on an interface supporting the cli via socket (as before), the CLI via it build in python (aka. tgl) and brand new, the [Telegram bot api](https://github.com/luckydonald/pytgbot) as well.
-Receiving messages is already possible with all three (even simultaneously)
+A Python package that communicates with the [Telegram messenger CLI](https://github.com/vysheng/tg), to send and receive messages and more.
 
 Works with Python  2.7 and 3    
 
 > I really recommend to use Python 3, because of it's build in unicode support.
-Python 2 uses ascii only bytestrings, causing much, much trouble when dealing with characters like öäüß or emojis. (Trust me, I've been there)     
+Python 2 uses ascii only bytestrings, causing much, **much trouble** when dealing with characters like öäüß or emojis. (Trust me, I've been there)     
 ~ luckydonald
 
 
@@ -117,6 +115,17 @@ That's the basics. Have a look into the examples folder. For starters, I recomme
 * dump.py * is usefull to see, how the messages look like.    
 * ping.py * is usefull to see how to interact with pytg, send messages etc.
 
+### Contribute
+###### You can help!
+
+* by [reporting issues](https://github.com/luckydonald/pytg/issues)
+* by commiting patches/[pull requests](https://github.com/luckydonald/pytg/pulls)
+* with testing
+ 
+*Note: There is a version in the making, supporting the cli via socket (as before), the CLI via it build in python (aka. tgl) and brand new, the [Telegram bot api](https://github.com/luckydonald/pytgbot) as well.
+Receiving messages is already possible with all three (even simultaneously).
+Also it features neat classes for everything. Currently I lack the time to continue that.  
+See the develop branch for that. Maybe you can help make that happen.*
 
 ## **New in Version 0.4.1**
 It is named ```"pytg"``` again. Hooray!
@@ -149,12 +158,5 @@ They are in the [examples folder](https://github.com/luckydonald/pytg/tree/maste
 * ping.py * is usefull to see how to interact with pytg, send messages etc.    
 * dialog_list.py * shows you how to interact with the CLI and function returning stuff.    
 
-
-### Contribute
-You can help
-
-* with testing
-* by [reporting issues](https://github.com/luckydonald/pytg/issues)
-* by commiting patches
 
 Thanks!
