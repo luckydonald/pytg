@@ -3,6 +3,8 @@
 
 A Python package that communicates with the [Telegram messenger CLI](https://github.com/vysheng/tg), to send and receive messages and more.
 
+Telegram is an Whatsapp like Instant messenger, with clients for virtually every device you use.
+
 Works with Python  2.7 and 3    
 
 > I really recommend to use Python 3, because of it's build in unicode support.
@@ -158,9 +160,6 @@ They are in the [examples folder](https://github.com/luckydonald/pytg/tree/maste
 * ping.py * is usefull to see how to interact with pytg, send messages etc.    
 * dialog_list.py * shows you how to interact with the CLI and function returning stuff.
 * 
-
-
-Telegram is an Whatsapp like Instant messenger.
 
 
 Thanks!
