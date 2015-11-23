@@ -122,7 +122,7 @@ That's the basics. Have a look into the examples folder. For starters, I recomme
 * by commiting patches/[pull requests](https://github.com/luckydonald/pytg/pulls)
 * with testing
  
-*Note: There is a version in the making, supporting the cli via socket (as before), the CLI via it build in python (aka. tgl) and brand new, the [Telegram bot api](https://github.com/luckydonald/pytgbot) as well.
+*Note: There is a version in the making, supporting the cli via socket (as before), the CLI via its build in python (aka. tgl) and brand new, the [Telegram bot api](https://github.com/luckydonald/pytgbot) as well.
 Receiving messages is already possible with all three (even simultaneously).
 Also it features neat classes for everything. Currently I lack the time to continue that.  
 See the develop branch for that. Maybe you can help make that happen.*
@@ -156,7 +156,11 @@ See some example scripts to start with.
 They are in the [examples folder](https://github.com/luckydonald/pytg/tree/master/examples)    
 * dump.py * is usefull to see, how the messages look like.    
 * ping.py * is usefull to see how to interact with pytg, send messages etc.    
-* dialog_list.py * shows you how to interact with the CLI and function returning stuff.    
+* dialog_list.py * shows you how to interact with the CLI and function returning stuff.
+* 
+
+
+Telegram is an Whatsapp like Instant messenger.
 
 
 Thanks!
