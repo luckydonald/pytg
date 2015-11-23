@@ -97,6 +97,7 @@ functions["user_info"]			= ("user_info", [args.User("user")], res.something, Non
 functions["load_user_photo"]	= ("load_user_photo", [args.User("user")], res.something, 120.0, "Downloads file to downloads dirs. Prints file name after download end")
 
 #contacts
+functions["get_self"]			= ("get_self", [], res.anything, None, "get our user info")
 functions["contact_add"]		= ("add_contact", [args.UnicodeString("phone"), args.UnicodeString("first_name"), args.UnicodeString("last_name")], res.anything, None, "Tries to add user to contact list")
 functions["contact_add_by_card"]= ("import_card", [args.UnicodeString("card")], res.success_fail, None, "Gets user by card and prints it name. You can then send messages to him as usual #todo: add args type")
 functions["contact_rename"]		= ("rename_contact", [args.User("user"), args.UnicodeString("first_name"), args.UnicodeString("last_name")], res.something, None, "Renames contact #returns the new name")
