@@ -3,7 +3,7 @@
 
 A Python package that communicates with the [Telegram messenger CLI](https://github.com/vysheng/tg), to send and receive messages and more.
 
-Telegram is an Whatsapp like Instant messenger, with clients for virtually every device you use.
+[Telegram](https://telegram.org) is an Whatsapp like Instant messenger, with clients for virtually every device you use.
 
 Works with Python  2.7 and 3    
 
