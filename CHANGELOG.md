@@ -76,3 +76,26 @@ CLI fork not updated? That is a problem of the past!
 		sender.send_photo("user#1234", "/path/to/image.png")
 		sender.send_photo("user#1234", "/path/to/image.png", "This is a image")
 		```
+
+## **New in Version 0.4.1**
+It is named ```"pytg"``` again. Hooray!
+
+## **New in Version 0.4.0**
+No need for telejson any more, you can now run with the offical telegram-cli!
+Connecting to the cli for sending will now surrender after given retrys, and not loop forever.
+Also added a CHANGELOG file.
+
+
+## New in Version 0.3.1
+Updates for telejson beta compatibility.
+This version never got offically released before the telejson fork got replaced by vysheng's native json implementation.
+ 
+## **New in Version 0.3.0**
+Pytg2 (now since V0.4.1 called Pytg again) got overhauled to version 0.3.0, which will restructure heavily,
+BUT will decrease the CPU usage to around nothing.
+While the old versions need to parse the cli output directly, resuling in easy ways to exploit it, now it is safe, using json internal.
+Without the parsing we don't have to poll for new output ("Hey, got anything yet? And yet? And yet? ...") but just block until we got new output.
+The retrieval of new messaged is multitheaded, so you won't lose any messages if you do heavy and/or long operations between messages.
+
+Also a nice new feature is an automatic download of files. (more about this, as soon as I get time to edit this...)
+
