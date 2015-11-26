@@ -1,5 +1,5 @@
 # **PyTg** #
-#### Version 0.4.1e ####
+#### Version 0.4.2 ####
 
 A Python package that communicates with the [Telegram messenger CLI](https://github.com/vysheng/tg), to send and receive messages and more.
 
@@ -11,34 +11,19 @@ Works with Python  2.7 and 3
 Python 2 uses ascii only bytestrings, causing much, **much trouble** when dealing with characters like öäüß or emojis. (Trust me, I've been there)     
 ~ luckydonald
 
-
-## **URL Changes** or "How to update?"##
-Well, lot has happened recently. A huge change for the original users: merges, new functions,
-renames and and finally the changed url. Here is how to update your local git clone. If you have not used pytg before, just skip to the Install part.
-```shell
-# navigate into the clone
-cd pytg	 # not pytg/pytg!
-# change to the new url
-git remote set-url origin https://github.com/luckydonald/pytg.git
-# download the changes
-git pull
-# don't forget to install the newest official cli: https://github.com/vysheng/tg
-```
-If that failes at some point, just Install it from scratch.
-
 ## **Install**##
 ### Dependencies ###
  - Install the Telegram CLI (from @vysheng), follow the [official Instructions](https://github.com/vysheng/tg)
 
 ### Pytg ###
-###### Install form PyPI [![on PyPI](https://img.shields.io/pypi/v/pytg.svg)](https://pypi.python.org/pypi/pytg)
+##### Install form PyPI [![on PyPI](https://img.shields.io/pypi/v/pytg.svg)](https://pypi.python.org/pypi/pytg)
 
 ```shell
 pip install pytg
 ```    
 To upgrade append the ```--upgrade``` flag.
  
-###### Install from source
+##### Install from source
 
 (Beta versions are in the [development branch](https://github.com/luckydonald/pytg/tree/development))    
 
@@ -138,29 +123,18 @@ Receiving messages is already possible with all three (even simultaneously).
 Also it features neat classes for everything. Currently I lack the time to continue that.  
 See the develop branch for that. Maybe you can help make that happen.*
 
-## **New in Version 0.4.1**
-It is named ```"pytg"``` again. Hooray!
-
-## **New in Version 0.4.0**
-No need for telejson any more, you can now run with the offical telegram-cli!
-Connecting to the cli for sending will now surrender after given retrys, and not loop forever.
-Also added a CHANGELOG file.
-
-
-## New in Version 0.3.1
-Updates for telejson beta compatibility.
-This version never got offically released before the telejson fork got replaced by vysheng's native json implementation.
- 
-## **New in Version 0.3.0**
-Pytg2 (now since V0.4.1 called Pytg again) got overhauled to version 0.3.0, which will restructure heavily,
-BUT will decrease the CPU usage to around nothing.
-While the old versions need to parse the cli output directly, resuling in easy ways to exploit it, now it is safe, using json internal.
-Without the parsing we don't have to poll for new output ("Hey, got anything yet? And yet? And yet? ...") but just block until we got new output.
-The retrieval of new messaged is multitheaded, so you won't lose any messages if you do heavy and/or long operations between messages.
-
-Also a nice new feature is an automatic download of files. (more about this, as soon as I get time to edit this...)
-
-
+## **URL Changes** or "How to update?"##
+Here is how to update your local git clone to this url. If you have not used pytg before, just skip to the Install part.
+```shell
+# navigate into the clone
+cd pytg	 # not pytg/pytg!
+# change to the new url
+git remote set-url origin https://github.com/luckydonald/pytg.git
+# download the changes
+git pull
+# don't forget to install the newest official cli: https://github.com/vysheng/tg
+```
+If that failes at some point, just Install it from scratch.
 
 ### Look at the examples
 See some example scripts to start with.
