@@ -31,12 +31,21 @@ If that failes at some point, just Install it from scratch.
  - Install the Telegram CLI (from @vysheng), follow the [official Instructions](https://github.com/vysheng/tg)
 
 ### Pytg ###
- (Beta versions are in the [development branch](https://github.com/luckydonald/pytg/tree/development))
+###### Install form PyPI [![on PyPI](https://img.shields.io/pypi/v/pytg.svg)](https://pypi.python.org/pypi/pytg)
+
+```shell
+pip install pytg
+```    
+To upgrade append the ```--upgrade``` flag.
+ 
+###### Install from source
+
+(Beta versions are in the [development branch](https://github.com/luckydonald/pytg/tree/development))    
+
  - a) Get the latest pytg code from github.
     ```shell
     git clone https://github.com/luckydonald/pytg.git && cd pytg
-    ```
-     
+    ```     
  - b) To update already existing code, navigate to the root inside the pytg folder, then ```git pull```
  - Install
     ```shell
