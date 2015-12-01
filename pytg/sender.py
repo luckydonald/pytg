@@ -273,6 +273,8 @@ class Sender(object):
 		except ConnectionError as err:
 			raise
 		except NoResponse as err:
+			raise
+		except Exception as err:
 			args_ = inspect.getargspec(result_parser)[0]
 			if not "exception" in args_:
 				logger.exception("Result parser does not allow exceptions, but we got one: ")
