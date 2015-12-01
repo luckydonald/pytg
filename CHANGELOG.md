@@ -1,6 +1,9 @@
 
 #Changelog.
 
+## Version 0.4.4: ##
+- Fixed ```No handlers could be found for logger "pytg.sender"``` with Python 2. [#33](https://github.com/luckydonald/pytg/issues/33)
+
 ## Version 0.4.3: ##
 - Fixed ```pip install``` dependencies bug. [#55](https://github.com/luckydonald/pytg/issues/55)
 
