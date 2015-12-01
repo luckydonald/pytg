@@ -9,6 +9,7 @@ from .exceptions import NoResponse, IllegalResponseException
 from luckydonaldUtils.encoding import to_unicode as u
 
 logger = logging.getLogger(__name__)
+logger.addHandler(logging.NullHandler())
 
 
 __all__ = ["receiver", "sender", "Telegram"]
