@@ -8,7 +8,7 @@ Report any issues at https://github.com/luckydonald/pytg/issues/"""
 
 setup(
 	name='pytg',
-	version="0.4.3",
+	version="0.4.4",
 	description='Connect to the Telegram CLI, receive and send Telegram messages.',
 	long_description=long_description,
 	# The project's main homepage.

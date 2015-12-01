@@ -13,7 +13,7 @@ logger.addHandler(logging.NullHandler())
 
 
 __all__ = ["receiver", "sender", "Telegram"]
-VERSION = "0.4.3"
+VERSION = "0.4.4"
 
 class Telegram(object):
 	"""
