@@ -1,6 +1,18 @@
 
 #Changelog.
 
+## Version 0.4.3: ##
+- Fixed ```pip install``` dependencies bug. [#55](https://github.com/luckydonald/pytg/issues/55)
+
+## Version 0.4.2: ##
+- Added ```result_timeout``` kwarg for all ```Sender``` functions. [#49](https://github.com/luckydonald/pytg/pull/49),[#48](https://github.com/luckydonald/pytg/pull/48). Thanks [@the-glu](https://github.com/the-glu)
+- Added first channel support [#47](https://github.com/luckydonald/pytg/pull/47). Thanks [@spoetnik](https://github.com/spoetnik)
+- Added to [PyPI](https://pypi.python.org/pypi/pytg).
+
+## Version 0.4.1e: ##
+- Fixed result parsing of ```Sender.contact_add(...)``` [#35](https://github.com/luckydonald/pytg/pull/53). Thanks [@spikeekips](https://github.com/spikeekips)
+- Added ```Sender.get_self()``` to  [#35](https://github.com/luckydonald/pytg/pull/53). Thanks [@spikeekips](https://github.com/spikeekips)
+
 ## Version 0.4.1d: ##
 - Bug Fix: Unicode error on Python 3.0 - 3.2 [issue #39](https://github.com/luckydonald/pytg/issues/39), also exported the encoding functions to a sepreate package called ```luckydonaldUtils``` (```pip install luckydonald-utils```).
 - Bug Fix: Result_parser method for the chat_add_user command. Thanks @juanprq 
