@@ -103,7 +103,7 @@ functions["contact_add_by_card"]= ("import_card", [args.UnicodeString("card")], 
 functions["contact_rename"]		= ("rename_contact", [args.User("user"), args.UnicodeString("first_name"), args.UnicodeString("last_name")], res.something, None, "Renames contact #returns the new name")
 functions["contact_delete"]		= ("del_contact", [args.User("user")], res.success_fail, None, "Deletes contact from contact list")
 functions["contacts_list"]		= ("contact_list", [], res.List(), None, "Prints contact list")
-functions["contacts_search"]	= ("contact_search", [args.UnicodeString("user_name"), args.NonNegativeNumber("limit", optional=True)], res.success_fail, None, "Searches contacts by username")
+functions["contacts_search"]	= ("contact_search", [args.UnicodeString("user_name"), args.NonNegativeNumber("limit", optional=True)], res.something, None, "Searches contacts by username")
 
 # group chats
 functions["chat_info"]			= ("chat_info", [args.Chat("chat")], res.something, None, "Prints info about chat (id, members, admin, etc.)")
