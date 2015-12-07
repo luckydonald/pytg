@@ -39,7 +39,7 @@ def response_fails(exception=None, *args):
 	if exception is None:
 		raise IllegalResponseException("Did not throw timeout exception.")
 	if isinstance(exception, NoResponse):
-		return
+		return None if len(args) == 0 else args[0] if len(args) == 1 else args
 	raise IllegalResponseException("Wrong exception: {exc}".format(exc=str(type(exception))))
 
 class ResultParser(object):
