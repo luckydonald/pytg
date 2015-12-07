@@ -36,8 +36,8 @@ sender = Sender( ... )
 sender.default_answer_timeout = 2  # in seconds
 ```
 
-You may change the timeout of any command with supplying result_timeout=<seconds> in the call.
-Also you can surround it with a try block, excepting a NoResponse if you like to ignore it.
+You may change the timeout of any command with supplying ```result_timeout=<seconds>``` in the call.
+Also you can surround it with a try block, excepting a [```NoResponse```](#noresponse) if you like to ignore timeouts.
 
 
 ### sending messages
@@ -156,11 +156,11 @@ They are at ```pytg.exceptions```
 ### NoResponse:
 This Exception means the CLI didn't send any response to that command in time.
 Most commonly that happens with the ```status_online``` command, but still only occasionally.
+You may change the timeout of any command with supplying ```result_timeout=<seconds>``` in the call.
 
-
-Combined example:
-
+```python
 try:
     sender.status_online(result_timeout=5)  # wait up to 5 seconds
 except NoResponse:  # from pytg.exceptions import NoResponse
     print("CLI did not responded in time")
+```
