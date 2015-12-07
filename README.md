@@ -48,8 +48,7 @@ To upgrade append the ```--upgrade``` flag.
 >***Note***: The examples files produce syntax errors for python 3.0 - 3.2, the pytg package itself is not affacted by this!    
 > To fix, just remove the ```u``` in front of the strings: change ```u"foobar"``` to ```"foobar``` (see [issue #39](https://github.com/luckydonald/pytg/issues/39#issuecomment-129992777) and [Python 3.3 accepts ```u'unicode'``` syntax again](https://docs.python.org/3/whatsnew/3.3.html?highlight=unicode)). 
 
-
-### *Start* telegram ###
+#### *Start* telegram ####
 
 Create a Telegram Instance.
 This will manage the CLI process, and registers the Sender and Receiver for you.
@@ -74,14 +73,14 @@ receiver = Receiver(host="localhost", port=4458)
 sender = Sender(host="localhost", port=4458)
 ```
 
-### *Send* a message ###
+#### *Send* a message ####
 
 ```python
 sender.send_msg("username", "Hello World!")
 # Easy huh?
 ```
     
-### *Receiving* messages ###
+#### *Receiving* messages ####
 
 You need a function as main loop.
 ```python
@@ -108,10 +107,21 @@ receiver.message(main_loop())
 ```
 
 That's the basics. Have a look into the examples folder. For starters, I recommend:    
-* dump.py * is usefull to see, how the messages look like.    
-* ping.py * is usefull to see how to interact with pytg, send messages etc.
+* dump.py - is usefull to see, how the messages look like.    
+* ping.py - is usefull to see how to interact with pytg, send messages etc.
 
-### Contribute
+## Documentation
+The ```Sender``` object features a rich build-in help, inside the python interpreter type:
+```python
+from pytg.sender import Sender
+help(Sender)  # list all commands
+help(Sender.get_self)  # get help for a specific command
+``` 
+
+Or you can have a look into [DOCUMENTATION.md](https://github.com/luckydonald/pytg/blob/master/DOCUMENTATION.md)
+
+
+## Contribute
 ###### You can help!
 
 * by [reporting issues](https://github.com/luckydonald/pytg/issues)
