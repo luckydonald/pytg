@@ -1,6 +1,9 @@
 
 #Changelog.
 
+## Version 0.4.5: ##
+- Fixed ```Sender.contacts_search()```. [#51](https://github.com/luckydonald/pytg/issues/51)
+
 ## Version 0.4.4: ##
 - Fixed ```No handlers could be found for logger "pytg.sender"``` with Python 2. [#33](https://github.com/luckydonald/pytg/issues/33)
 
