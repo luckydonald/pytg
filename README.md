@@ -1,50 +1,160 @@
-## PyTG
+# **PyTg** #
+#### Version 0.4.5 ####
 
-A Python package that wraps around [Telegram messenger CLI](https://github.com/vysheng/tg).
+[![Join the chat at https://gitter.im/luckydonald/pytg](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/luckydonald/pytg?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
-### Installation
+A Python package that communicates with the [Telegram messenger CLI](https://github.com/vysheng/tg), to send and receive messages and more.
 
-PyTG requires a patched copy of Telegram messenger CLI to make message parsing feasible. To install the patched Telegram messenger CLI:
+[Telegram](https://telegram.org) is an Whatsapp like Instant messenger, with clients for virtually every device you use.
 
-Clone GitHub Repository
+Works with Python  2.7 and 3    
 
-    $ git clone https://github.com/efaisal/tg.git && cd tg
-        
-or download and extract zip
+> I really recommend to use Python 3, because of it's build in unicode support.
+Python 2 uses ascii only bytestrings, causing much, **much trouble** when dealing with characters like öäüß or emojis. (Trust me, I've been there)     
+~ luckydonald
 
-    $ wget https://github.com/efaisal/tg/archive/master.zip -O tg.zip
-    $ tar xzf tg.zip && cd tg
+## **Install**##
+### Dependencies ###
+ - Install the Telegram CLI (from @vysheng), follow the [official Instructions](https://github.com/vysheng/tg)
 
-Then, run
+### Pytg ###
+##### Install form PyPI [![on PyPI](https://img.shields.io/pypi/v/pytg.svg)](https://pypi.python.org/pypi/pytg)
 
-    $ ./configure
+```shell
+pip install pytg
+```    
+To upgrade append the ```--upgrade``` flag.
+ 
+##### Install from source
 
-or
+(Beta versions are in the [development branch](https://github.com/luckydonald/pytg/tree/development))    
 
-    $ ./configure --disable-liblua
+ - a) Get the latest pytg code from github.
+    ```shell
+    git clone https://github.com/luckydonald/pytg.git && cd pytg
+    ```     
+ - b) To update already existing code, navigate to the root inside the pytg folder, then ```git pull```
+ - Install
+    ```shell
+    sudo python setup.py install 
+    ```
+    - The dependency "DictObject" should be installed automatically by this. If not, it is available on PyPI:    
+     ```sudo pip install DictObject```
+    - Same goes for "luckydonaldUtils":    
+     ```sudo pip install luckydonald-utils```
+    
+ Done.
 
-if you don't want Lua support.
+## **Usage** ##
 
-Next, run
+>***Note***: The examples files produce syntax errors for python 3.0 - 3.2, the pytg package itself is not affacted by this!    
+> To fix, just remove the ```u``` in front of the strings: change ```u"foobar"``` to ```"foobar``` (see [issue #39](https://github.com/luckydonald/pytg/issues/39#issuecomment-129992777) and [Python 3.3 accepts ```u'unicode'``` syntax again](https://docs.python.org/3/whatsnew/3.3.html?highlight=unicode)). 
 
-    $ make
+#### *Start* telegram ####
 
-Telegram messenger CLI has its own dependencies. See https://github.com/efaisal/tg for details.
+Create a Telegram Instance.
+This will manage the CLI process, and registers the Sender and Receiver for you.
 
-Once you build successfully, try to run
+```python
+from pytg import Telegram
+tg = Telegram(
+	telegram="/path/to/tg/bin/telegram-cli",
+	pubkey_file="/path/to/tg/tg-server.pub")
+receiver = tg.receiver
+sender = tg.sender
+```
 
-    $ ./telegram
+If you don't want pytg to start the cli for you, start it yourself with ```--json -P 4458``` (port 4458).
+You can then use the Receiver and/or the Sender like this: 
 
-Register your client, if required. Please note that PyTG does not support client registration yet.
 
-Now you are ready to install PyTG
+```python
+from pytg.sender import Sender
+from pytg.receiver import Receiver
+receiver = Receiver(host="localhost", port=4458)
+sender = Sender(host="localhost", port=4458)
+```
 
-Clone GitHub Repository
+#### *Send* a message ####
 
-    $ git clone https://github.com/efaisal/pytg.git && cd pytg && python setup.py install
-        
-or download and extract zip
+```python
+sender.send_msg("username", "Hello World!")
+# Easy huh?
+```
+    
+#### *Receiving* messages ####
 
-    $ wget https://github.com/efaisal/pytg/archive/master.zip -O pytg.zip
-    $ tar xzf pytg.zip && cd pytg && python setup.py install
+You need a function as main loop.
+```python
+@coroutine # from pytg.utils import coroutine
+def main_loop():
+	while not QUIT:
+		msg = (yield) # it waits until it got a message, stored now in msg.
+		print("Message: ", msg.text)
+		# do more stuff here!
+	#
+#
+```
 
+Last step is to register that function:
+
+```python
+# start the Receiver, so we can get messages!
+receiver.start()
+
+# let "main_loop" get new message events.
+# You can supply arguments here, like main_loop(foo, bar).
+receiver.message(main_loop())
+# now it will call the main_loop function and yield the new messages.
+```
+
+That's the basics. Have a look into the examples folder. For starters, I recommend:    
+* dump.py - is usefull to see, how the messages look like.    
+* ping.py - is usefull to see how to interact with pytg, send messages etc.
+
+## Documentation
+The ```Sender``` object features a rich build-in help, inside the python interpreter type:
+```python
+from pytg.sender import Sender
+help(Sender)  # list all commands
+help(Sender.get_self)  # get help for a specific command
+``` 
+
+Or you can have a look into [DOCUMENTATION.md](https://github.com/luckydonald/pytg/blob/master/DOCUMENTATION.md)
+
+
+## Contribute
+###### You can help!
+
+* by [reporting issues](https://github.com/luckydonald/pytg/issues)
+* by commiting patches/[pull requests](https://github.com/luckydonald/pytg/pulls)
+* with testing
+ 
+*Note: There is a version in the making, supporting the cli via socket (as before), the CLI via its build in python (aka. tgl) and brand new, the [Telegram bot api](https://github.com/luckydonald/pytgbot) as well.
+Receiving messages is already possible with all three (even simultaneously).
+Also it features neat classes for everything. Currently I lack the time to continue that.  
+See the develop branch for that. Maybe you can help make that happen.*
+
+## **URL Changes** or "How to update?"##
+Here is how to update your local git clone to this url. If you have not used pytg before, just skip to the Install part.
+```shell
+# navigate into the clone
+cd pytg	 # not pytg/pytg!
+# change to the new url
+git remote set-url origin https://github.com/luckydonald/pytg.git
+# download the changes
+git pull
+# don't forget to install the newest official cli: https://github.com/vysheng/tg
+```
+If that failes at some point, just Install it from scratch.
+
+### Look at the examples
+See some example scripts to start with.
+They are in the [examples folder](https://github.com/luckydonald/pytg/tree/master/examples)    
+* dump.py * is usefull to see, how the messages look like.    
+* ping.py * is usefull to see how to interact with pytg, send messages etc.    
+* dialog_list.py * shows you how to interact with the CLI and function returning stuff.
+* 
+
+
+Thanks!
