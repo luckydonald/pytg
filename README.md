@@ -28,15 +28,13 @@ To upgrade append the ```--upgrade``` flag.
 
 (Beta versions are in the [development branch](https://github.com/luckydonald/pytg/tree/development))    
 
- - a) Get the latest pytg code from github.
+ - a) Get the latest pytg code from github.    
     ```shell
     git clone https://github.com/luckydonald/pytg.git && cd pytg
     ```     
  - b) To update already existing code, navigate to the root inside the pytg folder, then ```git pull```
  - Install
-    ```shell
-    sudo python setup.py install 
-    ```
+    ```sudo python setup.py install```
     - The dependency "DictObject" should be installed automatically by this. If not, it is available on PyPI:    
      ```sudo pip install DictObject```
     - Same goes for "luckydonaldUtils":    
