@@ -2,3 +2,5 @@
 build/
 .directory
 .*.sw?
+dist
+pytg.egg-info
