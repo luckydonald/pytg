@@ -134,6 +134,7 @@ functions["channel_set_about"]		= ("channel_set_about", [args.Channel("channel")
 # functions["channel_set_admin"]		= ("channel_set_admin", <channel> <admin> <type>  Sets channel admin. 0 - not admin, 1 - moderator, 2 - editor
 functions["channel_set_username"]		= ("channel_set_username", [args.Channel("channel"), args.UnicodeString("name")], res.success_fail, None, "Sets channel username info.")
 functions["channel_set_photo"]		= ("channel_set_photo", [args.Channel("channel"), args.File("file")], res.something, 120.0, "Sets channel photo. Photo will be cropped to square")
+functions["channel_rename"]		= ("rename_channel", [args.Channel("channel"), args.UnicodeString("new_name")], res.success_fail, None, "Renames channel")
 
 # own profile
 functions["set_profile_name"]	= ("set_profile_name", [args.UnicodeString("first_name"), args.UnicodeString("last_name")], res.something, 60.0, "Sets profile name.")
