@@ -41,6 +41,11 @@ def fix_message(message):
 
 
 def fix_peer(peer):
+	# rename peer_type => type
+	if peer["peer_type"]:
+		peer["type"] = peer["peer_type"]
+		del peer["peer_type"]
+
 	# add cmd field
 	if peer["type"] == TGL_PEER_ENCR_CHAT:
 		assert peer["print_name"].startswith(ENCR_CHAT_PREFIX)
