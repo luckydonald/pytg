@@ -52,7 +52,7 @@ def fix_peer(peer):
 		assert peer["print_name"].startswith(ENCR_CHAT_PREFIX)
 		peer["cmd"] = peer["print_name"]
 	else:
-		peer["cmd"] = peer["type"] + u("#") + u(str(peer["peer_id"]))
+		peer["cmd"] = u("%s#%d") % (peer["type"], peer["peer_id"])
 
 	#remove print_name field
 	#create name field
