@@ -51,6 +51,8 @@ def fix_peer(peer):
 	if peer["type"] == TGL_PEER_ENCR_CHAT:
 		assert peer["print_name"].startswith(ENCR_CHAT_PREFIX)
 		peer["cmd"] = peer["print_name"]
+	elif peer["type"] == TGL_PEER_CHANNEL:
+		peer["cmd"] = u("%s#id%d") % (peer["type"], peer["peer_id"])
 	else:
 		peer["cmd"] = u("%s#%d") % (peer["type"], peer["peer_id"])
 
