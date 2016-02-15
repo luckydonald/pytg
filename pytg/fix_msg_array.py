@@ -43,7 +43,7 @@ def fix_message(message):
 
 def fix_peer(peer):
 	# rename peer_type => type
-	if peer["peer_type"]:
+	if "peer_type" in peer and peer["peer_type"]:
 		peer["type"] = peer["peer_type"]
 		del peer["peer_type"]
 
