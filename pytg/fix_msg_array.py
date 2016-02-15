@@ -33,9 +33,9 @@ def fix_message(message):
 	# create the peer, thats where to reply to.
 	if message["own"]:
 		message["peer"] = None
-	elif message["receiver"]["type"] == TGL_PEER_CHAT or message["receiver"]["type"] == TGL_PEER_GEO_CHAT or message["receiver"]["type"] == TGL_PEER_CHANNEL:
+	elif message["receiver"]["type"] in [TGL_PEER_CHAT, TGL_PEER_GEO_CHAT, TGL_PEER_CHANNEL]:
 		message["peer"] = message["receiver"]
-	elif message["receiver"]["type"] == TGL_PEER_USER or message["receiver"]["type"] == TGL_PEER_ENCR_CHAT:
+	elif message["receiver"]["type"] in [TGL_PEER_USER, TGL_PEER_ENCR_CHAT]:
 		message["peer"] = message["sender"]
 	# return it
 	return message
@@ -70,7 +70,7 @@ def fix_peer(peer):
 			peer["name"] = peer["first_name"]
 		elif "username" in peer and peer["username"]:
 			peer["name"] =  peer["username"]
-	elif peer["type"] == TGL_PEER_CHAT or peer["type"] == TGL_PEER_CHANNEL:
+	elif peer["type"] in [TGL_PEER_CHAT, TGL_PEER_CHANNEL]:
 		if "title" in peer and peer["title"]:
 			peer["name"] = peer["title"]
 	elif peer["type"] == TGL_PEER_ENCR_CHAT:
