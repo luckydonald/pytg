@@ -85,6 +85,12 @@ class User(Peer):
 		return super(User, self).parse(value)
 
 
+class Channel(Peer):
+	type="str"
+	def parse(self, value):
+		return super(User, self).parse(value)
+
+
 class SecretChat(Peer):
 	type="str"
 	def parse(self, value):

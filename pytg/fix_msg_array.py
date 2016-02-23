@@ -11,6 +11,7 @@ TGL_PEER_CHAT = u("chat")
 TGL_PEER_USER = u("user")
 TGL_PEER_ENCR_CHAT = u("encr_chat")
 TGL_PEER_GEO_CHAT = u("geo_chat") #todo: does this even exists?
+TGL_PEER_CHANNEL = u("channel")
 
 def fix_message(message):
 	# skip if not has message typical elements
@@ -32,21 +33,28 @@ def fix_message(message):
 	# create the peer, thats where to reply to.
 	if message["own"]:
 		message["peer"] = None
-	elif message["receiver"]["type"] == TGL_PEER_CHAT or message["receiver"]["type"] == TGL_PEER_GEO_CHAT:
+	elif message["receiver"]["type"] in [TGL_PEER_CHAT, TGL_PEER_GEO_CHAT, TGL_PEER_CHANNEL]:
 		message["peer"] = message["receiver"]
-	elif message["receiver"]["type"] == TGL_PEER_USER or message["receiver"]["type"] == TGL_PEER_ENCR_CHAT:
+	elif message["receiver"]["type"] in [TGL_PEER_USER, TGL_PEER_ENCR_CHAT]:
 		message["peer"] = message["sender"]
 	# return it
 	return message
 
 
 def fix_peer(peer):
+	# rename peer_type => type
+	if "peer_type" in peer and peer["peer_type"]:
+		peer["type"] = peer["peer_type"]
+		del peer["peer_type"]
+
 	# add cmd field
 	if peer["type"] == TGL_PEER_ENCR_CHAT:
 		assert peer["print_name"].startswith(ENCR_CHAT_PREFIX)
 		peer["cmd"] = peer["print_name"]
+	elif peer["type"] == TGL_PEER_CHANNEL:
+		peer["cmd"] = u("%s#id%d") % (peer["type"], peer["peer_id"])
 	else:
-		peer["cmd"] = peer["type"] + u("#") + u(str(peer["id"]))
+		peer["cmd"] = u("%s#%d") % (peer["type"], peer["peer_id"])
 
 	#remove print_name field
 	#create name field
@@ -62,7 +70,7 @@ def fix_peer(peer):
 			peer["name"] = peer["first_name"]
 		elif "username" in peer and peer["username"]:
 			peer["name"] =  peer["username"]
-	elif peer["type"] == TGL_PEER_CHAT:
+	elif peer["type"] in [TGL_PEER_CHAT, TGL_PEER_CHANNEL]:
 		if "title" in peer and peer["title"]:
 			peer["name"] = peer["title"]
 	elif peer["type"] == TGL_PEER_ENCR_CHAT:
