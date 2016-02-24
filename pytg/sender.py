@@ -41,7 +41,7 @@ functions = OrderedDict()
 # send messages
 functions["msg"]                  = ("msg", [args.Peer("peer"), args.UnicodeString("test")], res.success_fail, 60.0, "Sends text message to peer")
 functions["send_msg"]             = functions["msg"]
-functions["send_text"]             = functions["msg"]
+functions["send_text"]            = functions["msg"]
 functions["send_audio"]           = ("send_audio", [args.Peer("peer"), args.File("file")], res.success_fail, 120.0, "")
 functions["send_typing"]          = ("send_typing", [args.Peer("peer")], res.success_fail, None, "")
 functions["send_typing_abort"]    = ("send_typing_abort", [args.Peer("peer")], res.success_fail, None, "")
@@ -74,7 +74,10 @@ functions["messages_search"]      = ("search", [
                                                 args.NonNegativeNumber("to", optional=True),
                                                 args.NonNegativeNumber("offset", optional=True),
                                                 args.UnicodeString("pattern")
-                                            ],                            res.something, None, "")
+                                                ], res.something, None,
+                                     "Search for pattern in messages from date from to date to (unixtime) "
+                                     "in messages with peer (if peer not present, in all messages)"
+                                     )
 
 # load media
 functions["load_audio"]           = ("load_audio", [args.MsgId("msg_id")], res.something, 120.0, "Downloads file to downloads dirs. Prints file name after download end")
@@ -90,6 +93,7 @@ functions["load_video_thumb"]     = ("load_video_thumb", [args.MsgId("msg_id")],
 # peer
 functions["mark_read"]            = ("mark_read", [args.Peer("peer")], res.success_fail, None, "Marks messages with peer as read")
 functions["history"]              = ("history", [args.Peer("user"), args.PositiveNumber("limit", optional=True), args.NonNegativeNumber("offset", optional=True)], res.something, None, "Prints messages with this peer (most recent message lower). Also marks messages as read")
+functions["resolve_username"]     = ("resolve_username", [args.Username("@username")], res.OnlineEvent, None, "Searches user by username")
 
 
 # user
@@ -155,7 +159,21 @@ functions["set_password"]         = ("set_password", [args.UnicodeString("hint",
 functions["raw"]                  = ("", [args.UnescapedUnicodeString("command")], res.raw, 120.0, "just send custom shit to the cli. Use, if there are no fitting functions, because I didn't update.")
 functions["cli_help"]             = ("help", [], res.raw, None, "Prints the help. (Needed for pytg itself!)")
 
-#  these are commented out in the cli too:
+
+reply_functions = OrderedDict()
+# used to map send functions to the fitting reply functions if reply_id is a permanent-msg-id
+# note: this uses the cli command, not the function name!
+reply_functions["msg"]                  = "reply"
+reply_functions["send_audio"]           = "reply_audio"
+reply_functions["send_photo"]           = "reply_photo"
+reply_functions["send_video"]           = "reply_video"
+reply_functions["send_document"]        = "reply_document"
+reply_functions["send_file"]            = "reply_file"
+reply_functions["send_location"]        = "reply_location"
+reply_functions["send_contact"]         = "reply_contact"
+
+
+#  these commands are commented out in the cli too:
 
 # //"reply_text": ("reply_text", [args.MsgId("msg_id"), ca_number, ca_file_name_end, ca_none,"<msg-id> <file>"], res.success_fail, None),  # Sends contents of text file as plain text message
 # //"restore_msg": ("restore_msg", [args.MsgId("msg_id"), ca_number, ca_none,"<msg-id>"], res.success_fail, None),  # Restores message. Only available shortly (one hour?) after deletion
@@ -367,14 +385,24 @@ class Sender(object):
         :type    retry_connect: int
         """
         reply_part = ""
+        alternative_command = None
         if reply_id:
             if not isinstance(reply_id, int):
-                raise AttributeError("reply_id keyword argument is not integer.")
+                if cli_command in reply_functions:
+                    alternative_command = reply_functions[cli_command]
+                    logger.warn("Substituting command \"{cmd}\" to \"{alt}\" to provide backwards compatibiltity for the reply parameter.\n"
+                                "See https://github.com/luckydonald/pytg/issues/65 for details.".format(cmd=cli_command, alt=alternative_command))
+                else:
+                    raise AttributeError("reply_id keyword argument is not integer. "
+                                         "Please use the reply methods with the permantent-msg-ids instead!")
             reply_part = "[reply  =%i]" % reply_id
         preview_part = "[enable_preview]" if enable_preview else "[disable_preview]"
         arg_string = " ".join([u(x) for x in args])
-        request = " ".join([reply_part, preview_part, cli_command, arg_string])
-        request = "".join([request, "\n"])  # TODO can this be deleted?
+        if alternative_command:
+            request = " ".join([preview_part, alternative_command, arg_string])
+        else:
+            request = " ".join([reply_part, preview_part, cli_command, arg_string])
+        request = "".join([request, "\n"])  # TODO can this be deleted? We are using sockets now...
         result = self._do_send(request, answer_timeout=answer_timeout, retry_connect=retry_connect)
         return result
 
@@ -543,6 +571,10 @@ class Sender(object):
             if isinstance(arg, str):
                 if arg in Sender.registered_functions:
                     print("| {func}\n|\t{doc}\n|".format(func=arg, doc=Sender.registered_functions[arg].replace("\n", "\n|\t")))
+
+    @property
+    def do_quit(self):
+        return self._do_quit
 
 
 """

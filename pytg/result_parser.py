@@ -3,6 +3,7 @@ from DictObject import DictObjectList
 from luckydonaldUtils.encoding import to_unicode as u
 import logging
 
+from .fix_msg_array import fix_peer
 from .exceptions import IllegalResponseException, NoResponse
 
 __author__ = 'luckydonald'
@@ -58,3 +59,24 @@ class List(ResultParser):
             return json
         else:
             raise IllegalResponseException("Not a list: {json}".format(json=str(json)))
+
+
+class OnlineEvent(ResultParser):
+    def __call__(self, json):
+        if not isinstance(json, dict):
+            raise IllegalResponseException("Not a dict: {json}".format(json=str(json)))
+        _check_if_has(json, "when", str)
+        _check_if_has(json, "user", dict)
+        json["user"] = fix_peer(json["user"])
+        return json
+
+
+def _check_if_has(json, key, expected_type=None):
+    if key not in json:
+        raise IllegalResponseException("Cloud not find key \"{key}\" in dict: {json}".format(key=key, json=str(json)))
+    if type is not None:
+        if not isinstance(json[key], expected_type):
+            raise IllegalResponseException("Key \"{key}\" is not type {type_expected}, but is type {type_is}: {json}"
+                                           .format(key=key, type_expected=str(expected_type), type_is=type(json[key]),
+                                                   json=str(json)))
+
