@@ -73,7 +73,11 @@ class Telegram(object):
             os.setpgrp()
 
         atexit.register(self.stop_cli)
-        args = [self._tg_cli, '-R', '-W', '-P', str(port), '-k', self._public_key_file, '--json']
+        args = [
+            self._tg_cli, '-R', '-W', '-P', str(port),
+            '-k', self._public_key_file, '--json',
+            '--permanent-peer-ids', '--permanent-peer-ids',
+        ]
         if custom_cli_args is not None:
             if not isinstance(custom_cli_args, (list, tuple)):
                 raise TypeError("custom_cli_args should be a list or a tuple.")
@@ -102,7 +106,7 @@ class Telegram(object):
             self.receiver.stop()
         logger.info("Asking to CLI to stop.")
         if self._proc is not None:
-            if self.sender._do_quit:
+            if self.sender.do_quit:
                 logger.debug("Sender already stopped. Unable to issue safe_quit or quit to exit via socket.")
             else:
                 try:

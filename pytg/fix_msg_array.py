@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
-__author__ = 'luckydonald'
 
 import logging
+from luckydonaldUtils.encoding import to_unicode as u
 
 logger = logging.getLogger(__name__)
+__author__ = 'luckydonald'
 
-from luckydonaldUtils.encoding import to_unicode as u
 
 ENCR_CHAT_PREFIX = "!_user@"
 TGL_PEER_CHAT = u("chat")
@@ -50,13 +50,16 @@ def fix_peer(peer):
         del peer["peer_type"]
 
     # add cmd field
+    # cmd is the field you should always use in messages.
     if peer["type"] == TGL_PEER_ENCR_CHAT:
         assert peer["print_name"].startswith(ENCR_CHAT_PREFIX)
         peer["cmd"] = peer["print_name"]
+    elif "id" in peer and peer["id"].startswith("$"):
+        peer["cmd"] = peer["id"]  # permanent-peer-ids
     elif peer["type"] == TGL_PEER_CHANNEL:
-        peer["cmd"] = u("%s#id%d") % (peer["type"], peer["peer_id"])
+        peer["cmd"] = u("{type}#id{peer_id}").format(type=TGL_PEER_CHANNEL, peer_id=peer["peer_id"])
     else:
-        peer["cmd"] = u("%s#%d") % (peer["type"], peer["peer_id"])
+        peer["cmd"] = u("{type}#{peer_id}").format(type=peer["type"], peer_id=peer["peer_id"])
 
     # remove print_name field
     # create name field
