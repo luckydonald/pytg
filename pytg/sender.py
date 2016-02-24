@@ -54,7 +54,8 @@ functions["send_contact"]         = ("send_contact", [args.Peer("peer"), args.Un
 functions["send_text_from_file"]  = ("send_text", [args.Peer("peer"), args.File("file")], res.success_fail, 60.0, "")
 functions["fwd"]                  = ("fwd", [args.Peer("peer"), args.MsgId("msg_id")], res.success_fail, None, "Forwards message to peer. Forward to secret chats is forbidden")
 functions["fwd_media"]            = ("fwd_media", [args.Peer("peer"), args.MsgId("msg_id")], res.success_fail, None, "Forwards message media to peer. Forward to secret chats is forbidden. Result slightly differs from fwd")
-functions["reply_text"]           = ("reply", [args.MsgId("msg_id"), args.UnicodeString("text")], res.success_fail, None, "Sends text reply to message")
+functions["reply"]                = ("reply", [args.MsgId("msg_id"), args.UnicodeString("text")], res.success_fail, None, "Sends text reply to message")
+functions["reply_text"]           = functions["reply"]
 functions["reply_audio"]          = ("reply_audio", [args.MsgId("msg_id"), args.File("file")], res.success_fail, 120.0, "Sends audio to peer")
 functions["reply_contact"]        = ("reply_contact", [args.MsgId("msg_id"), args.UnicodeString("phone"), args.UnicodeString("first_name"), args.UnicodeString("last_name")], res.success_fail, 120.0, "Sends contact (not necessary telegram user)")
 functions["reply_document"]       = ("reply_document", [args.MsgId("msg_id"), args.File("file")], res.success_fail, None, "Sends document to peer")
@@ -162,8 +163,10 @@ functions["cli_help"]             = ("help", [], res.raw, None, "Prints the help
 
 reply_functions = OrderedDict()
 # used to map send functions to the fitting reply functions if reply_id is a permanent-msg-id
-# note: this uses the cli command, not the function name!
+# note: this uses the function name, not the cli command!
 reply_functions["msg"]                  = "reply"
+reply_functions["send_msg"]             = reply_functions["msg"]
+reply_functions["send_text"]            = reply_functions["msg"]
 reply_functions["send_audio"]           = "reply_audio"
 reply_functions["send_photo"]           = "reply_photo"
 reply_functions["send_video"]           = "reply_video"
@@ -282,11 +285,34 @@ class Sender(object):
         result_timeout = functions[function_name][FUNC_TIME]
         if "result_timeout" in kwargs:
             result_timeout = kwargs["result_timeout"]
+        modifier = []
+        # reply id modifier
+        if reply_id:
+            if not isinstance(reply_id, int):
+                # reply id modifier workaround
+                if function_name in reply_functions:
+                    alternative_command = reply_functions[function_name]
+                    logger.warn("Trying to substitute command \"{cmd}\" to \"{alt}\" to provide backwards compatibiltity for the reply parameter.\n"
+                                "Please note this is *very* hacky and should NOT be trusted or used!!\n"
+                                "See https://github.com/luckydonald/pytg/issues/65 for details.".format(cmd=function_name, alt=alternative_command))
+                    arguments = list(arguments)  # because it is a tuple.
+                    arguments[0] = reply_id  # should - in theory - replace the peer with the reply id.
+                    del kwargs["reply_id"]  # so we don't try to substitute again.
+                    # This is at least the syntax of msg -> reply
+                    return self.execute_function(alternative_command, *arguments, **kwargs)
+                else:
+                    raise AttributeError("reply_id keyword argument is not integer. "
+                                         "Please use the reply methods with the permantent-msg-ids instead!")
+            else:
+                modifier.append("[reply  =%i]" % reply_id)
+        # preview modifier
+        modifier.append("[enable_preview]" if enable_preview else "[disable_preview]")
+        modifier_str = " ".join(modifier)
         try:
             if result_timeout:
-                result = self._do_command(command_name, new_args, answer_timeout=result_timeout, retry_connect=retry_connect, enable_preview=enable_preview, reply_id=reply_id)
+                result = self._do_command(command_name, new_args, answer_timeout=result_timeout, retry_connect=retry_connect, modifier=modifier_str)
             else:
-                result = self._do_command(command_name, new_args, answer_timeout=self.default_answer_timeout, retry_connect=retry_connect, enable_preview=enable_preview, reply_id=reply_id)
+                result = self._do_command(command_name, new_args, answer_timeout=self.default_answer_timeout, retry_connect=retry_connect, modifier=modifier_str)
         except ConnectionError:
             raise
         except NoResponse:
@@ -372,36 +398,23 @@ class Sender(object):
             i += 1
         return command_name, new_args
 
-    def _do_command(self, cli_command, args, reply_id=None, enable_preview=None, answer_timeout=default_answer_timeout, retry_connect=2):
+    def _do_command(self, cli_command, args, answer_timeout=default_answer_timeout, retry_connect=2, modifier=None):
         """
         This function will join the cli_command with the given parameters (dynamic *args),
         and execute _do_send(request,**kwargs)
 
-        :keyword reply_id: The message id which this command is a reply to. (will be ignored by the CLI with non-sending commands)
-        :type    reply_id: int or None
         :keyword enable_preview: If the URL found in a message should have a preview. (will be ignored by the CLI with non-sending commands)
         :type    enable_preview: bool
         :keyword retry_connect: How often the initial connection should be retried. default: 2. Negative number means infinite.
         :type    retry_connect: int
+        :keyword modifier:
+        :type    modifier:
         """
-        reply_part = ""
-        alternative_command = None
-        if reply_id:
-            if not isinstance(reply_id, int):
-                if cli_command in reply_functions:
-                    alternative_command = reply_functions[cli_command]
-                    logger.warn("Substituting command \"{cmd}\" to \"{alt}\" to provide backwards compatibiltity for the reply parameter.\n"
-                                "See https://github.com/luckydonald/pytg/issues/65 for details.".format(cmd=cli_command, alt=alternative_command))
-                else:
-                    raise AttributeError("reply_id keyword argument is not integer. "
-                                         "Please use the reply methods with the permantent-msg-ids instead!")
-            reply_part = "[reply  =%i]" % reply_id
-        preview_part = "[enable_preview]" if enable_preview else "[disable_preview]"
         arg_string = " ".join([u(x) for x in args])
-        if alternative_command:
-            request = " ".join([preview_part, alternative_command, arg_string])
-        else:
-            request = " ".join([reply_part, preview_part, cli_command, arg_string])
+        request = " ".join([cli_command, arg_string])
+        if modifier:
+            assert isinstance(modifier, str)
+            request = " ".join([modifier, request])
         request = "".join([request, "\n"])  # TODO can this be deleted? We are using sockets now...
         result = self._do_send(request, answer_timeout=answer_timeout, retry_connect=retry_connect)
         return result
