@@ -88,7 +88,7 @@ class Telegram(object):
             raise AssertionError("CLI did stop, should be running...")
             # return pid
             # raise NotImplementedError("I Have to figure out processes in Python first...")
-    startCLI = start_cli  # compatibility with < v0 .4.5
+    startCLI = start_cli  # compatibility with <= v0.4.5
 
     def stop_cli(self):
         """
@@ -149,7 +149,7 @@ class Telegram(object):
         else:
             logger.warn("No CLI running.")
             raise AssertionError("No CLI running.")
-    stopCLI = stop_cli  # compatibility with <= v0 .4.5
+    stopCLI = stop_cli  # compatibility with <= v0.4.5
 
     def _check_stopped(self):
         self._proc.poll()

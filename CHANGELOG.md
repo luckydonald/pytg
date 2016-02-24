@@ -1,5 +1,11 @@
 
 #Changelog.
+## Version 0.4.6: ##
+- Added `Sender.channel_rename`, and supergroup fixes from [PR #61](https://github.com/luckydonald/pytg/pull/61). Thanks [@huiyiqun](https://github.com/huiyiqun)
+- Added `Sender.reply`, the previous `Sender.reply_text` became an alias of that. (ea43060c3f53a3f947fd73cd624c85a412804408)
+- Added `Sender.resolve_username` [#63](https://github.com/luckydonald/pytg/issues/63) (34ffb3fd15e8e322873c679b74293c3c184284d3)
+- Started using [PEP 8 formatting](https://www.python.org/dev/peps/pep-0008/) which addresses [#59](https://github.com/luckydonald/pytg/pull/59)
+- Started using [PEP 396](https://www.python.org/dev/peps/pep-0396/) to include `__version__`
 
 ## Version 0.4.5: ##
 - Fixed ```Sender.contacts_search()```. [#51](https://github.com/luckydonald/pytg/issues/51)
