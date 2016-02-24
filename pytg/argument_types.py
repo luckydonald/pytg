@@ -1,17 +1,24 @@
 # -*- coding: utf-8 -*-
-__author__ = 'luckydonald'
 
 from luckydonaldUtils import encoding
 from .utils import escape  # validate_input
 from .exceptions import ArgumentParseError
 from os import path  # file checking.
-import logging
+import logging, re
+
+__author__ = 'luckydonald'
 
 logger = logging.getLogger(__name__)
 
+USERNAME_REGEX = re.compile(
+    "^@?(?P<username>(?:[a-z](?:[a-z0-9]|_(?!_)){3,}[a-z0-9])|(?:gif|vid|wiki|pic|bing|imdb|bold))$",
+    # https://regex101.com/r/eV1oV1
+    flags=re.IGNORECASE
+)
+
 
 class Argument(object):
-    type = "unknown-argument-type"
+    type = "unknown-argument-type"  # used when generating docstrings for sender.py's functions
 
     def __init__(self, name, optional=False, multible=False, default=None):
         self.name = name
@@ -26,7 +33,7 @@ class Argument(object):
         else:
             string = "<" + string + ">"
         if self.multible:
-            string = string + "+"
+            string += "+"
         return string
 
     def parse(self, value):
@@ -75,6 +82,16 @@ class Peer(UnescapedUnicodeString):
         return value
 
 
+class Username(UnicodeString):
+    type = "str"
+
+    def parse(self, value):
+        if not USERNAME_REGEX.match(value):
+            raise ArgumentParseError(
+                "Username {username} did not match regex.".format(username=value)
+            )  # See https://regex101.com/r/eV1oV1
+
+
 class Chat(Peer):
     type = "str"
 
@@ -90,13 +107,6 @@ class User(Peer):
         return value
 
 
-class Channel(Peer):
-    type = "str"
-
-    def parse(self, value):
-        return super(User, self).parse(value)
-
-
 class SecretChat(Peer):
     type = "str"
 
@@ -108,7 +118,7 @@ class Channel(Peer):
     type = "str"
 
     def parse(self, value):
-        return super(Channel, self).parse(value)
+        return super(Peer, self).parse(value)
 
 
 class Number(Argument):
