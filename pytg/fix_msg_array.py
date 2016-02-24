@@ -50,7 +50,7 @@ def fix_peer(peer):
         del peer["peer_type"]
 
     # add cmd field
-    # cmd is the field you should always use in messages.
+    # cmd is the field you should always use when sending messages.
     if peer["type"] == TGL_PEER_ENCR_CHAT:
         assert peer["print_name"].startswith(ENCR_CHAT_PREFIX)
         peer["cmd"] = peer["print_name"]
