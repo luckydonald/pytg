@@ -52,13 +52,13 @@ class Nothing(Argument):
 
 class UnescapedUnicodeString(Argument):
     """
-    Used for unicodes stings which will not be escaped.
+    Used for unicodes stings which will not be escaped. (no need for escaping and 'simple quotes')
     """
     type = "str"
     pass
 
 
-class UnicodeString(UnescapedUnicodeString):
+class UnicodeString(Argument):
     """
     Used for unicodes stings which will be escaped, and wrapped in 'simple quotes'
     """
@@ -69,6 +69,16 @@ class UnicodeString(UnescapedUnicodeString):
         value = escape(value)
         if not isinstance(value, encoding.text_type):
             raise ArgumentParseError("Not a string.")
+        return value
+
+
+class PermanentID(UnescapedUnicodeString):
+    type = "str"
+
+    def parse(self, value):
+        if not isinstance(value, encoding.unicode_type):
+            raise ArgumentParseError("Not a (unicode) string.")
+        # TODO: Regex
         return value
 
 
@@ -173,8 +183,8 @@ class File(UnicodeString):
         return value
 
 
-class MsgId(PositiveNumber):
-    type = "int"
+class MsgId(PermanentID):
+    type = "str"
 
     def parse(self, value):
         return super(MsgId, self).parse(value)
