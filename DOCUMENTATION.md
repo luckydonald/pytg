@@ -41,7 +41,7 @@ Also you can surround it with a try block, excepting a [```NoResponse```](#nores
 
 
 ### sending messages
-| Telgram command (\* means optional) | Expected return parser | Timout (in seconds) | Description |
+| Telgram command<br>(\* means optional) | Expected return parser | Timout<br>(seconds) | Description |
 | ------------------ | ---------------------- | ------------------------ | ----------- |
 | ```sender.msg(```peer```,``` text```)``` | success_fail | 60.0 | Sends text message to peer |
 | ```sender.send_msg(```peer```,``` text```)``` | success_fail | 60.0 | Sends text message to peer (alias to msg)|
@@ -69,7 +69,7 @@ Also you can surround it with a try block, excepting a [```NoResponse```](#nores
 | ```sender.broadcast_text(```user```,``` text```)``` | success_fail | 60.0 | Sends text to several users at once |
 
 ### message related
-| Telgram command (\* means optional) | Expected return parser | Timout (in seconds) | Description |
+| Telgram command<br>(\* means optional) | Expected return parser | Timout<br>(seconds) | Description |
 | ------------------ | ---------------------- | ------------------------ | ----------- |
 | ```sender.load_audio(```msg_id```)``` | something | 120.0 | Downloads file to downloads dirs. Prints file name after download end |
 | ```sender.load_chat_photo(```chat```)``` | success_fail | 120.0 | Downloads file to downloads dirs. Prints file name after download end |
@@ -82,20 +82,20 @@ Also you can surround it with a try block, excepting a [```NoResponse```](#nores
 | ```sender.load_video_thumb(```msg_id```)``` | something | 120.0 | Downloads file to downloads dirs. Prints file name after download end |
 
 ### peer related
-| Telgram command (\* means optional) | Expected return parser | Timout (in seconds) | Description |
+| Telgram command<br>(\* means optional) | Expected return parser | Timout<br>(seconds) | Description |
 | ------------------ | ---------------------- | ------------------------ | ----------- |
 | ```sender.mark_read(```peer```)``` | success_fail | [None](#default_answer_timeout) | Marks messages with peer as read |
 | ```sender.history(```user```,``` *limit*\*```,``` *offset*\*```)``` | something | [None](#default_answer_timeout) | Prints messages with this peer (most recent message lower). Also marks messages as read |
 
 
 ### user related
-| Telgram command (\* means optional) | Expected return parser | Timout (in seconds) | Description |
+| Telgram command<br>(\* means optional) | Expected return parser | Timout<br>(seconds) | Description |
 | ------------------ | ---------------------- | ------------------------ | ----------- |
 | ```sender.user_info(```user```)``` | something | [None](#default_answer_timeout) |  |
 | ```sender.load_user_photo(```user```)``` | something | 120.0 | Downloads file to downloads dirs. Prints file name after download end |
 
 ### contact related
-| Telgram command (\* means optional) | Expected return parser | Timout (in seconds) | Description |
+| Telgram command<br>(\* means optional) | Expected return parser | Timout<br>(seconds) | Description |
 | ------------------ | ---------------------- | ------------------------ | ----------- |
 | ```sender.contact_add(```phone```,``` first_name```,``` last_name```)``` | something | [None](#default_answer_timeout) | Tries to add user to contact list |
 | ```sender.contact_add_by_card(```card```)``` | success_fail | [None](#default_answer_timeout) | Gets user by card and prints it name. You can then send messages to him as usual #todo: add args type |
@@ -105,7 +105,7 @@ Also you can surround it with a try block, excepting a [```NoResponse```](#nores
 | ```sender.contacts_search(```user_name```,``` *limit*\*```)``` | success_fail | [None](#default_answer_timeout) | Searches contacts by username |
 
 ### group chat related
-| Telgram command (\* means optional) | Expected return parser | Timout (in seconds) | Description |
+| Telgram command<br>(\* means optional) | Expected return parser | Timout<br>(seconds) | Description |
 | ------------------ | ---------------------- | ------------------------ | ----------- |
 | ```sender.chat_info(```chat```)``` | something | [None](#default_answer_timeout) | Prints info about chat (id, members, admin, etc.) |
 | ```sender.chat_set_photo(```chat```,``` file```)``` | success_fail | 120.0 | Sets chat photo. Photo will be cropped to square |
@@ -117,7 +117,7 @@ Also you can surround it with a try block, excepting a [```NoResponse```](#nores
 | ```sender.export_chat_link(```chat```)``` | success_fail | [None](#default_answer_timeout) | Prints chat link that can be used to join to chat |
 
 ### secret chat related
-| Telgram command (\* means optional) | Expected return parser | Timout (in seconds) | Description |
+| Telgram command<br>(\* means optional) | Expected return parser | Timout<br>(seconds) | Description |
 | ------------------ | ---------------------- | ------------------------ | ----------- |
 | ```sender.create_secret_chat(```user```)``` | success_fail | [None](#default_answer_timeout) | Starts creation of secret chat |
 | ```sender.accept_secret_chat(```secret_chat```)``` | success_fail | [None](#default_answer_timeout) | Accept a secret chat |
@@ -125,7 +125,7 @@ Also you can surround it with a try block, excepting a [```NoResponse```](#nores
 | ```sender.visualize_key(```secret_chat```)``` | success_fail | [None](#default_answer_timeout) | Prints visualization of encryption key (first 16 bytes sha1 of it in fact) |
 
 ### own profile related
-| Telgram command (\* means optional) | Expected return parser | Timout (in seconds) | Description |
+| Telgram command<br>(\* means optional) | Expected return parser | Timout<br>(seconds) | Description |
 | ------------------ | ---------------------- | ------------------------ | ----------- |
 | ```sender.set_profile_name(```first_name```,``` last_name```)``` | something | 60.0 | Sets profile name. |
 | ```sender.set_username(```name```)``` | success_fail | [None](#default_answer_timeout) | Sets username. |
@@ -135,7 +135,7 @@ Also you can surround it with a try block, excepting a [```NoResponse```](#nores
 | ```sender.export_card()``` | success_fail | [None](#default_answer_timeout) | Prints card that can be imported by another user with import_card method |
 
 ### system related
-| Telgram command (\* means optional) | Expected return parser | Timout (in seconds) | Description |
+| Telgram command<br>(\* means optional) | Expected return parser | Timout<br>(seconds) | Description |
 | ------------------ | ---------------------- | ------------------------ | ----------- |
 | ```sender.quit()``` | response_fails | [None](#default_answer_timeout) | Quits immediately |
 | ```sender.safe_quit()``` | response_fails | [None](#default_answer_timeout) | Waits for all queries to end, then quits |
@@ -144,7 +144,7 @@ Also you can surround it with a try block, excepting a [```NoResponse```](#nores
 | sender.set_password(*hint*\* default: "empty") | success_fail | [None](#default_answer_timeout) | Sets password |
 
 ### diversa
-| Telgram command (\* means optional) | Expected return parser | Timout (in seconds) | Description |
+| Telgram command<br>(\* means optional) | Expected return parser | Timout<br>(seconds) | Description |
 | ------------------ | ---------------------- | ------------------------ | ----------- |
 | ```sender.raw(```command```)``` | raw | 120.0 | just send custom shit to the cli. Use, if there are no fitting functions, because I didn't update
 | ```sender.cli_help()``` | raw | [None](#default_answer_timeout) | Prints the help. (Needed for pytg itself!) |
