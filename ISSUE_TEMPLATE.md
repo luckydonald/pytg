@@ -15,7 +15,3 @@ Tell us what should happen
 
 ### Actual behaviour
 Tell us what happens instead
-```
-Post your traceback and/or log here.
-```
-
