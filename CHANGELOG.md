@@ -1,5 +1,9 @@
+#Changelog
 
-#Changelog.
+## Version 0.4.7: ##
+- Fixed `Sender.message_get` not accepting the new permanent id's. [#66](https://github.com/luckydonald/pytg/issues/66)
+- Added Example `source_of_reply.py` involving `Sender.message_get` to find the first message of a stack of replies.
+
 ## Version 0.4.6: ##
 - Added `Sender.channel_rename`, and supergroup fixes from [PR #61](https://github.com/luckydonald/pytg/pull/61). Thanks [@huiyiqun](https://github.com/huiyiqun)
 - Added `Sender.reply`, the previous `Sender.reply_text` became an alias of that. (ea43060c3f53a3f947fd73cd624c85a412804408)
