@@ -67,7 +67,7 @@ functions["broadcast_text"]       = ("broadcast", [args.User("user", multible=Tr
 
 # message related
 functions["message_delete"]       = ("delete_msg", [args.MsgId("msg_id")], res.success_fail, None, "Deletes message")
-functions["message_get"]          = ("get_message", [args.NonNegativeNumber("msg_id")], res.something, None, "Get message by id")
+functions["message_get"]          = ("get_message", [args.MsgId("msg_id")], res.something, None, "Get message by id")
 functions["messages_search"]      = ("search", [
                                                 args.Peer("peer", optional=True),
                                                 args.NonNegativeNumber("limit", optional=True),
