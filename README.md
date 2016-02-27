@@ -1,5 +1,5 @@
 # **PyTg** 
-#### Version [#### Version 0.4.8 ####](https://github.com/luckydonald/pytg/blob/master/CHANGELOG.md#changelog) ####
+#### Version [0.4.8](https://github.com/luckydonald/pytg/blob/master/CHANGELOG.md#changelog) ####
 [![get it from PyPI](https://img.shields.io/pypi/v/pytg.svg)](https://pypi.python.org/pypi/pytg) [![PyPI](https://img.shields.io/pypi/dm/pytg.svg)](https://pypi.python.org/pypi/pytg/0.4.6/) [![Join the chat at https://gitter.im/luckydonald/pytg](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/luckydonald/pytg?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 A Python package that communicates with the [Telegram messenger CLI](https://github.com/vysheng/tg), to send and receive messages and more.
