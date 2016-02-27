@@ -19,7 +19,8 @@ from luckydonaldUtils.encoding import text_type, binary_type
 
 from . import result_parser as res
 from . import argument_types as args
-from .exceptions import UnknownFunction, ConnectionError, NoResponse, IllegalResponseException
+from .result_parser import ResultParser
+from .exceptions import UnknownFunction, ConnectionError, NoResponse, IllegalResponseException, FailException
 from .fix_msg_array import fix_message
 from .this_py_version import set_docstring, get_dict_items
 
@@ -310,10 +311,11 @@ class Sender(object):
         modifier.append("[enable_preview]" if enable_preview else "[disable_preview]")
         modifier_str = " ".join(modifier)
         try:
+            request = self._build_request(command_name, new_args, modifier=modifier_str)
             if result_timeout:
-                result = self._do_command(command_name, new_args, answer_timeout=result_timeout, retry_connect=retry_connect, modifier=modifier_str)
+                result = self._do_send(request, answer_timeout=result_timeout, retry_connect=retry_connect)
             else:
-                result = self._do_command(command_name, new_args, answer_timeout=self.default_answer_timeout, retry_connect=retry_connect, modifier=modifier_str)
+                result = self._do_send(request, answer_timeout=self.default_answer_timeout, retry_connect=retry_connect)
         except ConnectionError:
             raise
         except NoResponse:
@@ -329,17 +331,27 @@ class Sender(object):
             except TypeError:
                 logger.error("Result parser did not allow exceptions.")
                 raise
+        # end try _do_command
+        if inspect.isclass(result_parser):
+            assert issubclass(result_parser, ResultParser)  # if it is a class it should subclass ResultParser.
+            result_parser = result_parser()  # get an instance
+        # end if
         if result_parser != res.raw:  # skip json'ing stuff marked as raw output.
             try:
                 json_dict = json.loads(result)
                 message = DictObject.objectify(json_dict)
                 message = fix_message(message)
+                result = message
             except:
-                logger.exception("Parsing of answer failed, maybe not valid json?\nMessage: >{}<".format(result))
-                # result_parser todo
+                logger.exception("Parsing of answer failed, maybe not valid json?\nMessage:\n{}".format(result))
                 return IllegalResponseException("Parsing of answer failed, maybe not valid json?\nMessage: >{}<".format(result))  # TODO: This is *very* bad code.
-            return result_parser(message)
-        return result_parser(result)  # raw()
+            try:
+                return result_parser(message)
+            except FailException as e:
+                e.command = request
+                raise e
+        # else (raw only)
+        return result_parser(result)  # raw() only
 
     @staticmethod
     def _validate_input(function_name, arguments):
@@ -399,17 +411,18 @@ class Sender(object):
             i += 1
         return command_name, new_args
 
-    def _do_command(self, cli_command, args, answer_timeout=default_answer_timeout, retry_connect=2, modifier=None):
+    @staticmethod
+    def _build_request(cli_command, args, modifier=None):
         """
         This function will join the cli_command with the given parameters (dynamic *args),
-        and execute _do_send(request,**kwargs)
+        applying the modifier.
 
-        :keyword enable_preview: If the URL found in a message should have a preview. (will be ignored by the CLI with non-sending commands)
-        :type    enable_preview: bool
-        :keyword retry_connect: How often the initial connection should be retried. default: 2. Negative number means infinite.
-        :type    retry_connect: int
-        :keyword modifier:
-        :type    modifier:
+        :param cli_command: the actual command
+        :type  cli_command: str
+        :param args: The arguments for that list
+        :type  args: list of str
+        :keyword modifier: A modifier, like [enable_preview]. They are poorly documented in the CLI.
+        :type    modifier: str
         """
         arg_string = " ".join([u(x) for x in args])
         request = " ".join([cli_command, arg_string])
@@ -417,8 +430,7 @@ class Sender(object):
             assert isinstance(modifier, str)
             request = " ".join([modifier, request])
         request = "".join([request, "\n"])  # TODO can this be deleted? We are using sockets now...
-        result = self._do_send(request, answer_timeout=answer_timeout, retry_connect=retry_connect)
-        return result
+        return request
 
     def _do_send(self, command, answer_timeout=default_answer_timeout, retry_connect=2):
         """

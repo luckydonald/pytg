@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
-from DictObject import DictObjectList
+from DictObject import DictObjectList, DictObject
 from luckydonaldUtils.encoding import to_unicode as u
 import logging
 
 from .fix_msg_array import fix_peer
-from .exceptions import IllegalResponseException, NoResponse
+from .exceptions import IllegalResponseException, NoResponse, FailException
 
 __author__ = 'luckydonald'
-
+__all__ = ["raw", "nothing", "something", "anything", "success_fail", "response_fails", "ResultParser", "List", "OnlineEvent"]
 logger = logging.getLogger(__name__)
 
 
@@ -32,10 +32,13 @@ def anything(value):
 
 
 def success_fail(json):
+    """
+    :type json: DictObject
+    """
     if json.result == u("SUCCESS"):
         return True
     if json.result == u("FAIL"):
-        return json
+        raise FailException(json.error_code, json.error)
     raise IllegalResponseException("Found: {}".format(json))
 
 
@@ -50,7 +53,8 @@ def response_fails(exception=None, *args):
 
 
 class ResultParser(object):
-    pass
+    def __call__(self, *args, **kwargs):
+        raise NotImplementedError("Yo. Somebody probably forgot to write some code.")
 
 
 class List(ResultParser):
@@ -63,8 +67,13 @@ class List(ResultParser):
 
 class OnlineEvent(ResultParser):
     def __call__(self, json):
-        if not isinstance(json, dict):
+        """
+        :type json: DictObject
+        """
+        if not isinstance(json, DictObject):
             raise IllegalResponseException("Not a dict: {json}".format(json=str(json)))
+        assert isinstance(json, DictObject)
+        success_fail(json)
         _check_if_has(json, "when", str)
         _check_if_has(json, "user", dict)
         json["user"] = fix_peer(json["user"])
@@ -73,7 +82,7 @@ class OnlineEvent(ResultParser):
 
 def _check_if_has(json, key, expected_type=None):
     if key not in json:
-        raise IllegalResponseException("Cloud not find key \"{key}\" in dict: {json}".format(key=key, json=str(json)))
+        raise IllegalResponseException("Could not find key \"{key}\" in dict: {json}".format(key=key, json=str(json)))
     if type is not None:
         if not isinstance(json[key], expected_type):
             raise IllegalResponseException("Key \"{key}\" is not type {type_expected}, but is type {type_is}: {json}"
