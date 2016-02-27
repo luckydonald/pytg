@@ -31,15 +31,27 @@ def anything(value):
     return value
 
 
-def success_fail(json):
+def success_fail(json, need_success=True):
     """
-    :type json: DictObject
+    Will return True if json.result == "SUCCESS".
+    If json.result was not found, and need_success is set to True, a IllegalResponseException is raised.
+    If json.result was not found, and need_success is set to False, it will return the original json.
+
+    :param json: The input to check.
+    :type  json: DictObject
+    :keyword need_success: if true it will raise a IllegalResponseException if json.result is not found.
+    :type    need_success: bool
+    :returns: True if json.result == "SUCCESS", or the given json if json.result is not found.
+    :rtype: bool | DictObject
     """
+    if not need_success and not "result" in json:
+        return json
     if json.result == u("SUCCESS"):
         return True
     if json.result == u("FAIL"):
         raise FailException(json.error_code, json.error)
     raise IllegalResponseException("Found: {}".format(json))
+# end def
 
 
 def response_fails(exception=None, *args):
@@ -73,7 +85,7 @@ class OnlineEvent(ResultParser):
         if not isinstance(json, DictObject):
             raise IllegalResponseException("Not a dict: {json}".format(json=str(json)))
         assert isinstance(json, DictObject)
-        success_fail(json)
+        success_fail(json, need_success=False)
         _check_if_has(json, "when", str)
         _check_if_has(json, "user", dict)
         json["user"] = fix_peer(json["user"])
