@@ -173,13 +173,13 @@ class PositiveNumber(NonNegativeNumber):
         return value
 
 
-class File(UnicodeString):
+class FilePath(UnicodeString):
     type = "str"
 
     def parse(self, value):
         if not path.isfile(encoding.native_type(value)):
             raise ArgumentParseError("File path \"{path}\" not valid.".format(path=value))
-        value = super(File, self).parse(value)
+        value = super(FilePath, self).parse(value)
         return value
 
 

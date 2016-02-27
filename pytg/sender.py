@@ -42,27 +42,27 @@ functions = OrderedDict()
 functions["msg"]                  = ("msg", [args.Peer("peer"), args.UnicodeString("test")], res.success_fail, 60.0, "Sends text message to peer")
 functions["send_msg"]             = functions["msg"]
 functions["send_text"]            = functions["msg"]
-functions["send_audio"]           = ("send_audio", [args.Peer("peer"), args.File("file")], res.success_fail, 120.0, "")
+functions["send_audio"]           = ("send_audio", [args.Peer("peer"), args.FilePath("file")], res.success_fail, 120.0, "")
 functions["send_typing"]          = ("send_typing", [args.Peer("peer")], res.success_fail, None, "")
 functions["send_typing_abort"]    = ("send_typing_abort", [args.Peer("peer")], res.success_fail, None, "")
-functions["send_photo"]           = ("send_photo", [args.Peer("peer"), args.File("file"), args.UnicodeString("caption", optional=True)], res.success_fail, 120.0, "")
-functions["send_video"]           = ("send_video", [args.Peer("peer"), args.File("file"), args.UnicodeString("caption", optional=True)], res.success_fail, 120.0, "")
-functions["send_document"]        = ("send_document", [args.Peer("peer"), args.File("file")], res.success_fail, 120.0, "")
-functions["send_file"]            = ("send_file", [args.Peer("peer"), args.File("file")], res.success_fail, 120.0, "")
+functions["send_photo"]           = ("send_photo", [args.Peer("peer"), args.FilePath("file"), args.UnicodeString("caption", optional=True)], res.success_fail, 120.0, "")
+functions["send_video"]           = ("send_video", [args.Peer("peer"), args.FilePath("file"), args.UnicodeString("caption", optional=True)], res.success_fail, 120.0, "")
+functions["send_document"]        = ("send_document", [args.Peer("peer"), args.FilePath("file")], res.success_fail, 120.0, "")
+functions["send_file"]            = ("send_file", [args.Peer("peer"), args.FilePath("file")], res.success_fail, 120.0, "")
 functions["send_location"]        = ("send_location", [args.Peer("peer"), args.Double("latitude"), args.Double("longitude")], res.success_fail, None, "")
 functions["send_contact"]         = ("send_contact", [args.Peer("peer"), args.UnicodeString("phone"), args.UnicodeString("first_name"), args.UnicodeString("last_name")], res.something, 60.0, "ret: formated message")
-functions["send_text_from_file"]  = ("send_text", [args.Peer("peer"), args.File("file")], res.success_fail, 60.0, "")
+functions["send_text_from_file"]  = ("send_text", [args.Peer("peer"), args.FilePath("file")], res.success_fail, 60.0, "")
 functions["fwd"]                  = ("fwd", [args.Peer("peer"), args.MsgId("msg_id")], res.success_fail, None, "Forwards message to peer. Forward to secret chats is forbidden")
 functions["fwd_media"]            = ("fwd_media", [args.Peer("peer"), args.MsgId("msg_id")], res.success_fail, None, "Forwards message media to peer. Forward to secret chats is forbidden. Result slightly differs from fwd")
 functions["reply"]                = ("reply", [args.MsgId("msg_id"), args.UnicodeString("text")], res.success_fail, None, "Sends text reply to message")
 functions["reply_text"]           = functions["reply"]
-functions["reply_audio"]          = ("reply_audio", [args.MsgId("msg_id"), args.File("file")], res.success_fail, 120.0, "Sends audio to peer")
+functions["reply_audio"]          = ("reply_audio", [args.MsgId("msg_id"), args.FilePath("file")], res.success_fail, 120.0, "Sends audio to peer")
 functions["reply_contact"]        = ("reply_contact", [args.MsgId("msg_id"), args.UnicodeString("phone"), args.UnicodeString("first_name"), args.UnicodeString("last_name")], res.success_fail, 120.0, "Sends contact (not necessary telegram user)")
-functions["reply_document"]       = ("reply_document", [args.MsgId("msg_id"), args.File("file")], res.success_fail, None, "Sends document to peer")
-functions["reply_file"]           = ("reply_file", [args.MsgId("msg_id"), args.File("file")], res.success_fail, 120.0, "Sends document to peer")
+functions["reply_document"]       = ("reply_document", [args.MsgId("msg_id"), args.FilePath("file")], res.success_fail, None, "Sends document to peer")
+functions["reply_file"]           = ("reply_file", [args.MsgId("msg_id"), args.FilePath("file")], res.success_fail, 120.0, "Sends document to peer")
 functions["reply_location"]       = ("reply_location", [args.MsgId("msg_id"), args.Double("latitude"), args.Double("longitude")], res.success_fail, None, "Sends geo location")
-functions["reply_photo"]          = ("reply_photo", [args.MsgId("msg_id"), args.File("file"), args.UnicodeString("caption", optional=True)], res.success_fail, 120.0, "Sends photo to peer")
-functions["reply_video"]          = ("reply_video", [args.MsgId("msg_id"), args.File("file"), args.UnicodeString("caption", optional=True)], res.success_fail, 120.0, "Sends video to peer")
+functions["reply_photo"]          = ("reply_photo", [args.MsgId("msg_id"), args.FilePath("file"), args.UnicodeString("caption", optional=True)], res.success_fail, 120.0, "Sends photo to peer")
+functions["reply_video"]          = ("reply_video", [args.MsgId("msg_id"), args.FilePath("file"), args.UnicodeString("caption", optional=True)], res.success_fail, 120.0, "Sends video to peer")
 functions["broadcast_text"]       = ("broadcast", [args.User("user", multible=True), args.UnicodeString("text")], res.success_fail, 60.0, "Sends text to several users at once")
 
 # message related
@@ -113,7 +113,7 @@ functions["contacts_search"]      = ("contact_search", [args.UnicodeString("user
 
 # group chats
 functions["chat_info"]            = ("chat_info", [args.Chat("chat")], res.something, None, "Prints info about chat (id, members, admin, etc.)")
-functions["chat_set_photo"]       = ("chat_set_photo", [args.Chat("chat"), args.File("file")], res.success_fail, 120, 0, "Sets chat photo. Photo will be cropped to square")
+functions["chat_set_photo"]       = ("chat_set_photo", [args.Chat("chat"), args.FilePath("file")], res.success_fail, 120, 0, "Sets chat photo. Photo will be cropped to square")
 functions["chat_add_user"]        = ("chat_add_user", [args.Chat("chat"), args.User("user"), args.NonNegativeNumber("msgs_to_forward", optional=True)], res.success_fail, 60.0, "Adds user to chat. Sends him last msgs-to-forward message from this chat. Default 100")
 functions["chat_del_user"]        = ("chat_del_user", [args.Chat("chat"), args.User("user")], res.success_fail, None, "Deletes user from chat")
 functions["chat_rename"]          = ("rename_chat", [args.Chat("chat"), args.UnicodeString("new_name")], res.success_fail, None, "Renames chat")
@@ -139,13 +139,13 @@ functions["channel_list"]         = ("channel_list", [args.NonNegativeNumber("li
 functions["channel_set_about"]    = ("channel_set_about", [args.Channel("channel"), args.UnicodeString("about")], res.success_fail, None, "Sets channel about info.")
 # functions["channel_set_admin"]  = ("channel_set_admin", <channel> <admin> <type>  Sets channel admin. 0 - not admin, 1 - moderator, 2 - editor
 functions["channel_set_username"] = ("channel_set_username", [args.Channel("channel"), args.UnicodeString("name")], res.success_fail, None, "Sets channel username info.")
-functions["channel_set_photo"]    = ("channel_set_photo", [args.Channel("channel"), args.File("file")], res.something, 120.0, "Sets channel photo. Photo will be cropped to square")
+functions["channel_set_photo"]    = ("channel_set_photo", [args.Channel("channel"), args.FilePath("file")], res.something, 120.0, "Sets channel photo. Photo will be cropped to square")
 functions["channel_rename"]       = ("rename_channel", [args.Channel("channel"), args.UnicodeString("new_name")], res.success_fail, None, "Renames channel")
 
 # own profile
 functions["set_profile_name"]     = ("set_profile_name", [args.UnicodeString("first_name"), args.UnicodeString("last_name")], res.something, 60.0, "Sets profile name.")
 functions["set_username"]         = ("set_username", [args.UnicodeString("name")], res.success_fail, None, "Sets username.")
-functions["set_profile_photo"]    = ("set_profile_photo", [args.File("file")], res.something, 120.0, "Sets profile photo. Photo will be cropped to square")
+functions["set_profile_photo"]    = ("set_profile_photo", [args.FilePath("file")], res.something, 120.0, "Sets profile photo. Photo will be cropped to square")
 functions["status_online"]        = ("status_online", [], res.success_fail, None, "Sets status as online")
 functions["status_offline"]       = ("status_offline", [], res.success_fail, None, "Sets status as offline")
 functions["export_card"]          = ("export_card", [], res.success_fail, None, "Prints card that can be imported by another user with import_card method")
