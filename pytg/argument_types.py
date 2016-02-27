@@ -100,6 +100,7 @@ class Username(UnicodeString):
             raise ArgumentParseError(
                 "Username {username} did not match regex.".format(username=value)
             )  # See https://regex101.com/r/eV1oV1
+        return value
 
 
 class Chat(Peer):
