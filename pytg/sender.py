@@ -95,7 +95,7 @@ functions["load_video_thumb"]     = ("load_video_thumb", [args.MsgId("msg_id")],
 # peer
 functions["mark_read"]            = ("mark_read", [args.Peer("peer")], res.success_fail, None, "Marks messages with peer as read")
 functions["history"]              = ("history", [args.Peer("user"), args.PositiveNumber("limit", optional=True), args.NonNegativeNumber("offset", optional=True)], res.something, None, "Prints messages with this peer (most recent message lower). Also marks messages as read")
-functions["resolve_username"]     = ("resolve_username", [args.Username("@username")], res.OnlineEvent, None, "Searches user by username")
+functions["resolve_username"]     = ("resolve_username", [args.Username("@username")], res.something, None, "Searches user by username")
 
 
 # user
@@ -395,7 +395,10 @@ class Sender(object):
                 # end if optional
             # end if to many arguments
             arg = arguments[i]
-            logger.debug("Parsing {function_name}: Argument {arg} - {type} ({opt})".format(function_name=n(function_name), arg=n(arg), type=func_type, opt=("optional" if hasattr(func_type, "_optional") else "needed")))
+            logger.debug("Parsing {function_name}: Argument {arg} - {type} ({opt})".format(
+                function_name=n(function_name), arg=n(arg), type=func_type,
+                opt=("optional" if hasattr(func_type, "_optional") else "needed")
+            ))
             # arg is the given one, which should be func_type.
 
             try:
