@@ -1,8 +1,8 @@
 #Changelog
 
 ## Version 0.4.8: ##
-- Renamed the argumen type `File` to `FilePath` to be more clear about it beeing a string. (Relates to [#67](https://github.com/luckydonald/pytg/issues/67)
-- Now the new `FailException` (subclasses `IllegalResponseException`) will now be raised if the CLI fails.
+- Renamed the argumen type `File` to `FilePath` to be more clear about it beeing a string. (Relates to [#67](https://github.com/luckydonald/pytg/issues/67))
+- Now the new `FailException` (subclasses `IllegalResponseException`) will be raised if the reports a error.
 - Fixed `Username` Argument becoming `None`
 - `ResultParser` classes (not instances) will be instanciated automatically.
 
