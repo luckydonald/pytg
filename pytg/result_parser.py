@@ -87,7 +87,7 @@ class OnlineEvent(ResultParser):
         assert isinstance(json, DictObject)
         success_fail(json, need_success=False)
         _check_if_has(json, "when", str)
-        _check_if_has(json, "user", dict)
+        _check_if_has(json, "user", DictObject)
         json["user"] = fix_peer(json["user"])
         return json
 
