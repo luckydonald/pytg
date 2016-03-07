@@ -2,7 +2,7 @@
 
 ## Version 0.4.8: ##
 - Renamed the argumen type `File` to `FilePath` to be more clear about it beeing a string. (Relates to [#67](https://github.com/luckydonald/pytg/issues/67))
-- Now the new `FailException` (subclasses `IllegalResponseException`) will be raised if the reports a error.
+- Now the new `FailException` (subclasses `IllegalResponseException`) will be raised if the CLI reports a error.
 - Fixed `Username` Argument becoming `None`
 - `ResultParser` classes (not instances) will be instanciated automatically.
 
@@ -30,6 +30,7 @@
 - Added ```result_timeout``` kwarg for all ```Sender``` functions. [#49](https://github.com/luckydonald/pytg/pull/49),[#48](https://github.com/luckydonald/pytg/pull/48). Thanks [@the-glu](https://github.com/the-glu)
 - Added first channel support [#47](https://github.com/luckydonald/pytg/pull/47). Thanks [@spoetnik](https://github.com/spoetnik)
 - Added to [PyPI](https://pypi.python.org/pypi/pytg).
+- Will not make such strange version numbers again.
 
 ## Version 0.4.1e: ##
 - Fixed result parsing of ```Sender.contact_add(...)``` [#35](https://github.com/luckydonald/pytg/pull/53). Thanks [@spikeekips](https://github.com/spikeekips)
@@ -49,18 +50,20 @@
 ## Version 0.4.1a: ##
 - fixed ```Sender``` not working with python 2. ([issue #26](https://github.com/luckydonald/pytg/issues/26), thanks @Meisolsson.)
 
-## Version 0.4.1``` ```:     
+## Version 0.4.1``` ```:  
+
 **Big rename**:     
-```pytg2``` -> ```pytg```    
+`pytg2` -> `pytg`    
 Thats it.
 
 ## Version 0.4.1: ##
+It is named ```"pytg"``` again. Hooray!
+[@luckydonald](https://github.com/luckydonald) took over maintainence.
 
-for documentation, see:
-```python
-help(pytg.sender.Sender)
-```
-
+- For documentation, you can just use python's `help()` function:
+    ```python
+    help(pytg.sender.Sender)
+    ```
 - added reply and preview capabilities.    
 - added commands.    
 
@@ -68,8 +71,13 @@ help(pytg.sender.Sender)
 ## Version 0.4.0: ##
 official cli support.
 CLI fork not updated? That is a problem of the past!
-> It was fun to develop that json bridge by myself though, and It hurts a bit too left that behind :cry:.
-> But: I learned a lot about C and git on that journy, and are letting my experience with json flow back into the original cli.
+
+No need for telejson any more, you can now run with the offical telegram-cli!
+Connecting to the cli for sending will now surrender after given retrys, and not loop forever.
+Also added a CHANGELOG file.
+
+> It was fun to develop that json bridge by myself though, and It hurts a bit too left that behind... :cry:
+> But: I learned a lot about C and git on that journy, and I can let my experience with json flow back into the original cli.
 > Everybody will profit from this.
 
 - ```pytg.Telegram```, ```pytg.sender.Sender```, ```pytg.receiver.Receiver``` 
@@ -84,7 +92,7 @@ CLI fork not updated? That is a problem of the past!
 		- ```out``` -> ```own``` (out is not intuitive as not mandatory this cli has send the message but the account did.)
 		- ```peer``` [added] This is where you most likly want to reply to.
 			It will be the group where the message got send, or the user if it is a private message.
-		- ~~```print_name```~~ [removed] use "cmd" and "name" instead.
+		- ~~```print_name```~~ **removed** use "cmd" and "name" instead.
 		- + ```cmd``` the unique identifier string which will not change. (exception: secret chats might be replaced by a new one)
 		- + ```name``` is a display name. Either the first name or, if not set, the username.
 		
@@ -111,25 +119,66 @@ CLI fork not updated? That is a problem of the past!
 		sender.send_photo("user#1234", "/path/to/image.png", "This is a image")
 		```
 
-## **New in Version 0.4.1**
-It is named ```"pytg"``` again. Hooray!
-
-## **New in Version 0.4.0**
-No need for telejson any more, you can now run with the offical telegram-cli!
-Connecting to the cli for sending will now surrender after given retrys, and not loop forever.
-Also added a CHANGELOG file.
-
-
-## New in Version 0.3.1
+## Version 0.3.1:
 Updates for telejson beta compatibility.
 This version never got offically released before the telejson fork got replaced by vysheng's native json implementation.
+In the end that was way better.
  
-## **New in Version 0.3.0**
-Pytg2 (now since V0.4.1 called Pytg again) got overhauled to version 0.3.0, which will restructure heavily,
+## **Version 0.3.0:**
+*Pytg2* (since `v0.4.1` called *pytg* again) got overhauled to version `0.3.0`, which restructures heavily,
 BUT will decrease the CPU usage to around nothing.
 While the old versions need to parse the cli output directly, resuling in easy ways to exploit it, now it is safe, using json internal.
+You need the modified telejson-cli for that to work. 
 Without the parsing we don't have to poll for new output ("Hey, got anything yet? And yet? And yet? ...") but just block until we got new output.
 The retrieval of new messaged is multitheaded, so you won't lose any messages if you do heavy and/or long operations between messages.
 
 Also a nice new feature is an automatic download of files. (more about this, as soon as I get time to edit this...)
 
+## Version 0.2.2:
+updated commands to reflect CLI changes, moved exceptions, better error output
+
+In Detail:
+
+- added the new commands to pytg:
+    - `send_typing(peer)`
+    - `set_profile_name(first_name, last_name=None)`
+    - `set_username(username)`
+    - `set_profile_photo(path)`
+    - `create_group_chat(chat_topic, user1, user2, user3, ... )`
+    - `chat_set_name(chat, new_name)  as mirror to rename_chat(chat, new_name)`
+    - `rename_chat(chat, new_name)`
+    - `search(pattern, peer=None, limit=None, from_unixtime=None, to_unixtime=None, offset=None)`
+- Moved exceptions into errors.py file to have them all in one place.
+- If a message type of telegram is not supported, it will now tell you with an message.
+
+(since commit `bb2a631`)
+
+## Version 0.2.1:
+- Renamed indexes of the messages arrays!
+    - `uid` > `userid`
+    - `gid` > `groupid`
+    - `cmduser` > `usercmd`
+    - `cmdgroup` > `groupcmd`
+- improved print_message_data (for messages) regex.
+- and did some code cleanup.
+
+Did I mention:
+
+- Fuck Yeah, got the f`**`k encoding working!!!
+- fixed `'\'` crashing bot.
+- fixed encoding like `'äöü'.
+
+(Changelog restored from commit [`888ebf`](https://github.com/luckydonald/pytg/commit/888ebf85cc0bbe216aa729569de6b0eb881294ee))
+
+
+## Version 0.2:
+[@luckydonald](https://github.com/luckydonald) started working on a fork.
+(first commit [`ea331e`](https://github.com/luckydonald/pytg/commit/ea331eb71cdf1bad481893d8516768217446e07e), called version 0.2 since [`722361`](https://github.com/luckydonald/pytg/commit/722361307a547a312e7bd4b9daa46a7c104d3c60))
+
+## Version 0.1
+Somewhere around commit [072c5f](https://github.com/luckydonald/pytg/commit/072c5f67c4164948ae255cac704709432511b667)
+
+## Version 0 - The beginning
+Back in January 2014, [@efaisal](https://github.com/efaisal) started working on pytg. 
+The Telgram-CLI was brand new, and there was no way to interact with it programatically like you could much later with lua or json. Until [then](https://github.com/luckydonald/pytg/commit/8c62dc4a35ef4ff2b81f4c0801f5448374fccaa1) there was not a single bot in telegam. 
+There was no talking. There was no smiling. *-sigh-* There were only rocks. [quote reference](http://mlp.wikia.com/wiki/Transcripts/The_Cutie_Mark_Chronicles)

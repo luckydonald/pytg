@@ -2,7 +2,7 @@
 #### Version [0.4.8](https://github.com/luckydonald/pytg/blob/master/CHANGELOG.md#changelog) ####
 [![get it from PyPI](https://img.shields.io/pypi/v/pytg.svg)](https://pypi.python.org/pypi/pytg) [![PyPI](https://img.shields.io/pypi/dm/pytg.svg)](https://pypi.python.org/pypi/pytg/0.4.6/) [![Join the chat at https://gitter.im/luckydonald/pytg](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/luckydonald/pytg?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
-A Python package that communicates with the [Telegram messenger CLI](https://github.com/vysheng/tg), to send and receive messages and more.
+A Python package that communicates with the [Telegram messenger CLI](https://github.com/vysheng/tg), to send and receive messages and more. *Since January 2014*
 
 [Telegram](https://telegram.org) is an Whatsapp like Instant messenger, with clients for virtually every device you use.
 
@@ -130,8 +130,9 @@ Receiving messages is already possible with all three (even simultaneously).
 Also it features neat classes for everything. Currently I lack the time to continue that.  
 See the develop branch for that. Maybe you can help make that happen.*
 
-## **URL Changes** or "How to update?"##
-Here is how to update your local git clone to this url. If you have not used pytg before, just skip to the Install part.
+## URL Changes ##
+If you started with pytg after 2015, you can ignore this. If you cloned from `luckydonald/pytg`, you can ignore this.
+Here is how to update your local git clone to this url when your old one was set to [https://github.com/efaisal/pytg.git`](https://github.com/efaisal) (before I started maintaining it in September 2014)
 ```shell
 # navigate into the clone
 cd pytg	 # not pytg/pytg!
