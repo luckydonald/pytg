@@ -7,7 +7,7 @@ logger = logging.getLogger(__name__)
 __author__ = 'luckydonald'
 
 
-ENCR_CHAT_PREFIX = "!_user@"
+ENCR_CHAT_PREFIX = "!_"
 TGL_PEER_CHAT = u("chat")
 TGL_PEER_USER = u("user")
 TGL_PEER_ENCR_CHAT = u("encr_chat")
@@ -65,8 +65,8 @@ def fix_peer(peer):
     # create name field
     if "print_name" in peer:
         peer["name"] = peer["print_name"]  # just in case everything failes.
-        del peer[
-            "print_name"]  # can contain ugly print_names like "user#123", "chat#123" or "no_spaces_just_underscores"
+        del peer["print_name"]
+        # can contain ugly print_names like "user#123", "chat#123" or "no_spaces_just_underscores"
     else:
         peer["name"] = ""
 
