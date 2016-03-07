@@ -1,5 +1,8 @@
 #Changelog
 
+## Version 0.4.9: ##
+- Fixes `AssertionError` with secret chats. [#74](https://github.com/luckydonald/pytg/issues/74)
+
 ## Version 0.4.8: ##
 - Renamed the argumen type `File` to `FilePath` to be more clear about it beeing a string. (Relates to [#67](https://github.com/luckydonald/pytg/issues/67))
 - Now the new `FailException` (subclasses `IllegalResponseException`) will be raised if the CLI reports a error.
