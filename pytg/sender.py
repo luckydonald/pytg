@@ -662,7 +662,7 @@ def _register_all_functions():
                     "\t`enable_preview`: optional, if the URL found in a message should have a preview. Default: False. " \
                     "(Will be ignored by the CLI with non-sending commands.)\n" \
                     "\t`retry_connect`: optional. How long, in seconds, we wait for the cli to answer the send command. " \
-                    "Set to explicitly to `None to use the global default timeout (`Sender.default_answer_timeout`) `" \
+                    "Set to explicitly to `None` to use the global default timeout (`Sender.default_answer_timeout`) " \
                     "instead of the default timeout for the given command. " \
                     "To use the default timeout for that command omit this parameter. " \
                     "Default: default timeout for the given command\n" \
@@ -703,7 +703,7 @@ def _create_markdown_documentation():
             assert isinstance(current_arg, args.Argument)
             arguments.append(current_arg.name)
             cli_args.append(str(current_arg))
-            args_description.append("\t\t- `{arg_name}`: *{optional}*, needs a {arg_class} (type: {type}), and may {allow_multible} be repeated.".format(
+            args_description.append("\t\t- `{arg_name}`: *{optional}*, needs a {arg_class} (type: `{type}`), and may {allow_multible} be repeated.".format(
                                     arg_name=current_arg.name,
                                     optional="optional" if current_arg.optional else "mandatory",
                                     arg_class=current_arg.__class__.__name__,
@@ -730,7 +730,7 @@ def _create_markdown_documentation():
                     "\t\t- `retry_connect`: *optional*, how often the initial connection should be retried. " \
                     "Default: 2. Negative number means infinite.\n" \
                     "\t\t- `retry_connect`: *optional*. How long, in seconds, we wait for the cli to answer the send command. " \
-                    "Set to explicitly to `None to use the global default timeout (`Sender.default_answer_timeout`) `" \
+                    "Set to explicitly to `None` to use the global default timeout (`Sender.default_answer_timeout`) " \
                     "instead of the default timeout for the given command. " \
                     "To use the default timeout for that command omit this parameter. " \
                     "Default: default timeout for the given command\n" \
