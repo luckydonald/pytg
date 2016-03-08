@@ -16,7 +16,6 @@ from luckydonaldUtils.encoding import to_unicode as u
 from luckydonaldUtils.encoding import to_binary as b
 from luckydonaldUtils.encoding import to_native as n
 from luckydonaldUtils.encoding import text_type, binary_type
-from wheel.tool import parser
 
 from . import result_parser as res
 from . import argument_types as args
