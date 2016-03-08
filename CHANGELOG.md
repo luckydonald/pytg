@@ -2,6 +2,9 @@
 
 ## Version 0.4.10: ##
 - Added optional caption argument to `send_document("user", "filepath" [, "caption"])`
+- Improved automated docstrings a bit.
+- Added automatic generation of documentation. `pytg.sender.create_automatic_documentation(filename="DOCUMENTATION.md")` creates a markdown formatted file. This uses roughly the same generation process as the automatic docstrings.
+- The old documentation can be found at `DOCUMENTATION_manual.md`
 
 ## Version 0.4.9: ##
 - Fixes `AssertionError` with secret chats. [#74](https://github.com/luckydonald/pytg/issues/74)

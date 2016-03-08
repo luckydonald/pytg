@@ -16,6 +16,7 @@ from luckydonaldUtils.encoding import to_unicode as u
 from luckydonaldUtils.encoding import to_binary as b
 from luckydonaldUtils.encoding import to_native as n
 from luckydonaldUtils.encoding import text_type, binary_type
+from wheel.tool import parser
 
 from . import result_parser as res
 from . import argument_types as args
@@ -34,7 +35,7 @@ FUNC_ARGS = 1  # arguments
 FUNC_RES  = 2  # return parser
 FUNC_TIME = 3  # Timeout
 FUNC_DESC = 4  # Description
-__all__ = ["Sender"]
+__all__ = ["Sender", "create_automatic_documentation"]
 functions = OrderedDict()
 
 # function to call              # actual telegram command, [required arguments], expected return parser, timeout (None = global default), Description
@@ -649,24 +650,36 @@ def _register_all_functions():
             description = meta[FUNC_DESC] + "\n"
         else:
             description = ""
-
+        parser = meta[FUNC_RES]
+        if not (inspect.isclass(parser) or inspect.isfunction(parser)):
+            parser = parser.__class__
+        parser_name = parser.__module__ + "." + parser.__name__
         docstring = "\n`def {func_name}({arguments})`\n" \
                     "{description}\n" \
                     "Arguments:\n" \
                     "{argument_description}\n" \
                     "\n" \
                     "Keyword arguments:\n" \
-                    "\t`reply_id`: optional, the message id (int) which this command is a reply to. Default: None. " \
-                    "(Will be ignored by the CLI with non-sending commands.)\n" \
                     "\t`enable_preview`: optional, if the URL found in a message should have a preview. Default: False. " \
                     "(Will be ignored by the CLI with non-sending commands.)\n" \
-                    "\t`retry_connect`: optional, how often the initial connection should be retried. " \
+                    "\t`retry_connect`: optional. How long, in seconds, we wait for the cli to answer the send command. " \
+                    "Set to explicitly to `None to use the global default timeout (`Sender.default_answer_timeout`) `" \
+                    "instead of the default timeout for the given command. " \
+                    "To use the default timeout for that command omit this parameter. " \
+                    "Default: default timeout for the given command\n" \
+                    "\t`result_timeout`: optional, how often the initial connection should be retried. " \
                     "Default: 2. Negative number means infinite.\n" \
+                    "\t`reply_id`: optional, this command is kept for compatibility. Please use the reply commands! " \
+                    "Default: None. (Will be ignored by the CLI with non-sending commands.)\n" \
+                    "\n" \
+                    "Returns:\n" \
+                    "\tthe parsed result using {parser} parser or raises an pytg.exceptions.IllegalResponseExceptions." \
                     "".format(
                         description=description,
                         func_name=function,
                         arguments=", ".join(arguments),
-                        argument_description=argument_description
+                        argument_description=argument_description,
+                        parser=parser_name
                     )
         Sender.registered_functions[function] = docstring
         command_func = command_alias_wrapper(function)
@@ -674,4 +687,77 @@ def _register_all_functions():
         setattr(command_func, "cli_command", meta[FUNC_CMD] + (" " if len(cli_args)>0 else "") + " ".join(cli_args))
         setattr(Sender, function, command_func)
 
+
+def _create_markdown_documentation():
+    """
+    This function generates me a fancy little Markdown formatted documentation.
+    Because any generated documentation is better then no documentation.
+    This is used to change/add commands easily in the future.
+    :return:
+    """
+    all_the_text = ["# Documentation", "(generated)", "### `pytg.sender.Sender`"]
+    for function, meta in get_dict_items(functions):  # slow in python 2:  http://stackoverflow.com/a/3294899
+        arguments = []
+        cli_args = []
+        args_description = []
+        for current_arg in meta[FUNC_ARGS]:
+            assert isinstance(current_arg, args.Argument)
+            arguments.append(current_arg.name)
+            cli_args.append(str(current_arg))
+            args_description.append("\t\t- `{arg_name}`: *{optional}*, needs a {arg_class} (type: {type}), and may {allow_multible} be repeated.".format(
+                                    arg_name=current_arg.name,
+                                    optional="optional" if current_arg.optional else "mandatory",
+                                    arg_class=current_arg.__class__.__name__,
+                                    allow_multible="not" if not current_arg.multible else "",
+                                    type=current_arg.type))
+        if len(args_description) == 0:
+            argument_description = "\t\tNo arguments."
+        else:
+            argument_description = "\n".join(args_description)
+        if meta[FUNC_DESC]:
+            description = meta[FUNC_DESC]
+        else:
+            description = ""
+        parser = meta[FUNC_RES]
+        if not (inspect.isclass(parser) or inspect.isfunction(parser)):
+            parser = parser.__class__
+        parser_name = parser.__module__ + "." + parser.__name__
+        docstring = "\n- `{func_name}({arguments})`: {description}\n" \
+                    "\t- Arguments:\n" \
+                    "{argument_description}\n" \
+                    "\t- Keyword arguments:\n" \
+                    "\t\t- `enable_preview`: *optional*, if the URL found in a message should have a preview. Default: False. " \
+                    "(Will be ignored by the CLI with non-sending commands.)\n" \
+                    "\t\t- `retry_connect`: *optional*, how often the initial connection should be retried. " \
+                    "Default: 2. Negative number means infinite.\n" \
+                    "\t\t- `retry_connect`: *optional*. How long, in seconds, we wait for the cli to answer the send command. " \
+                    "Set to explicitly to `None to use the global default timeout (`Sender.default_answer_timeout`) `" \
+                    "instead of the default timeout for the given command. " \
+                    "To use the default timeout for that command omit this parameter. " \
+                    "Default: default timeout for the given command\n" \
+                    "\t\t- `reply_id`: *optional*, this command is kept for compatibility. Please use the reply commands! " \
+                    "Default: None. (Will be ignored by the CLI with non-sending commands.)\n" \
+                    "\t- Returns:\n" \
+                    "\t\tthe parsed result using `{parser}` parser or raises an `pytg.exceptions.IllegalResponseExceptions`." \
+                    "".format(
+                        description=description,
+                        func_name=function,
+                        arguments=", ".join(arguments),
+                        argument_description=argument_description,
+                        parser = parser_name
+        )
+        all_the_text.append(docstring)
+    return "\n".join(all_the_text).strip()
+
+
+def create_automatic_documentation(filename="DOCUMENTATION.md"):
+    import os
+    with open(filename, mode="w") as docu_file:
+        print("Writing to {path}".format(path=os.path.abspath(docu_file.name)))
+        docu_file.write(b(_create_markdown_documentation()))
+    # end with
+# end def
+
+
 _register_all_functions()
+
