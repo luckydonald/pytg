@@ -1,5 +1,8 @@
 #Changelog
 
+## Version 0.4.10: ##
+- Added optional caption argument to `send_document("user", "filepath" [, "caption"])`
+
 ## Version 0.4.9: ##
 - Fixes `AssertionError` with secret chats. [#74](https://github.com/luckydonald/pytg/issues/74)
 

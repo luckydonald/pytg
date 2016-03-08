@@ -48,7 +48,7 @@ functions["send_typing"]          = ("send_typing", [args.Peer("peer")], res.suc
 functions["send_typing_abort"]    = ("send_typing_abort", [args.Peer("peer")], res.success_fail, None, "")
 functions["send_photo"]           = ("send_photo", [args.Peer("peer"), args.FilePath("file"), args.UnicodeString("caption", optional=True)], res.success_fail, 120.0, "")
 functions["send_video"]           = ("send_video", [args.Peer("peer"), args.FilePath("file"), args.UnicodeString("caption", optional=True)], res.success_fail, 120.0, "")
-functions["send_document"]        = ("send_document", [args.Peer("peer"), args.FilePath("file")], res.success_fail, 120.0, "")
+functions["send_document"]        = ("send_document", [args.Peer("peer"), args.FilePath("file"), args.UnicodeString("caption", optional=True)], res.success_fail, 120.0, "")
 functions["send_file"]            = ("send_file", [args.Peer("peer"), args.FilePath("file")], res.success_fail, 120.0, "")
 functions["send_location"]        = ("send_location", [args.Peer("peer"), args.Double("latitude"), args.Double("longitude")], res.success_fail, None, "")
 functions["send_contact"]         = ("send_contact", [args.Peer("peer"), args.UnicodeString("phone"), args.UnicodeString("first_name"), args.UnicodeString("last_name")], res.something, 60.0, "ret: formated message")
