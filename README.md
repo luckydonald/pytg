@@ -12,6 +12,17 @@ Works with Python  2.7 and 3
 Python 2 uses ascii only bytestrings, causing much, **much trouble** when dealing with characters like öäüß or emojis. (Trust me, I've been there)     
 ~ luckydonald
 
+## Documentation
+The ```Sender``` object features a rich build-in help, inside the python interpreter type:
+```python
+from pytg.sender import Sender
+help(Sender)  # list all commands
+help(Sender.get_self)  # get help for a specific command
+``` 
+This is also availabe as [generated documentation](https://github.com/luckydonald/pytg/blob/master/CHANGELOG.md#changelog) here on github.
+Also have a look at the [Changelog](https://github.com/luckydonald/pytg/blob/master/CHANGELOG.md#changelog) to see what's going on.
+
+
 ## **Install**##
 ### Dependencies ###
  - Install the Telegram CLI (from @vysheng), follow the [official Instructions](https://github.com/vysheng/tg)
@@ -25,7 +36,6 @@ pip install pytg
 To upgrade append the ```--upgrade``` flag.
  
 ##### Install from source
-
 (Beta versions are in the [development branch](https://github.com/luckydonald/pytg/tree/development))    
 
  - a) Get the latest pytg code from github.    
@@ -42,6 +52,7 @@ To upgrade append the ```--upgrade``` flag.
 
 ## **Usage** ##
 
+[]
 >***Note***: The examples files produce syntax errors for python 3.0 - 3.2, the pytg package itself is not affacted by this!    
 > To fix, just remove the ```u``` in front of the strings: change ```u"foobar"``` to ```"foobar``` (see [issue #39](https://github.com/luckydonald/pytg/issues/39#issuecomment-129992777) and [Python 3.3 accepts ```u'unicode'``` syntax again](https://docs.python.org/3/whatsnew/3.3.html?highlight=unicode)). 
 
@@ -106,17 +117,6 @@ receiver.message(main_loop())
 That's the basics. Have a look into the examples folder. For starters, I recommend:    
 * dump.py - is usefull to see, how the messages look like.    
 * ping.py - is usefull to see how to interact with pytg, send messages etc.
-
-## Documentation
-The ```Sender``` object features a rich build-in help, inside the python interpreter type:
-```python
-from pytg.sender import Sender
-help(Sender)  # list all commands
-help(Sender.get_self)  # get help for a specific command
-``` 
-
-Or you can have a look into [DOCUMENTATION.md](https://github.com/luckydonald/pytg/blob/master/DOCUMENTATION.md)
-
 
 ## Contribute
 ###### You can help!
