@@ -50,7 +50,7 @@ def example_function(sender):  # name "example_function" and given parameters ar
                 continue  # we don't want to process this message.
             if msg.text == None:  # we have media instead.
                 continue  # and again, because we want to process only text message.
-            # Everything in ptg2 will be unicode. If you use python 3 thats no problem,
+            # Everything in pytg will be unicode. If you use python 3 thats no problem,
             # just if you use python 2 you have to be carefull! (better switch to 3)
             # for convinience of py2 users there is a to_unicode(<string>) in pytg.encoding
             # for python 3 the using of it is not needed.
