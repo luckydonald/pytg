@@ -6,6 +6,7 @@
 - Added automatic generation of documentation. `pytg.sender.create_automatic_documentation(filename="DOCUMENTATION.md")` creates a markdown formatted file. This uses roughly the same generation process as the automatic docstrings.
 - Also added some missing documentation for some errors. [#69](https://github.com/luckydonald/pytg/issues/69)
 - The old documentation can be found at `DOCUMENTATION_manual.md`
+- Added a example to demonstrate how to build converations with the use of generators and the `yield` statement.
 
 ## Version 0.4.9: ##
 - Fixes `AssertionError` with secret chats. [#74](https://github.com/luckydonald/pytg/issues/74)

@@ -53,15 +53,7 @@ def main():
     # if you want to shutdown the telegram cli:
     # sender.safe_quit() # this shuts down the telegram cli.
     # sender.quit() # this shuts down the telegram cli, without waiting for downloads to complete.
-
-
 # end def main
-
-def get_message_replied_to(msg, sender):
-    if 'reply_id' in msg:
-        next_msg = sender.message_get(msg.reply_id)
-        return get_message_replied_to(next_msg, sender)
-    return msg
 
 
 @coroutine
@@ -81,25 +73,20 @@ def message_loop(sender):  # name "message_loop" and given parameters are define
 
             msg = (yield)  # get the next message
             while should_skip_message(msg, sender, only_allow_user=user):
-                # skip all unwanted events/messages. see should_skip_message for more detail.
+                # If msg is a unwanted event/message, get the next one.
+                # See should_skip_message for more detail.
                 msg = (yield)  # just get the next message.
             # end skip-while-unwanted loop
 
             name = msg.text
             sender.msg(user, u"Now {name}, how old are you?".format(name=name))
 
-            # same loop as before
-            while True:
-                # skip all events which are no messages,
-                # skip all messages which are messages from the bot itself,
-                #     are not from the same user
-                #     or aren't text messages
-                msg = (yield)  # it waits until the generator has a has message here.
-                if should_skip_message(msg, sender, only_allow_user=user):
-                    continue
-                # end if
-                break  # we have a good message
-            # end skip while
+            msg = (yield)  # get the next message
+            while should_skip_message(msg, sender, only_allow_user=user):
+                # If msg is a unwanted event/message, get the next one.
+                # See should_skip_message for more detail.
+                msg = (yield)  # just get the next message.
+            # end skip-while-unwanted loop
 
             age = msg.text
 
@@ -121,10 +108,11 @@ def message_loop(sender):  # name "message_loop" and given parameters are define
 
 def should_skip_message(msg, sender, only_allow_user=None):
     """
-    Checks if the event is a message, is not from the bot itself and has text.
+    Checks if the event is a message, is not from the bot itself, is in a user-to-user (user-to-bot) chat and has text.
     Also sets the online status to online.
+    :keyword only_allow_user: (Optional) Ignore all messages which are not from this user (checks msg.sender.cmd)
 
-    Basically the same code as in ping.py
+    Basically the same code as in ping.py, a little bit extended.
     """
     sender.status_online()  # so we will stay online.
     # (if we are offline it might not receive the messages instantly,
