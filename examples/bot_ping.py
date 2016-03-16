@@ -1,4 +1,8 @@
 # coding=utf-8
+"""
+A simple bot reacting to messages.
+like the dump bot, but it responds to every `ping` with a `pong`.
+"""
 from __future__ import unicode_literals
 from pytg.receiver import Receiver  # get messages
 from pytg.sender import Sender  # send messages, and other querys.
@@ -7,6 +11,7 @@ from pytg.utils import coroutine
 __author__ = 'luckydonald'
 
 ADMIN_ID = 10717954  # you should probably change this.
+
 
 def main():
     # get a Receiver instance, to get messages.
