@@ -1,4 +1,7 @@
 # -*- coding: utf-8 -*-
+"""
+A small bot printing the `msg` message object.
+"""
 from pytg.receiver import Receiver
 from pytg.utils import coroutine
 
