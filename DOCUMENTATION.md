@@ -38,7 +38,7 @@
 	- Returns:
 		the parsed result using `pytg.result_parser.success_fail` parser or raises an `pytg.exceptions.IllegalResponseExceptions`.
 
-- `send_audio(peer, file)`: 
+- `send_audio(peer, file)`: Sends audio to peer
 	- Arguments:
 		- `peer`: *mandatory*, needs a Peer (type: `str`), and may not be repeated.
 		- `file`: *mandatory*, needs a FilePath (type: `str`), and may not be repeated.
@@ -50,7 +50,7 @@
 	- Returns:
 		the parsed result using `pytg.result_parser.success_fail` parser or raises an `pytg.exceptions.IllegalResponseExceptions`.
 
-- `send_typing(peer)`: 
+- `send_typing(peer)`: Sends typing notification. You can supply a custom status (range 0-10): none, typing, cancel, record video, upload video, record audio, upload audio, upload photo, upload document, geo and choose contact.
 	- Arguments:
 		- `peer`: *mandatory*, needs a Peer (type: `str`), and may not be repeated.
 	- Keyword arguments:
@@ -61,7 +61,7 @@
 	- Returns:
 		the parsed result using `pytg.result_parser.success_fail` parser or raises an `pytg.exceptions.IllegalResponseExceptions`.
 
-- `send_typing_abort(peer)`: 
+- `send_typing_abort(peer)`: Sends typing notification abort
 	- Arguments:
 		- `peer`: *mandatory*, needs a Peer (type: `str`), and may not be repeated.
 	- Keyword arguments:
@@ -72,20 +72,7 @@
 	- Returns:
 		the parsed result using `pytg.result_parser.success_fail` parser or raises an `pytg.exceptions.IllegalResponseExceptions`.
 
-- `send_photo(peer, file, caption)`: 
-	- Arguments:
-		- `peer`: *mandatory*, needs a Peer (type: `str`), and may not be repeated.
-		- `file`: *mandatory*, needs a FilePath (type: `str`), and may not be repeated.
-		- `caption`: *optional*, needs a UnicodeString (type: `str`), and may not be repeated.
-	- Keyword arguments:
-		- `enable_preview`: *optional*, if the URL found in a message should have a preview. Default: False. (Will be ignored by the CLI with non-sending commands.)
-		- `retry_connect`: *optional*, how often the initial connection should be retried. Default: 2. Negative number means infinite.
-		- `retry_connect`: *optional*. How long, in seconds, we wait for the cli to answer the send command. Set to explicitly to `None` to use the global default timeout (`Sender.default_answer_timeout`) instead of the default timeout for the given command. To use the default timeout for that command omit this parameter. Default: default timeout for the given command
-		- `reply_id`: *optional*, this command is kept for compatibility. Please use the reply commands! Default: None. (Will be ignored by the CLI with non-sending commands.)
-	- Returns:
-		the parsed result using `pytg.result_parser.success_fail` parser or raises an `pytg.exceptions.IllegalResponseExceptions`.
-
-- `send_video(peer, file, caption)`: 
+- `send_photo(peer, file, caption)`: Sends photo to peer
 	- Arguments:
 		- `peer`: *mandatory*, needs a Peer (type: `str`), and may not be repeated.
 		- `file`: *mandatory*, needs a FilePath (type: `str`), and may not be repeated.
@@ -98,7 +85,7 @@
 	- Returns:
 		the parsed result using `pytg.result_parser.success_fail` parser or raises an `pytg.exceptions.IllegalResponseExceptions`.
 
-- `send_document(peer, file, caption)`: 
+- `send_video(peer, file, caption)`: Sends video to peer
 	- Arguments:
 		- `peer`: *mandatory*, needs a Peer (type: `str`), and may not be repeated.
 		- `file`: *mandatory*, needs a FilePath (type: `str`), and may not be repeated.
@@ -111,7 +98,20 @@
 	- Returns:
 		the parsed result using `pytg.result_parser.success_fail` parser or raises an `pytg.exceptions.IllegalResponseExceptions`.
 
-- `send_file(peer, file)`: 
+- `send_document(peer, file, caption)`: Sends document to peer (as raw file including filename)
+	- Arguments:
+		- `peer`: *mandatory*, needs a Peer (type: `str`), and may not be repeated.
+		- `file`: *mandatory*, needs a FilePath (type: `str`), and may not be repeated.
+		- `caption`: *optional*, needs a UnicodeString (type: `str`), and may not be repeated.
+	- Keyword arguments:
+		- `enable_preview`: *optional*, if the URL found in a message should have a preview. Default: False. (Will be ignored by the CLI with non-sending commands.)
+		- `retry_connect`: *optional*, how often the initial connection should be retried. Default: 2. Negative number means infinite.
+		- `retry_connect`: *optional*. How long, in seconds, we wait for the cli to answer the send command. Set to explicitly to `None` to use the global default timeout (`Sender.default_answer_timeout`) instead of the default timeout for the given command. To use the default timeout for that command omit this parameter. Default: default timeout for the given command
+		- `reply_id`: *optional*, this command is kept for compatibility. Please use the reply commands! Default: None. (Will be ignored by the CLI with non-sending commands.)
+	- Returns:
+		the parsed result using `pytg.result_parser.success_fail` parser or raises an `pytg.exceptions.IllegalResponseExceptions`.
+
+- `send_file(peer, file)`: Sends document to peer (using the best available method, e.g. songs as audio and images as photos)
 	- Arguments:
 		- `peer`: *mandatory*, needs a Peer (type: `str`), and may not be repeated.
 		- `file`: *mandatory*, needs a FilePath (type: `str`), and may not be repeated.
@@ -123,7 +123,7 @@
 	- Returns:
 		the parsed result using `pytg.result_parser.success_fail` parser or raises an `pytg.exceptions.IllegalResponseExceptions`.
 
-- `send_location(peer, latitude, longitude)`: 
+- `send_location(peer, latitude, longitude)`: Sends geo location
 	- Arguments:
 		- `peer`: *mandatory*, needs a Peer (type: `str`), and may not be repeated.
 		- `latitude`: *mandatory*, needs a Double (type: `float`), and may not be repeated.
@@ -136,7 +136,7 @@
 	- Returns:
 		the parsed result using `pytg.result_parser.success_fail` parser or raises an `pytg.exceptions.IllegalResponseExceptions`.
 
-- `send_contact(peer, phone, first_name, last_name)`: ret: formated message
+- `send_contact(peer, phone, first_name, last_name)`: Sends contact (not necessary telegram user).
 	- Arguments:
 		- `peer`: *mandatory*, needs a Peer (type: `str`), and may not be repeated.
 		- `phone`: *mandatory*, needs a UnicodeString (type: `str`), and may not be repeated.
@@ -150,7 +150,7 @@
 	- Returns:
 		the parsed result using `pytg.result_parser.something` parser or raises an `pytg.exceptions.IllegalResponseExceptions`.
 
-- `send_text_from_file(peer, file)`: 
+- `send_text_from_file(peer, file)`: Sends contents of text file as plain text message
 	- Arguments:
 		- `peer`: *mandatory*, needs a Peer (type: `str`), and may not be repeated.
 		- `file`: *mandatory*, needs a FilePath (type: `str`), and may not be repeated.
@@ -483,7 +483,7 @@
 	- Returns:
 		the parsed result using `pytg.result_parser.something` parser or raises an `pytg.exceptions.IllegalResponseExceptions`.
 
-- `user_info(user)`: 
+- `user_info(user)`: Prints info about user (id, last online, phone, etc.)
 	- Arguments:
 		- `user`: *mandatory*, needs a User (type: `str`), and may not be repeated.
 	- Keyword arguments:
@@ -703,7 +703,7 @@
 	- Returns:
 		the parsed result using `pytg.result_parser.success_fail` parser or raises an `pytg.exceptions.IllegalResponseExceptions`.
 
-- `accept_secret_chat(secret_chat)`: 
+- `accept_secret_chat(secret_chat)`: Accepts secret chat. Only useful when started with -E flag
 	- Arguments:
 		- `secret_chat`: *mandatory*, needs a SecretChat (type: `str`), and may not be repeated.
 	- Keyword arguments:

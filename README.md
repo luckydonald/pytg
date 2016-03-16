@@ -22,6 +22,11 @@ help(Sender.get_self)  # get help for a specific command
 This is also availabe as [generated documentation](https://github.com/luckydonald/pytg/blob/master/CHANGELOG.md#changelog) here on github.
 Also have a look at the [Changelog](https://github.com/luckydonald/pytg/blob/master/CHANGELOG.md#changelog) to see what's going on.
 
+To generate the documentation yourself:
+```python
+from pytg.sender import create_automatic_documentation; create_automatic_documentation()
+```
+
 
 ## **Install**##
 ### Dependencies ###

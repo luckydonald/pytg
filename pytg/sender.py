@@ -43,16 +43,16 @@ functions = OrderedDict()
 functions["msg"]                  = ("msg", [args.Peer("peer"), args.UnicodeString("test")], res.success_fail, 60.0, "Sends text message to peer")
 functions["send_msg"]             = functions["msg"]
 functions["send_text"]            = functions["msg"]
-functions["send_audio"]           = ("send_audio", [args.Peer("peer"), args.FilePath("file")], res.success_fail, 120.0, "")
-functions["send_typing"]          = ("send_typing", [args.Peer("peer")], res.success_fail, None, "")
-functions["send_typing_abort"]    = ("send_typing_abort", [args.Peer("peer")], res.success_fail, None, "")
-functions["send_photo"]           = ("send_photo", [args.Peer("peer"), args.FilePath("file"), args.UnicodeString("caption", optional=True)], res.success_fail, 120.0, "")
-functions["send_video"]           = ("send_video", [args.Peer("peer"), args.FilePath("file"), args.UnicodeString("caption", optional=True)], res.success_fail, 120.0, "")
-functions["send_document"]        = ("send_document", [args.Peer("peer"), args.FilePath("file"), args.UnicodeString("caption", optional=True)], res.success_fail, 120.0, "")
-functions["send_file"]            = ("send_file", [args.Peer("peer"), args.FilePath("file")], res.success_fail, 120.0, "")
-functions["send_location"]        = ("send_location", [args.Peer("peer"), args.Double("latitude"), args.Double("longitude")], res.success_fail, None, "")
-functions["send_contact"]         = ("send_contact", [args.Peer("peer"), args.UnicodeString("phone"), args.UnicodeString("first_name"), args.UnicodeString("last_name")], res.something, 60.0, "ret: formated message")
-functions["send_text_from_file"]  = ("send_text", [args.Peer("peer"), args.FilePath("file")], res.success_fail, 60.0, "")
+functions["send_audio"]           = ("send_audio", [args.Peer("peer"), args.FilePath("file")], res.success_fail, 120.0, "Sends audio to peer")
+functions["send_typing"]          = ("send_typing", [args.Peer("peer")], res.success_fail, None, "Sends typing notification. You can supply a custom status (range 0-10): none, typing, cancel, record video, upload video, record audio, upload audio, upload photo, upload document, geo and choose contact.")
+functions["send_typing_abort"]    = ("send_typing_abort", [args.Peer("peer")], res.success_fail, None, "Sends typing notification abort")
+functions["send_photo"]           = ("send_photo", [args.Peer("peer"), args.FilePath("file"), args.UnicodeString("caption", optional=True)], res.success_fail, 120.0, "Sends photo to peer")
+functions["send_video"]           = ("send_video", [args.Peer("peer"), args.FilePath("file"), args.UnicodeString("caption", optional=True)], res.success_fail, 120.0, "Sends video to peer")
+functions["send_document"]        = ("send_document", [args.Peer("peer"), args.FilePath("file"), args.UnicodeString("caption", optional=True)], res.success_fail, 120.0, "Sends document to peer (as raw file including filename)")
+functions["send_file"]            = ("send_file", [args.Peer("peer"), args.FilePath("file")], res.success_fail, 120.0, "Sends document to peer (using the best available method, e.g. songs as audio and images as photos)")
+functions["send_location"]        = ("send_location", [args.Peer("peer"), args.Double("latitude"), args.Double("longitude")], res.success_fail, None, "Sends geo location")
+functions["send_contact"]         = ("send_contact", [args.Peer("peer"), args.UnicodeString("phone"), args.UnicodeString("first_name"), args.UnicodeString("last_name")], res.something, 60.0, "Sends contact (not necessary telegram user).")  # what did the "ret: formated message" help string mean?
+functions["send_text_from_file"]  = ("send_text", [args.Peer("peer"), args.FilePath("file")], res.success_fail, 60.0, "Sends contents of text file as plain text message")
 functions["fwd"]                  = ("fwd", [args.Peer("peer"), args.MsgId("msg_id")], res.success_fail, None, "Forwards message to peer. Forward to secret chats is forbidden")
 functions["fwd_media"]            = ("fwd_media", [args.Peer("peer"), args.MsgId("msg_id")], res.success_fail, None, "Forwards message media to peer. Forward to secret chats is forbidden. Result slightly differs from fwd")
 functions["reply"]                = ("reply", [args.MsgId("msg_id"), args.UnicodeString("text")], res.success_fail, None, "Sends text reply to message")
@@ -99,7 +99,7 @@ functions["resolve_username"]     = ("resolve_username", [args.Username("@userna
 
 
 # user
-functions["user_info"]            = ("user_info", [args.User("user")], res.something, None, "")
+functions["user_info"]            = ("user_info", [args.User("user")], res.something, None, "Prints info about user (id, last online, phone, etc.)")
 functions["load_user_photo"]      = ("load_user_photo", [args.User("user")], res.something, 120.0, "Downloads file to downloads dirs. Prints file name after download end")
 
 # contacts
@@ -124,7 +124,7 @@ functions["export_chat_link"]     = ("export_chat_link", [args.Chat("chat")], re
 
 # secret chats
 functions["create_secret_chat"]   = ("create_secret_chat", [args.User("user")], res.success_fail, None, "Starts creation of secret chat")
-functions["accept_secret_chat"]   = ("accept_secret_chat", [args.SecretChat("secret_chat")], res.success_fail, None, "")
+functions["accept_secret_chat"]   = ("accept_secret_chat", [args.SecretChat("secret_chat")], res.success_fail, None, "Accepts secret chat. Only useful when started with -E flag")
 functions["set_ttl"]              = ("set_ttl", [args.NonNegativeNumber("secret_chat")], res.success_fail, None, "Sets secret chat ttl. Client itself ignores ttl")
 functions["visualize_key"]        = ("visualize_key", [args.SecretChat("secret_chat")], res.success_fail, None, "Prints visualization of encryption key (first 16 bytes sha1 of it in fact)")
 
