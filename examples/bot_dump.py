@@ -4,6 +4,7 @@ from pytg.utils import coroutine
 
 __author__ = 'luckydonald'
 
+
 @coroutine
 def example_function(receiver):
     try:
