@@ -6,6 +6,7 @@ from pytg.utils import coroutine
 
 __author__ = 'luckydonald'
 
+ADMIN_ID = 10717954  # you should probably change this.
 
 def main():
     # get a Receiver instance, to get messages.
@@ -20,10 +21,11 @@ def main():
     # add "example_function" function as message listener. You can supply arguments here (like sender).
     receiver.message(example_function(sender))  # now it will call the example_function and yield the new messages.
 
+    # continues here, after exiting the while loop in example_function()
+
     # please, no more messages. (we could stop the the cli too, with sender.safe_quit() )
     receiver.stop()
 
-    # continues here, after exiting while loop in example_function()
     print("I am done!")
 
     # the sender will disconnect after each send, so there is no need to stop it.
@@ -35,10 +37,9 @@ def main():
 # this is the function which will process our incoming messages
 @coroutine
 def example_function(sender):  # name "example_function" and given parameters are defined in main()
-    QUIT = False
-    ADMIN_ID = 10717954
+    quit = False
     try:
-        while not QUIT:  # loop for messages
+        while not quit:  # loop for messages
             msg = (yield)  # it waits until the generator has a has message here.
             sender.status_online()  # so we will stay online.
             # (if we are offline it might not receive the messages instantly,
@@ -48,7 +49,7 @@ def example_function(sender):  # name "example_function" and given parameters ar
                 continue  # is not a message.
             if msg.own:  # the bot has send this message.
                 continue  # we don't want to process this message.
-            if msg.text == None:  # we have media instead.
+            if msg.text is None:  # we have media instead.
                 continue  # and again, because we want to process only text message.
             # Everything in pytg will be unicode. If you use python 3 thats no problem,
             # just if you use python 2 you have to be carefull! (better switch to 3)
@@ -61,7 +62,7 @@ def example_function(sender):  # name "example_function" and given parameters ar
             elif msg.text == u"quit":  # you should probably check a user id
                 if msg.sender.id == ADMIN_ID:
                     sender.send_msg(msg.sender.cmd, u"Bye!")
-                    QUIT = True
+                    quit = True
                 else:
                     reply = u"You are not my Admin.\nMy Admin has id {admin_id} but you have {user_id}".format(
                         admin_id=ADMIN_ID, user_id=msg.sender.id)
@@ -77,7 +78,7 @@ def example_function(sender):  # name "example_function" and given parameters ar
         pass
 
 
-## program start here ##
+# # program start here ##
 if __name__ == '__main__':
     main()  # executing main function.
     # Last command of file (so everything needed is already loaded above)
