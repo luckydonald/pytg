@@ -8,6 +8,5 @@ def main():
     res = x.dialog_list()
     print("Got: >%s<" % res)
 
-
 if __name__ == '__main__':
     main()

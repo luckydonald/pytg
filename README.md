@@ -135,6 +135,25 @@ Receiving messages is already possible with all three (even simultaneously).
 Also it features neat classes for everything. Currently I lack the time to continue that.  
 See the develop branch for that. Maybe you can help make that happen.*
 
+## Examples
+There are some example scripts in the [examples folder](https://github.com/luckydonald/pytg/tree/master/examples):
+
+- `command_send_message.py`: Simplest way to just send a message.
+    - If you don't need to receive messages.
+- `command_who_am_i`: A simple example printing infos about yourself
+    - get the **@username** etc.
+- `command_dialog_list.py`: Simpler example printing the list of chats you have.
+    - Shows how to execute commands like `dialog_list` on the CLI.
+- `bot_dump.py`:  A small bot printing the `msg` message object.
+    - So you can see yourself how messages look like.    
+- `bot_ping.py`:   A simple bot reacting to messages.
+    - like the dump bot, but it responds to a `ping` with a `pong`.
+- `bot_source_of_reply`: When replying to any message with `#top`, the bot will show you the origin of that reply.
+    - This demonstrates how you could use `message_get` command and the `reply_id` information.
+- `bot_with_context`: Talk to a bot, not only a simple command.
+    - Demonstrates how to build converations with the use of generators and the `yield` statement.
+
+
 ## URL Changes ##
 If you started with pytg after 2015, you can ignore this. If you cloned from `luckydonald/pytg`, you can ignore this.
 Here is how to update your local git clone to this url when your old one was set to [https://github.com/efaisal/pytg.git`](https://github.com/efaisal) (before I started maintaining it in September 2014)
@@ -147,15 +166,7 @@ git remote set-url origin https://github.com/luckydonald/pytg.git
 git pull
 # don't forget to install the newest official cli: https://github.com/vysheng/tg
 ```
-If that failes at some point, just Install it from scratch.
-
-### Look at the examples
-See some example scripts to start with.
-They are in the [examples folder](https://github.com/luckydonald/pytg/tree/master/examples)    
-* dump.py * is usefull to see, how the messages look like.    
-* ping.py * is usefull to see how to interact with pytg, send messages etc.    
-* dialog_list.py * shows you how to interact with the CLI and function returning stuff.
-* 
+If that failes at some point, just Install it from scratch. 
 
 
 Thanks!

@@ -112,7 +112,7 @@ def should_skip_message(msg, sender, only_allow_user=None):
     Also sets the online status to online.
     :keyword only_allow_user: (Optional) Ignore all messages which are not from this user (checks msg.sender.cmd)
 
-    Basically the same code as in ping.py, a little bit extended.
+    Basically the same code as in bot_ping.py, a little bit extended.
     """
     sender.status_online()  # so we will stay online.
     # (if we are offline it might not receive the messages instantly,
@@ -136,8 +136,6 @@ def should_skip_message(msg, sender, only_allow_user=None):
         sender.msg(msg.sender.cmd, u"I am currently in use by another user. Please try again later.")
         return True
     return False
-
-
 
 
 # # program starts here # #

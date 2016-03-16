@@ -55,7 +55,7 @@ def message_loop(sender):  # name "message_loop" and given parameters are define
     try:
         while True:  # loop for messages
             # ==================== #
-            # SAME CODE as dump.py #
+            # SAME CODE as bot_dump.py #
             # ==================== #
             msg = (yield)  # it waits until the generator has a has message here.
             sender.status_online()  # so we will stay online.
