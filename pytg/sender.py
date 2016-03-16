@@ -40,7 +40,7 @@ functions = OrderedDict()
 # function to call              # actual telegram command, [required arguments], expected return parser, timeout (None = global default), Description
 # messages
 # send messages
-functions["msg"]                  = ("msg", [args.Peer("peer"), args.UnicodeString("test")], res.success_fail, 60.0, "Sends text message to peer")
+functions["msg"]                  = ("msg", [args.Peer("peer"), args.UnicodeString("text")], res.success_fail, 60.0, "Sends text message to peer")
 functions["send_msg"]             = functions["msg"]
 functions["send_text"]            = functions["msg"]
 functions["send_audio"]           = ("send_audio", [args.Peer("peer"), args.FilePath("file")], res.success_fail, 120.0, "Sends audio to peer")

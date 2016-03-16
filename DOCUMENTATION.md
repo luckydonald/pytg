@@ -2,10 +2,10 @@
 (generated)
 ### `pytg.sender.Sender`
 
-- `msg(peer, test)`: Sends text message to peer
+- `msg(peer, text)`: Sends text message to peer
 	- Arguments:
 		- `peer`: *mandatory*, needs a Peer (type: `str`), and may not be repeated.
-		- `test`: *mandatory*, needs a UnicodeString (type: `str`), and may not be repeated.
+		- `text`: *mandatory*, needs a UnicodeString (type: `str`), and may not be repeated.
 	- Keyword arguments:
 		- `enable_preview`: *optional*, if the URL found in a message should have a preview. Default: False. (Will be ignored by the CLI with non-sending commands.)
 		- `retry_connect`: *optional*, how often the initial connection should be retried. Default: 2. Negative number means infinite.
@@ -14,10 +14,10 @@
 	- Returns:
 		the parsed result using `pytg.result_parser.success_fail` parser or raises an `pytg.exceptions.IllegalResponseExceptions`.
 
-- `send_msg(peer, test)`: Sends text message to peer
+- `send_msg(peer, text)`: Sends text message to peer
 	- Arguments:
 		- `peer`: *mandatory*, needs a Peer (type: `str`), and may not be repeated.
-		- `test`: *mandatory*, needs a UnicodeString (type: `str`), and may not be repeated.
+		- `text`: *mandatory*, needs a UnicodeString (type: `str`), and may not be repeated.
 	- Keyword arguments:
 		- `enable_preview`: *optional*, if the URL found in a message should have a preview. Default: False. (Will be ignored by the CLI with non-sending commands.)
 		- `retry_connect`: *optional*, how often the initial connection should be retried. Default: 2. Negative number means infinite.
@@ -26,10 +26,10 @@
 	- Returns:
 		the parsed result using `pytg.result_parser.success_fail` parser or raises an `pytg.exceptions.IllegalResponseExceptions`.
 
-- `send_text(peer, test)`: Sends text message to peer
+- `send_text(peer, text)`: Sends text message to peer
 	- Arguments:
 		- `peer`: *mandatory*, needs a Peer (type: `str`), and may not be repeated.
-		- `test`: *mandatory*, needs a UnicodeString (type: `str`), and may not be repeated.
+		- `text`: *mandatory*, needs a UnicodeString (type: `str`), and may not be repeated.
 	- Keyword arguments:
 		- `enable_preview`: *optional*, if the URL found in a message should have a preview. Default: False. (Will be ignored by the CLI with non-sending commands.)
 		- `retry_connect`: *optional*, how often the initial connection should be retried. Default: 2. Negative number means infinite.

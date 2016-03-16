@@ -27,6 +27,8 @@ def main():
     # add "example_function" function as message listener. You can supply arguments here (like sender).
     receiver.message(message_loop(sender))  # now it will call the example_function and yield the new messages.
 
+    # continues here, after exiting the while loop in example_function()
+
     # please, no more messages. (we could stop the the cli too, with sender.safe_quit() )
     receiver.stop()
 
@@ -64,7 +66,7 @@ def message_loop(sender):  # name "message_loop" and given parameters are define
                 continue  # is not a message.
             if msg.own:  # the bot has send this message.
                 continue  # we don't want to process this message.
-            if msg.text == None:  # we have media instead.
+            if msg.text is None:  # we have media instead.
                 continue  # and again, because we want to process only text message.
                 # Everything in pytg will be unicode. If you use python 3 thats no problem,
                 # just if you use python 2 you have to be carefull! (better switch to 3)
@@ -89,7 +91,7 @@ def message_loop(sender):  # name "message_loop" and given parameters are define
         pass
 
 
-## program start here ##
+# # program starts here # #
 if __name__ == '__main__':
     main()  # executing main function.
     # Last command of file (so everything needed is already loaded above)

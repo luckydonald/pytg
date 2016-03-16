@@ -78,7 +78,7 @@ def example_function(sender):  # name "example_function" and given parameters ar
         pass
 
 
-# # program start here ##
+# # program starts here ##
 if __name__ == '__main__':
     main()  # executing main function.
     # Last command of file (so everything needed is already loaded above)
