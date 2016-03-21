@@ -82,15 +82,15 @@ functions["messages_search"]      = ("search", [
                                      )
 
 # load media
-functions["load_audio"]           = ("load_audio", [args.MsgId("msg_id")], res.something, 120.0, "Downloads file to downloads dirs. Prints file name after download end")
-functions["load_chat_photo"]      = ("load_chat_photo", [args.Chat("chat")], res.success_fail, 120.0, "Downloads file to downloads dirs. Prints file name after download end")
-functions["load_file"]            = ("load_file", [args.MsgId("msg_id")], res.something, 120.0, "Downloads file to downloads dirs. Prints file name after download end")
-functions["load_file_thumb"]      = ("load_file_thumb", [args.MsgId("msg_id")], res.something, 120.0, "Downloads file to downloads dirs. Prints file name after download end")
-functions["load_document"]        = ("load_document", [args.MsgId("msg_id")], res.something, 120.0, "Downloads file to downloads dirs. Prints file name after download end")
-functions["load_document_thumb"]  = ("load_document_thumb", [args.MsgId("msg_id")], res.something, 120.0, "Downloads file to downloads dirs. Prints file name after download end")
-functions["load_photo"]           = ("load_photo", [args.MsgId("msg_id")], res.something, 120.0, "Downloads file to downloads dirs. Prints file name after download end")
-functions["load_video"]           = ("load_video", [args.MsgId("msg_id")], res.something, 120.0, "Downloads file to downloads dirs. Prints file name after download end")
-functions["load_video_thumb"]     = ("load_video_thumb", [args.MsgId("msg_id")], res.something, 120.0, "Downloads file to downloads dirs. Prints file name after download end")
+functions["load_audio"]           = ("load_audio", [args.MsgId("msg_id")], res.downloaded_file, 120.0, "Downloads file to downloads dirs. Returns file path")
+functions["load_chat_photo"]      = ("load_chat_photo", [args.Chat("chat")], res.downloaded_file, 120.0, "Downloads file to downloads dirs. Returns file path")
+functions["load_file"]            = ("load_file", [args.MsgId("msg_id")], res.downloaded_file, 120.0, "Downloads file to downloads dirs. Returns file path")
+functions["load_file_thumb"]      = ("load_file_thumb", [args.MsgId("msg_id")], res.downloaded_file, 120.0, "Downloads file to downloads dirs. Returns file path")
+functions["load_document"]        = ("load_document", [args.MsgId("msg_id")], res.downloaded_file, 120.0, "Downloads file to downloads dirs. Returns file path")
+functions["load_document_thumb"]  = ("load_document_thumb", [args.MsgId("msg_id")], res.downloaded_file, 120.0, "Downloads file to downloads dirs. Returns file path")
+functions["load_photo"]           = ("load_photo", [args.MsgId("msg_id")], res.downloaded_file, 120.0, "Downloads file to downloads dirs. Returns file path")
+functions["load_video"]           = ("load_video", [args.MsgId("msg_id")], res.downloaded_file, 120.0, "Downloads file to downloads dirs. Returns file path")
+functions["load_video_thumb"]     = ("load_video_thumb", [args.MsgId("msg_id")], res.downloaded_file, 120.0, "Downloads file to downloads dirs. Returns file path")
 
 # peer
 functions["mark_read"]            = ("mark_read", [args.Peer("peer")], res.success_fail, None, "Marks messages with peer as read")
@@ -100,7 +100,7 @@ functions["resolve_username"]     = ("resolve_username", [args.Username("@userna
 
 # user
 functions["user_info"]            = ("user_info", [args.User("user")], res.something, None, "Prints info about user (id, last online, phone, etc.)")
-functions["load_user_photo"]      = ("load_user_photo", [args.User("user")], res.something, 120.0, "Downloads file to downloads dirs. Prints file name after download end")
+functions["load_user_photo"]      = ("load_user_photo", [args.User("user")], res.something, 120.0, "Downloads file to downloads dirs. Returns file path")
 
 # contacts
 functions["get_self"]             = ("get_self", [], res.anything, None, "get our user info")
@@ -232,6 +232,8 @@ class Sender(object):
         :param port:
         :return:
         """
+        if not isinstance(port, int):
+            raise TypeError("port is no int")
         self.s = None
         self.host = host
         self.port_out = port

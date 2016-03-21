@@ -177,7 +177,19 @@ class PositiveNumber(NonNegativeNumber):
 class FilePath(UnicodeString):
     type = "str"
 
-    def parse(self, value):
+    def parse(self, value, check_files=True):
+        """
+            File argument.
+
+            :param value: The file path.
+            :type  value: str
+
+            :keyword check_files: If it should verify the file path.
+            :type    check_files: bool
+
+            :return: Argument ready string.
+            :rtype:  str
+            """
         if not path.isfile(encoding.native_type(value)):
             raise ArgumentParseError("File path \"{path}\" not valid.".format(path=value))
         value = super(FilePath, self).parse(value)

@@ -9,6 +9,8 @@
 - Added `command_send_message.py` example to show the simplest way to just send a message.
 - Added `bot_with_context.py` example to demonstrate how to build converations with the use of generators and the `yield` statement.
 - Improved example documentation, renamed some example files.
+- Added `downloaded_file` parser. Returns a string for the file.
+- Started with some code for [#67](https://github.com/luckydonald/pytg/issues/67)
 
 ## Version 0.4.9: ##
 - Fixes `AssertionError` with secret chats. [#74](https://github.com/luckydonald/pytg/issues/74)

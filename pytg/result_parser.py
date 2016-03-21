@@ -1,7 +1,10 @@
 # -*- coding: utf-8 -*-
 from DictObject import DictObjectList, DictObject
+from luckydonaldUtils import encoding
 from luckydonaldUtils.encoding import to_unicode as u
 import logging
+
+from os import path
 
 from .fix_msg_array import fix_peer
 from .exceptions import IllegalResponseException, NoResponse, FailException
@@ -52,6 +55,31 @@ def success_fail(json, need_success=True):
         raise FailException(json.error_code, json.error)
     raise IllegalResponseException("Found: {}".format(json))
 # end def
+
+
+def downloaded_file(json, check_files=True):
+    """
+    Checks that the download was successful.
+
+    :param json: The json from the cli.
+    :type  json: DictObject
+
+    :keyword check_files: If it should verify the file path.
+    :type    check_files: bool
+
+    :return: The file path.
+    :rtype:  str
+    """
+    if "event" not in json or not json.event:
+        raise IllegalResponseException("Has no valid event attribute.")
+    if json.event != u("download"):
+        raise IllegalResponseException("Download event should be 'download'.")
+    if "result" not in json or not json.result:
+        raise IllegalResponseException("Has no valid result attribute.")
+    if check_files and not path.isfile(encoding.native_type(json.result)):
+        raise IllegalResponseException("File path \"{path}\" not valid.".format(path=json.result))
+    else:
+        return json.result
 
 
 def response_fails(exception=None, *args):
