@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 logger.addHandler(logging.NullHandler())
 
 __all__ = ["receiver", "sender", "Telegram"]
-VERSION = "0.4.9"
+VERSION = "0.4.10"
 __version__ = VERSION  # PEP-0396
 
 
