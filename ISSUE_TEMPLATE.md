@@ -11,7 +11,7 @@ insert any relevant code between the above and below backticks
 ```
 
 ### Expected behaviour
-Tell us what should happen
+Tell us what should happen.
 
 ### Actual behaviour
-Tell us what happens instead
+Tell us what happens instead.

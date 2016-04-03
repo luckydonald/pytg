@@ -1,9 +1,9 @@
 #Changelog
 
 ## Version 0.4.10: (Not released yet) ##
-- Added optional caption argument to `send_document("user", "filepath" [, "caption"])`
-- Improved automated docstrings on functions `help(...)` a bit.
-- Added automatic generation of documentation. `pytg.sender.create_automatic_documentation(filename="DOCUMENTATION.md")` creates a markdown formatted file. This uses roughly the same generation process as the automatic docstrings.
+- Added optional `caption` argument to `send_document("user", "filepath" [, "caption"])`
+- Improved automated `help(...)` docstrings a bit.
+- Added automatic generation of Markdown documentation. `pytg.sender.create_automatic_documentation(filename="DOCUMENTATION.md")` creates a markdown formatted file. This uses roughly the same generation process as the automatic docstrings.
 - Also added some missing documentation for some errors. [#69](https://github.com/luckydonald/pytg/issues/69)
 - The old documentation can be found at `DOCUMENTATION_manual.md`
 - Added `command_send_message.py` example to show the simplest way to just send a message.
