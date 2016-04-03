@@ -1,6 +1,9 @@
 #Changelog
 
-## Version 0.4.10: (Not released yet) ##
+## Version 0.4.11: (Not released on pip yet) ##
+- Nothing yet.
+
+## Version 0.4.10: ##
 - Added optional `caption` argument to `send_document("user", "filepath" [, "caption"])`
 - Improved automated `help(...)` docstrings a bit.
 - Added automatic generation of Markdown documentation. `pytg.sender.create_automatic_documentation(filename="DOCUMENTATION.md")` creates a markdown formatted file. This uses roughly the same generation process as the automatic docstrings.
