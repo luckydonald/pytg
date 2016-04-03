@@ -57,7 +57,6 @@ To upgrade append the ```--upgrade``` flag.
 
 ## **Usage** ##
 
-[]
 >***Note***: The examples files produce syntax errors for python 3.0 - 3.2, the pytg package itself is not affacted by this!    
 > To fix, just remove the ```u``` in front of the strings: change ```u"foobar"``` to ```"foobar``` (see [issue #39](https://github.com/luckydonald/pytg/issues/39#issuecomment-129992777) and [Python 3.3 accepts ```u'unicode'``` syntax again](https://docs.python.org/3/whatsnew/3.3.html?highlight=unicode)). 
 
@@ -134,6 +133,16 @@ That's the basics. Have a look into the examples folder. For starters, I recomme
 Receiving messages is already possible with all three (even simultaneously).
 Also it features neat classes for everything. Currently I lack the time to continue that.  
 See the develop branch for that. Maybe you can help make that happen.*
+
+## In case of errors ##
+First you should set logging to level `DEBUG` to see what's going on.
+```python
+# add this to the first lines in your file
+import logging
+logging.basicConfig(level=logging.DEBUG)
+```
+If you are about to open a new issue, search the existing ones (open and closed) first.
+Somtimes they are already reported or even solved.
 
 ## Examples
 There are some example scripts in the [examples folder](https://github.com/luckydonald/pytg/tree/master/examples):

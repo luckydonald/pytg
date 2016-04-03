@@ -44,7 +44,7 @@ functions["msg"]                  = ("msg", [args.Peer("peer"), args.UnicodeStri
 functions["send_msg"]             = functions["msg"]
 functions["send_text"]            = functions["msg"]
 functions["send_audio"]           = ("send_audio", [args.Peer("peer"), args.FilePath("file")], res.success_fail, 120.0, "Sends audio to peer")
-functions["send_typing"]          = ("send_typing", [args.Peer("peer")], res.success_fail, None, "Sends typing notification. You can supply a custom status (range 0-10): none, typing, cancel, record video, upload video, record audio, upload audio, upload photo, upload document, geo and choose contact.")
+functions["send_typing"]          = ("send_typing", [args.Peer("peer"), args.NonNegativeNumber("status", optional=True)], res.success_fail, None, "Sends typing notification. You can supply a custom status (range 0-10): none, typing, cancel, record video, upload video, record audio, upload audio, upload photo, upload document, geo and choose contact.")
 functions["send_typing_abort"]    = ("send_typing_abort", [args.Peer("peer")], res.success_fail, None, "Sends typing notification abort")
 functions["send_photo"]           = ("send_photo", [args.Peer("peer"), args.FilePath("file"), args.UnicodeString("caption", optional=True)], res.success_fail, 120.0, "Sends photo to peer")
 functions["send_video"]           = ("send_video", [args.Peer("peer"), args.FilePath("file"), args.UnicodeString("caption", optional=True)], res.success_fail, 120.0, "Sends video to peer")

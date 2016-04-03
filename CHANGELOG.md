@@ -11,6 +11,7 @@
 - Improved example documentation, renamed some example files.
 - Added `downloaded_file` parser. Returns a string for the file.
 - Started with some code for [#67](https://github.com/luckydonald/pytg/issues/67)
+- Added optional `status` parameter to `Sender.send_typing`.
 
 ## Version 0.4.9: ##
 - Fixes `AssertionError` with secret chats. [#74](https://github.com/luckydonald/pytg/issues/74)

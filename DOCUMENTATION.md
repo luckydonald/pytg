@@ -50,9 +50,10 @@
 	- Returns:
 		the parsed result using `pytg.result_parser.success_fail` parser or raises an `pytg.exceptions.IllegalResponseExceptions`.
 
-- `send_typing(peer)`: Sends typing notification. You can supply a custom status (range 0-10): none, typing, cancel, record video, upload video, record audio, upload audio, upload photo, upload document, geo and choose contact.
+- `send_typing(peer, status)`: Sends typing notification. You can supply a custom status (range 0-10): none, typing, cancel, record video, upload video, record audio, upload audio, upload photo, upload document, geo and choose contact.
 	- Arguments:
 		- `peer`: *mandatory*, needs a Peer (type: `str`), and may not be repeated.
+		- `status`: *optional*, needs a NonNegativeNumber (type: `int >= 0`), and may not be repeated.
 	- Keyword arguments:
 		- `enable_preview`: *optional*, if the URL found in a message should have a preview. Default: False. (Will be ignored by the CLI with non-sending commands.)
 		- `retry_connect`: *optional*, how often the initial connection should be retried. Default: 2. Negative number means infinite.
@@ -349,7 +350,7 @@
 	- Returns:
 		the parsed result using `pytg.result_parser.something` parser or raises an `pytg.exceptions.IllegalResponseExceptions`.
 
-- `load_audio(msg_id)`: Downloads file to downloads dirs. Prints file name after download end
+- `load_audio(msg_id)`: Downloads file to downloads dirs. Returns file path
 	- Arguments:
 		- `msg_id`: *mandatory*, needs a MsgId (type: `str`), and may not be repeated.
 	- Keyword arguments:
@@ -358,9 +359,9 @@
 		- `retry_connect`: *optional*. How long, in seconds, we wait for the cli to answer the send command. Set to explicitly to `None` to use the global default timeout (`Sender.default_answer_timeout`) instead of the default timeout for the given command. To use the default timeout for that command omit this parameter. Default: default timeout for the given command
 		- `reply_id`: *optional*, this command is kept for compatibility. Please use the reply commands! Default: None. (Will be ignored by the CLI with non-sending commands.)
 	- Returns:
-		the parsed result using `pytg.result_parser.something` parser or raises an `pytg.exceptions.IllegalResponseExceptions`.
+		the parsed result using `pytg.result_parser.downloaded_file` parser or raises an `pytg.exceptions.IllegalResponseExceptions`.
 
-- `load_chat_photo(chat)`: Downloads file to downloads dirs. Prints file name after download end
+- `load_chat_photo(chat)`: Downloads file to downloads dirs. Returns file path
 	- Arguments:
 		- `chat`: *mandatory*, needs a Chat (type: `str`), and may not be repeated.
 	- Keyword arguments:
@@ -369,9 +370,9 @@
 		- `retry_connect`: *optional*. How long, in seconds, we wait for the cli to answer the send command. Set to explicitly to `None` to use the global default timeout (`Sender.default_answer_timeout`) instead of the default timeout for the given command. To use the default timeout for that command omit this parameter. Default: default timeout for the given command
 		- `reply_id`: *optional*, this command is kept for compatibility. Please use the reply commands! Default: None. (Will be ignored by the CLI with non-sending commands.)
 	- Returns:
-		the parsed result using `pytg.result_parser.success_fail` parser or raises an `pytg.exceptions.IllegalResponseExceptions`.
+		the parsed result using `pytg.result_parser.downloaded_file` parser or raises an `pytg.exceptions.IllegalResponseExceptions`.
 
-- `load_file(msg_id)`: Downloads file to downloads dirs. Prints file name after download end
+- `load_file(msg_id)`: Downloads file to downloads dirs. Returns file path
 	- Arguments:
 		- `msg_id`: *mandatory*, needs a MsgId (type: `str`), and may not be repeated.
 	- Keyword arguments:
@@ -380,9 +381,9 @@
 		- `retry_connect`: *optional*. How long, in seconds, we wait for the cli to answer the send command. Set to explicitly to `None` to use the global default timeout (`Sender.default_answer_timeout`) instead of the default timeout for the given command. To use the default timeout for that command omit this parameter. Default: default timeout for the given command
 		- `reply_id`: *optional*, this command is kept for compatibility. Please use the reply commands! Default: None. (Will be ignored by the CLI with non-sending commands.)
 	- Returns:
-		the parsed result using `pytg.result_parser.something` parser or raises an `pytg.exceptions.IllegalResponseExceptions`.
+		the parsed result using `pytg.result_parser.downloaded_file` parser or raises an `pytg.exceptions.IllegalResponseExceptions`.
 
-- `load_file_thumb(msg_id)`: Downloads file to downloads dirs. Prints file name after download end
+- `load_file_thumb(msg_id)`: Downloads file to downloads dirs. Returns file path
 	- Arguments:
 		- `msg_id`: *mandatory*, needs a MsgId (type: `str`), and may not be repeated.
 	- Keyword arguments:
@@ -391,9 +392,9 @@
 		- `retry_connect`: *optional*. How long, in seconds, we wait for the cli to answer the send command. Set to explicitly to `None` to use the global default timeout (`Sender.default_answer_timeout`) instead of the default timeout for the given command. To use the default timeout for that command omit this parameter. Default: default timeout for the given command
 		- `reply_id`: *optional*, this command is kept for compatibility. Please use the reply commands! Default: None. (Will be ignored by the CLI with non-sending commands.)
 	- Returns:
-		the parsed result using `pytg.result_parser.something` parser or raises an `pytg.exceptions.IllegalResponseExceptions`.
+		the parsed result using `pytg.result_parser.downloaded_file` parser or raises an `pytg.exceptions.IllegalResponseExceptions`.
 
-- `load_document(msg_id)`: Downloads file to downloads dirs. Prints file name after download end
+- `load_document(msg_id)`: Downloads file to downloads dirs. Returns file path
 	- Arguments:
 		- `msg_id`: *mandatory*, needs a MsgId (type: `str`), and may not be repeated.
 	- Keyword arguments:
@@ -402,9 +403,9 @@
 		- `retry_connect`: *optional*. How long, in seconds, we wait for the cli to answer the send command. Set to explicitly to `None` to use the global default timeout (`Sender.default_answer_timeout`) instead of the default timeout for the given command. To use the default timeout for that command omit this parameter. Default: default timeout for the given command
 		- `reply_id`: *optional*, this command is kept for compatibility. Please use the reply commands! Default: None. (Will be ignored by the CLI with non-sending commands.)
 	- Returns:
-		the parsed result using `pytg.result_parser.something` parser or raises an `pytg.exceptions.IllegalResponseExceptions`.
+		the parsed result using `pytg.result_parser.downloaded_file` parser or raises an `pytg.exceptions.IllegalResponseExceptions`.
 
-- `load_document_thumb(msg_id)`: Downloads file to downloads dirs. Prints file name after download end
+- `load_document_thumb(msg_id)`: Downloads file to downloads dirs. Returns file path
 	- Arguments:
 		- `msg_id`: *mandatory*, needs a MsgId (type: `str`), and may not be repeated.
 	- Keyword arguments:
@@ -413,9 +414,9 @@
 		- `retry_connect`: *optional*. How long, in seconds, we wait for the cli to answer the send command. Set to explicitly to `None` to use the global default timeout (`Sender.default_answer_timeout`) instead of the default timeout for the given command. To use the default timeout for that command omit this parameter. Default: default timeout for the given command
 		- `reply_id`: *optional*, this command is kept for compatibility. Please use the reply commands! Default: None. (Will be ignored by the CLI with non-sending commands.)
 	- Returns:
-		the parsed result using `pytg.result_parser.something` parser or raises an `pytg.exceptions.IllegalResponseExceptions`.
+		the parsed result using `pytg.result_parser.downloaded_file` parser or raises an `pytg.exceptions.IllegalResponseExceptions`.
 
-- `load_photo(msg_id)`: Downloads file to downloads dirs. Prints file name after download end
+- `load_photo(msg_id)`: Downloads file to downloads dirs. Returns file path
 	- Arguments:
 		- `msg_id`: *mandatory*, needs a MsgId (type: `str`), and may not be repeated.
 	- Keyword arguments:
@@ -424,9 +425,9 @@
 		- `retry_connect`: *optional*. How long, in seconds, we wait for the cli to answer the send command. Set to explicitly to `None` to use the global default timeout (`Sender.default_answer_timeout`) instead of the default timeout for the given command. To use the default timeout for that command omit this parameter. Default: default timeout for the given command
 		- `reply_id`: *optional*, this command is kept for compatibility. Please use the reply commands! Default: None. (Will be ignored by the CLI with non-sending commands.)
 	- Returns:
-		the parsed result using `pytg.result_parser.something` parser or raises an `pytg.exceptions.IllegalResponseExceptions`.
+		the parsed result using `pytg.result_parser.downloaded_file` parser or raises an `pytg.exceptions.IllegalResponseExceptions`.
 
-- `load_video(msg_id)`: Downloads file to downloads dirs. Prints file name after download end
+- `load_video(msg_id)`: Downloads file to downloads dirs. Returns file path
 	- Arguments:
 		- `msg_id`: *mandatory*, needs a MsgId (type: `str`), and may not be repeated.
 	- Keyword arguments:
@@ -435,9 +436,9 @@
 		- `retry_connect`: *optional*. How long, in seconds, we wait for the cli to answer the send command. Set to explicitly to `None` to use the global default timeout (`Sender.default_answer_timeout`) instead of the default timeout for the given command. To use the default timeout for that command omit this parameter. Default: default timeout for the given command
 		- `reply_id`: *optional*, this command is kept for compatibility. Please use the reply commands! Default: None. (Will be ignored by the CLI with non-sending commands.)
 	- Returns:
-		the parsed result using `pytg.result_parser.something` parser or raises an `pytg.exceptions.IllegalResponseExceptions`.
+		the parsed result using `pytg.result_parser.downloaded_file` parser or raises an `pytg.exceptions.IllegalResponseExceptions`.
 
-- `load_video_thumb(msg_id)`: Downloads file to downloads dirs. Prints file name after download end
+- `load_video_thumb(msg_id)`: Downloads file to downloads dirs. Returns file path
 	- Arguments:
 		- `msg_id`: *mandatory*, needs a MsgId (type: `str`), and may not be repeated.
 	- Keyword arguments:
@@ -446,7 +447,7 @@
 		- `retry_connect`: *optional*. How long, in seconds, we wait for the cli to answer the send command. Set to explicitly to `None` to use the global default timeout (`Sender.default_answer_timeout`) instead of the default timeout for the given command. To use the default timeout for that command omit this parameter. Default: default timeout for the given command
 		- `reply_id`: *optional*, this command is kept for compatibility. Please use the reply commands! Default: None. (Will be ignored by the CLI with non-sending commands.)
 	- Returns:
-		the parsed result using `pytg.result_parser.something` parser or raises an `pytg.exceptions.IllegalResponseExceptions`.
+		the parsed result using `pytg.result_parser.downloaded_file` parser or raises an `pytg.exceptions.IllegalResponseExceptions`.
 
 - `mark_read(peer)`: Marks messages with peer as read
 	- Arguments:
@@ -494,7 +495,7 @@
 	- Returns:
 		the parsed result using `pytg.result_parser.something` parser or raises an `pytg.exceptions.IllegalResponseExceptions`.
 
-- `load_user_photo(user)`: Downloads file to downloads dirs. Prints file name after download end
+- `load_user_photo(user)`: Downloads file to downloads dirs. Returns file path
 	- Arguments:
 		- `user`: *mandatory*, needs a User (type: `str`), and may not be repeated.
 	- Keyword arguments:
