@@ -31,7 +31,6 @@ from pytg.sender import create_automatic_documentation; create_automatic_documen
 ## **Install**##
 ### Dependencies ###
  - Install the Telegram CLI (from @vysheng), follow the [official Instructions](https://github.com/vysheng/tg)
-   - currently needs the test branch, when cloning add ` -b test`. (See issue [#72](https://github.com/luckydonald/pytg/issues/72))
 
 ### Pytg ###
 ##### Install form PyPI [![on PyPI](https://img.shields.io/pypi/v/pytg.svg)](https://pypi.python.org/pypi/pytg)
