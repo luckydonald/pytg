@@ -11,6 +11,7 @@ There are some example in this folder.
     
 - [bot_dump](https://github.com/luckydonald/pytg/blob/master/examples/bot_dump.py):  A small bot printing the `msg` message object.
     - So you can see yourself how messages look like.    
+    - ![image](https://cloud.githubusercontent.com/assets/2737108/14706123/202761dc-07bd-11e6-928c-9d5b2a85239a.png)
     
 - [bot_ping](https://github.com/luckydonald/pytg/blob/master/examples/bot_ping.py):  A simple bot reacting to messages.
     - like the dump bot, but it responds to a `ping` with a `pong`.
