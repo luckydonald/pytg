@@ -129,8 +129,8 @@ functions["set_ttl"]              = ("set_ttl", [args.NonNegativeNumber("secret_
 functions["visualize_key"]        = ("visualize_key", [args.SecretChat("secret_chat")], res.success_fail, None, "Prints visualization of encryption key (first 16 bytes sha1 of it in fact)")
 
 # channels
-functions["channel_get_admins"]   = ("channel_get_admins", [args.Channel("channel"), args.NonNegativeNumber("limit", optional=True), args.NonNegativeNumber("offset", optional=True)], res.List(), None, "Gets channel admins")
-functions["channel_get_members"]  = ("channel_get_members", [args.Channel("channel"), args.NonNegativeNumber("limit", optional=True), args.NonNegativeNumber("offset", optional=True)], res.List(), None, "Gets channel members")
+functions["channel_get_admins"]   = ("channel_get_admins", [args.Channel("channel"), args.NonNegativeNumber("limit", optional=True), args.Number("offset", optional=True)], res.List(), None, "Gets channel admins")
+functions["channel_get_members"]  = ("channel_get_members", [args.Channel("channel"), args.NonNegativeNumber("limit", optional=True), args.Number("offset", optional=True)], res.List(), None, "Gets channel members")
 functions["channel_info"]         = ("channel_info", [args.Channel("channel")], res.something, None, "Prints info about channel (id, members, admin, etc.)")
 functions["channel_invite"]       = ("channel_invite", [args.Channel("channel"), args.User("user")], res.success_fail, None, "Invites user to channel")
 functions["channel_join"]         = ("channel_join", [args.Channel("channel")], res.success_fail, None, "Joins to channel")
