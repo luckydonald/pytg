@@ -12,6 +12,10 @@ Works with Python  2.7 and 3
 Python 2 uses ascii only bytestrings, causing much, **much trouble** when dealing with characters like öäüß or emojis. (Trust me, I've been there)     
 ~ luckydonald
 
+### Alternative: [BotApi](https://github.com/luckydonald/pytgbot)
+If you'd like to use the **Telegram Bot Api** instead, there also is [pytgbot](https://github.com/luckydonald/pytgbot).
+It features a complete objects for all the possible server responses, so you always know what attributes to expect.
+
 ## Documentation
 The ```Sender``` object features a rich build-in help, inside the python interpreter type:
 ```python
@@ -19,7 +23,7 @@ from pytg.sender import Sender
 help(Sender)  # list all commands
 help(Sender.get_self)  # get help for a specific command
 ``` 
-This is also availabe as [generated documentation](https://github.com/luckydonald/pytg/blob/master/CHANGELOG.md#changelog) here on github.
+This is also availabe as [generated documentation](https://github.com/luckydonald/pytg/blob/master/README.md) here on github.
 Also have a look at the [Changelog](https://github.com/luckydonald/pytg/blob/master/CHANGELOG.md#changelog) to see what's going on.
 
 To generate the documentation yourself:
