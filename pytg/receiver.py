@@ -44,7 +44,8 @@ class Receiver(object):
     _queue = deque()
     _new_messages = threading.Semaphore(0)
     _queue_access = threading.Lock()
-
+    _handlers = []
+    
     def __init__(self, host="localhost", port=4458, append_json=False):
         """
         :param append_json: if the dict should contain the original json.
@@ -199,17 +200,27 @@ class Receiver(object):
             self._new_messages.release()
     # end def
 
-    @coroutine
-    def message(self, function):
-        if not isinstance(function, GeneratorType):
+
+    def add_handler(self, handler):
+        if not isinstance(handler, GeneratorType):
             raise TypeError('Target must be GeneratorType')
+        self._handlers.append(handler)
+    
+    def del_handler(self, handler):
+        if not isinstance(handler, GeneratorType):
+            raise TypeError('Target must be GeneratorType')
+        self._handlers.remove(handler)
+        
+    @coroutine
+    def process_handlers(self):
         try:
             while not self._do_quit:
                 self._new_messages.acquire()  # waits until at least 1 message is in the queue.
                 with self._queue_access:
                     message = self._queue.popleft()  # pop oldest item
                     logger.debug('Messages waiting in queue: %d', len(self._queue))
-                function.send(message)
+                for handler in self._handlers:
+                    handler.send(message)
         except GeneratorExit:
             pass
         except KeyboardInterrupt:
