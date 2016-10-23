@@ -14,7 +14,7 @@ Python 2 uses ascii only bytestrings, causing much, **much trouble** when dealin
 
 ### Alternative: [BotApi](https://github.com/luckydonald/pytgbot)
 If you'd like to use the **Telegram Bot Api** instead, there also is [pytgbot](https://github.com/luckydonald/pytgbot).
-It features a complete objects for all the possible server responses, so you always know what attributes to expect.
+It features a complete object oriented approach, mapping all the possible server responses. So you always know what attributes to expect.
 
 ## Documentation
 The ```Sender``` object features a rich build-in help, inside the python interpreter type:
