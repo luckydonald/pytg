@@ -156,7 +156,7 @@ import logging
 logging.basicConfig(level=logging.DEBUG)
 ```
 If you are about to open a new issue, search the existing ones (open and closed) first.
-Somtimes they are already reported or even solved.
+Sometimes they are already reported or even solved.
 
 ## Examples
 There are some example scripts in the [examples folder](https://github.com/luckydonald/pytg/tree/master/examples):
