@@ -142,6 +142,8 @@ functions["channel_set_about"]    = ("channel_set_about", [args.Channel("channel
 functions["channel_set_username"] = ("channel_set_username", [args.Channel("channel"), args.UnicodeString("name")], res.success_fail, None, "Sets channel username info.")
 functions["channel_set_photo"]    = ("channel_set_photo", [args.Channel("channel"), args.FilePath("file")], res.something, 120.0, "Sets channel photo. Photo will be cropped to square")
 functions["channel_rename"]       = ("rename_channel", [args.Channel("channel"), args.UnicodeString("new_name")], res.success_fail, None, "Renames channel")
+functions["export_channel_link"] = ("export_channel_link", [args.Chat("chat")], res.has_result, None,
+                                    "Prints channel link that can be used to join to channel")
 
 # own profile
 functions["set_profile_name"]     = ("set_profile_name", [args.UnicodeString("first_name"), args.UnicodeString("last_name")], res.something, 60.0, "Sets profile name.")

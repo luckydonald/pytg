@@ -34,6 +34,13 @@ def anything(value):
     return value
 
 
+def has_result(value):
+    if value and len(value) >= 1 and hasattr(value, 'keys') and 'result' in value.keys() and value['result']:
+        return value
+
+    raise IllegalResponseException("Should return dict with key 'result'")
+
+
 def success_fail(json, need_success=True):
     """
     Will return True if json.result == "SUCCESS".
