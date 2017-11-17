@@ -4,6 +4,7 @@ __author__ = 'luckydonald'
 import atexit
 import logging
 from time import sleep
+import os
 
 from .exceptions import NoResponse, IllegalResponseException
 from luckydonaldUtils.encoding import to_unicode as u
@@ -22,9 +23,13 @@ class Telegram(object):
     Also is able to start the CLI, and stop it respectivly.
     """
 
-    def __init__(self, host="127.0.0.1", port=4458, telegram=None, pubkey_file=None, custom_cli_args=None):
+    def __init__(self, host="127.0.0.1", port=4458, telegram=None, pubkey_file=None, custom_cli_args=None,
+                 home_directory=None):
         from .sender import Sender
         from .receiver import Receiver
+
+        self.home_dir = home_directory
+
         self._proc = None
         if telegram and pubkey_file:
             if host not in ["127.0.0.1", "localhost", "", None]:
@@ -69,7 +74,6 @@ class Telegram(object):
         self._public_key_file = pubkey_file
         import subprocess
         def preexec_function():
-            import os
             os.setpgrp()
 
         atexit.register(self.stop_cli)
@@ -83,7 +87,15 @@ class Telegram(object):
                 raise TypeError("custom_cli_args should be a list or a tuple.")
             args.extend(custom_cli_args)
         logger.info("Starting Telegram Executable: \"{cmd}\"".format(cmd=" ".join(args)))
-        self._proc = subprocess.Popen(args, stdin=subprocess.PIPE, stdout=subprocess.PIPE, preexec_fn=preexec_function)
+
+        if self.home_dir:
+            logger.info("Using custom Telegram home directory", self.home_dir)
+            custom_env = os.environ.copy()
+            custom_env["TELEGRAM_HOME"] = self.home_dir
+            self._proc = subprocess.Popen(args, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
+                                          preexec_fn=preexec_function, env=custom_env)
+        else:
+            self._proc = subprocess.Popen(args, stdin=subprocess.PIPE, stdout=subprocess.PIPE, preexec_fn=preexec_function)
         if self._check_stopped():
             raise AssertionError("CLI did stop, should be running...")
             # return pid
