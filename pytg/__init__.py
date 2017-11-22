@@ -88,14 +88,15 @@ class Telegram(object):
             args.extend(custom_cli_args)
         logger.info("Starting Telegram Executable: \"{cmd}\"".format(cmd=" ".join(args)))
 
+        custom_env = None
         if self.home_dir:
             logger.info("Using custom Telegram home directory", self.home_dir)
             custom_env = os.environ.copy()
             custom_env["TELEGRAM_HOME"] = self.home_dir
-            self._proc = subprocess.Popen(args, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
-                                          preexec_fn=preexec_function, env=custom_env)
-        else:
-            self._proc = subprocess.Popen(args, stdin=subprocess.PIPE, stdout=subprocess.PIPE, preexec_fn=preexec_function)
+        # end if
+        self._proc = subprocess.Popen(args, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
+                                      preexec_fn=preexec_function, env=custom_env)
+
         if self._check_stopped():
             raise AssertionError("CLI did stop, should be running...")
             # return pid
