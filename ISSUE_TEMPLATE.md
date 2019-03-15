@@ -8,16 +8,17 @@ Component | Version
 --------- | --------------
 python    | `X.X.X`          <!-- $ python --version; -->
 pytg      | `X.X.X`          <!-- $ python -c 'from pytg import VERSION; VERSION'; -->
-OS        | `Mac OS 10.9.5`  <!-- $ uname -a; -->
+OS        | `Mac OS 10.9.5`  <!-- $ uname -a; -->
+telegram-cli | `X.X.X`       <!-- $ telegram-cli --version -->
 
-<!--
 ### Things to check before submitting a report ###
 
 Have you
-- turned on verbose logging? (See https://github.com/luckydonald/pytg#in-case-of-errors )
-- tried commands manually (e.g. using netcat. Commands are printed in verbose mode)
-- searched existing issues ( https://github.com/luckydonald/pytg/issues )
--->
+<!-- mark completed steps with an x: [x] -->
+
+- [ ] searched existing issues ( https://github.com/luckydonald/pytg/issues )
+- [ ] turned on verbose logging? (See https://github.com/luckydonald/pytg#in-case-of-errors )
+- [ ] tried to execute commands manually (e.g. using netcat. Execute the commands which are printed in verbose mode yourself manually, and post the results)
 
 ### Steps to reproduce
 Detailed steps to reproduce the issue.
