@@ -26,27 +26,12 @@ It features a complete object oriented approach, mapping all the possible server
 - [Examples](#examples)
 
 
-## Documentation
-The ```Sender``` object features a rich build-in help, inside the python interpreter type:
-```python
-from pytg.sender import Sender
-help(Sender)  # list all commands
-help(Sender.get_self)  # get help for a specific command
-``` 
-This is also availabe as [generated documentation](https://github.com/luckydonald/pytg/blob/master/README.md) here on github.
-Also have a look at the [Changelog](https://github.com/luckydonald/pytg/blob/master/CHANGELOG.md#changelog) to see what's going on.
 
-To generate the documentation yourself:
-```python
-from pytg.sender import create_automatic_documentation; create_automatic_documentation()
-```
-
-
-## **Install**##
-### Dependencies ###
+## **Install**
+### Dependencies
  - Install the Telegram CLI (from @vysheng), follow the [official Instructions](https://github.com/vysheng/tg)
 
-### Pytg ###
+### Pytg
 ##### Install form PyPI [![on PyPI](https://img.shields.io/pypi/v/pytg.svg)](https://pypi.python.org/pypi/pytg)
 
 ```shell
@@ -69,12 +54,12 @@ To upgrade append the ```--upgrade``` flag.
     
  Done.
 
-## **Usage** ##
+## **Usage**
 
 >***Note***: The examples files produce syntax errors for python 3.0 - 3.2, the pytg package itself is not affacted by this!    
 > To fix, just remove the ```u``` in front of the strings: change ```u"foobar"``` to ```"foobar``` (see [issue #39](https://github.com/luckydonald/pytg/issues/39#issuecomment-129992777) and [Python 3.3 accepts ```u'unicode'``` syntax again](https://docs.python.org/3/whatsnew/3.3.html?highlight=unicode)). 
 
-#### *Start* telegram ####
+#### *Start* telegram
 
 Create a Telegram Instance.
 This will manage the CLI process, and registers the Sender and Receiver for you.
@@ -99,14 +84,14 @@ receiver = Receiver(host="localhost", port=4458)
 sender = Sender(host="localhost", port=4458)
 ```
 
-#### *Send* a message ####
+#### *Send* a message
 
 ```python
 sender.send_msg("username", "Hello World!")
 # Easy huh?
 ```
     
-#### *Receiving* messages ####
+#### *Receiving* messages
 
 You need a function as main loop.
 ```python
@@ -135,6 +120,24 @@ receiver.message(main_loop())
 That's the basics. Have a look into the examples folder. For starters, I recommend:    
 * dump.py - is usefull to see, how the messages look like.    
 * ping.py - is usefull to see how to interact with pytg, send messages etc.
+
+## More Documentation
+The ```Sender``` object features a rich build-in help, inside the python interpreter type:
+```python
+from pytg.sender import Sender
+help(Sender)  # list all commands
+help(Sender.get_self)  # get help for a specific command
+``` 
+
+This is also availabe as [generated documentation](https://github.com/luckydonald/pytg/blob/master/DOCUMENTATION.md) here on github.
+Also have a look at the [Changelog](https://github.com/luckydonald/pytg/blob/master/CHANGELOG.md#changelog) to see what's going on.
+
+To generate the documentation yourself:
+```python
+from pytg.sender import create_automatic_documentation; create_automatic_documentation()
+```
+
+You can also have a look at [the old documentation](https://github.com/luckydonald/pytg/blob/master/DOCUMENTATION_manual.md)
 
 ## Contribute
 ###### You can help!
@@ -182,7 +185,7 @@ There are some example scripts in the [examples folder](https://github.com/lucky
     - Demonstrates how to build converations with the use of generators and the `yield` statement.
 
 
-## URL Changes ##
+## URL Changes
 If you started with pytg after 2015, you can ignore this. If you cloned from `luckydonald/pytg`, you can ignore this.
 Here is how to update your local git clone to this url when your old one was set to [https://github.com/efaisal/pytg.git`](https://github.com/efaisal) (before I started maintaining it in September 2014)
 ```shell
