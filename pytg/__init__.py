@@ -8,6 +8,8 @@ import os
 
 from .exceptions import NoResponse, IllegalResponseException
 from luckydonaldUtils.encoding import to_unicode as u
+from luckydonaldUtils.encoding import to_binary as b
+
 
 logger = logging.getLogger(__name__)
 logger.addHandler(logging.NullHandler())
@@ -139,7 +141,7 @@ class Telegram(object):
             # end if-else: self.sender._do_quit
             if self._check_stopped(): return self._proc.returncode
             # has not terminated yet.
-            self._proc.communicate('quit\n')  # report this error in the bugtracker!
+            self._proc.communicate(b('quit\n'))  # report this error in the bugtracker!
             if self._check_stopped(): return self._proc.returncode
             try:
                 self._proc.terminate()
