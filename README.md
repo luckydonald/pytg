@@ -29,7 +29,8 @@ It features a complete object oriented approach, mapping all the possible server
 
 ## **Install**
 ### Dependencies
- - Install the Telegram CLI (from @vysheng), follow the [official Instructions](https://github.com/vysheng/tg)
+ - ~~Install the Telegram CLI (from @vysheng), follow the [official Instructions](https://github.com/vysheng/tg)~~
+ - Install up to date fork of Telegram CLI (by @kenorb-contrib), follow the [Instructions](https://github.com/kenorb-contrib/tg) there. 
 
 ### Pytg
 ##### Install form PyPI [![on PyPI](https://img.shields.io/pypi/v/pytg.svg)](https://pypi.python.org/pypi/pytg)
