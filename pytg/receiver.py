@@ -2,7 +2,10 @@
 import threading
 import socket  # connect to telegram cli.
 import json
+import stat
+import os
 import logging
+from sys import exit
 from collections import deque
 from types import GeneratorType
 from errno import EINTR, ECONNREFUSED
@@ -45,14 +48,53 @@ class Receiver(object):
     _new_messages = threading.Semaphore(0)
     _queue_access = threading.Lock()
 
-    def __init__(self, host="localhost", port=4458, append_json=False):
+    def __init__(self, host="localhost", port=4458, sock=None, append_json=False):
         """
         :param append_json: if the dict should contain the original json.
         """
         self.host = host
         self.port = port
+        self.sock = sock
         self.append_json = append_json
         self.s = None  # socket.
+
+        self.use_sock = False
+        self.use_tcp = False
+
+        # unix socket will be the default connection method
+        if sock:
+            if not isinstance(sock, str) and\
+               not isinstance(sock, bytes) and\
+               not isinstance(sock, bytearray):
+                raise TypeError("Supplied sock path is not a address type")
+
+            if not stat.S_ISSOCK(os.stat(sock).st_mode):
+                raise OSError("Supplied sock path is not a valid socket")
+
+            self.sock = sock
+            self.use_sock = True
+            print("Receiver is using unix domain socket at: {}".format(sock))
+
+        elif host and port:
+            if not isinstance(port, int):
+                raise TypeError("port is no int")
+
+            with socket.socket() as s:
+                error = s.connect_ex((host, port))
+                if error:
+                    print("{}:{} address is not a valid network socket, "\
+                          "faling with error {}"\
+                          .format(host, port, error))
+                else:
+                    self.use_tcp = True
+                    self.host = host
+                    self.port = port
+                    print("Receiver is using network socket at: {}:{}"
+                           .format(host,port))
+
+        if not self.use_sock and not self.use_tcp:
+            print("No valid connection to telegram-cli found")
+            exit()
 
     def queued_messages(self):
         """
@@ -93,9 +135,23 @@ class Receiver(object):
 
     def _receiver(self):
         while not self._do_quit:  # retry connection
-            self.s = socket.socket()  # errors?
+            self.s = socket.socket()
+
+            # network socket
+            if self.use_tcp:
+                self.s = socket.socket()
+
+            # unix-domain socket
+            elif self.use_sock:
+                self.s = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+
+            # connection
             try:
-                self.s.connect((self.host, self.port))
+                if self.use_tcp:
+                    self.s.connect((self.host, self.port))
+                elif self.use_sock:
+                    self.s.connect(self.sock)
+
             except socket.error as error:
                 self.s.close()
                 if error.errno == ECONNREFUSED and not self._do_quit:

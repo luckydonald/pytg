@@ -10,6 +10,9 @@ from time import sleep  # waiting on reconnect
 from collections import OrderedDict  # keep the the functions dict in order
 from errno import ECONNREFUSED, EINTR  # socket errors
 from socket import error as socket_error  # socket errors
+from sys import exit
+import stat
+import os
 
 from DictObject import DictObject  # pack the result as object.
 from luckydonaldUtils.encoding import to_unicode as u
@@ -226,19 +229,55 @@ class Sender(object):
     _do_quit = False
     default_answer_timeout = 1.0  # how long it should wait for a answer. DANGER: if set to None it will block!
 
-    def __init__(self, host, port):
+    def __init__(self, host="localhost", port=4458, sock=None):
         """
-        Create a new Sender object. Specify host and port.
+        Create a new Sender object. Specify host and port of unix-socket path
 
         :param host: host ip
-        :param port:
+        :param port: port
+        or
+        :param sock: socket path
         :return:
         """
-        if not isinstance(port, int):
-            raise TypeError("port is no int")
+        self.use_sock = False
+        self.use_tcp = False
+
+        # unix socket will be the default connection method
+        if sock:
+            if not isinstance(sock, str) and\
+               not isinstance(sock, bytes) and\
+               not isinstance(sock, bytearray):
+                raise TypeError("Supplied sock path is not a address type")
+
+            if not stat.S_ISSOCK(os.stat(sock).st_mode):
+                raise OSError("Supplied sock path is not a valid socket")
+
+            self.sock = sock
+            self.use_sock = True
+            print("Sender is using unix domain socket at: {}".format(sock))
+
+        elif host and port:
+            if not isinstance(port, int):
+                raise TypeError("port is no int")
+
+            with socket.socket() as s:
+                error = s.connect_ex((host, port))
+                if error:
+                    print("{}:{} address is not a valid network socket, "\
+                          "faling with error {}"\
+                          .format(host, port, error))
+                else:
+                    self.use_tcp = True
+                    self.host = host
+                    self.port = port
+                    print("Sender is using network socket at: {}:{}"
+                           .format(host,port))
+
+        if not self.use_sock and not self.use_tcp:
+            print("No valid connection to telegram-cli found")
+            exit()
+
         self.s = None
-        self.host = host
-        self.port_out = port
         self.debug = False
         self._socked_used = threading.Semaphore(1)  # start unblocked.
         atexit.register(self.terminate)
@@ -472,9 +511,20 @@ class Sender(object):
                 if self.s:
                     self.s.close()
                     self.s = None
-                self.s = socket.socket()
+                # network socket
+                if self.use_tcp:
+                    self.s = socket.socket()
+
+                # unix-domain socket
+                elif self.use_sock:
+                    self.s = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+
+                # connection
                 try:
-                    self.s.connect((self.host, self.port_out))
+                    if self.use_tcp:
+                        self.s.connect((self.host, self.port))
+                    elif self.use_sock:
+                        self.s.connect(self.sock)
                 except socket_error as error:
                     self.s.close()
                     if error.errno == ECONNREFUSED and not self._do_quit:
