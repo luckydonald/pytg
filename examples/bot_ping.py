@@ -57,8 +57,8 @@ def example_function(sender):  # name "example_function" and given parameters ar
             if msg.text is None:  # we have media instead.
                 continue  # and again, because we want to process only text message.
             # Everything in pytg will be unicode. If you use python 3 thats no problem,
-            # just if you use python 2 you have to be carefull! (better switch to 3)
-            # for convinience of py2 users there is a to_unicode(<string>) in pytg.encoding
+            # just if you use python 2 you have to be careful! (better switch to 3)
+            # for convenience of py2 users there is a to_unicode(<string>) in pytg.encoding
             # for python 3 the using of it is not needed.
             # But again, use python 3, as you have a chat with umlaute and emojis.
             # This WILL brake your python 2 code at some point!
@@ -79,7 +79,7 @@ def example_function(sender):  # name "example_function" and given parameters ar
         # we got a KeyboardIterrupt(Ctrl+C)
         pass
     else:
-        # the loop exited without exception, becaues _quit was set True
+        # the loop exited without exception, because _quit was set True
         pass
 
 

@@ -28,7 +28,7 @@ class IllegalResponseException(Exception):
 # result_parser.py/sender.py
 class FailException(IllegalResponseException):
     """
-    Used when the cli sends somethhing like
+    Used when the cli sends something like
     {'error_code': 100, 'result': 'FAIL', 'error': 'RPC_CALL_FAIL 400: USERNAME_INVALID'}
 
     This class has the following attributes:
@@ -38,7 +38,7 @@ class FailException(IllegalResponseException):
 
     def __init__(self, error_code, error, command=None):
         """
-        :param error_code: The error code returnded by the CLI.
+        :param error_code: The error code returned by the CLI.
         :type  error_code: int
         :param error: The message the CLI gives us.
         :type  error: str

@@ -51,7 +51,7 @@ functions["send_video"]           = ("send_video", [args.Peer("peer"), args.File
 functions["send_document"]        = ("send_document", [args.Peer("peer"), args.FilePath("file"), args.UnicodeString("caption", optional=True)], res.success_fail, 120.0, "Sends document to peer (as raw file including filename)")
 functions["send_file"]            = ("send_file", [args.Peer("peer"), args.FilePath("file")], res.success_fail, 120.0, "Sends document to peer (using the best available method, e.g. songs as audio and images as photos)")
 functions["send_location"]        = ("send_location", [args.Peer("peer"), args.Double("latitude"), args.Double("longitude")], res.success_fail, None, "Sends geo location")
-functions["send_contact"]         = ("send_contact", [args.Peer("peer"), args.UnicodeString("phone"), args.UnicodeString("first_name"), args.UnicodeString("last_name")], res.something, 60.0, "Sends contact (not necessary telegram user).")  # what did the "ret: formated message" help string mean?
+functions["send_contact"]         = ("send_contact", [args.Peer("peer"), args.UnicodeString("phone"), args.UnicodeString("first_name"), args.UnicodeString("last_name")], res.something, 60.0, "Sends contact (not necessary telegram user).")  # what did the "ret: formatted message" help string mean?
 functions["send_text_from_file"]  = ("send_text", [args.Peer("peer"), args.FilePath("file")], res.success_fail, 60.0, "Sends contents of text file as plain text message")
 functions["fwd"]                  = ("fwd", [args.Peer("peer"), args.MsgId("msg_id")], res.success_fail, None, "Forwards message to peer. Forward to secret chats is forbidden")
 functions["fwd_media"]            = ("fwd_media", [args.Peer("peer"), args.MsgId("msg_id")], res.success_fail, None, "Forwards message media to peer. Forward to secret chats is forbidden. Result slightly differs from fwd")
@@ -187,7 +187,7 @@ reply_functions["send_contact"]         = "reply_contact"
 # //    functions["secret_chat_rekey"] = ("secret_chat_rekey", [args.SecretChat("secret_chat")], res.success_fail, None, "generate new key for active secret chat"
 # "set": ("set", [ca_string, ca_number, ca_none,"<param> <value>"], res.success_fail, None),  # Sets value of param. Currently available: log_level, debug_verbosity, alarm, msg_num
 
-# These are not concidered useful, so I implement other things first. If needed, create an issue, or send an pull-request.
+# These are not considered useful, so I implement other things first. If needed, create an issue, or send an pull-request.
 
 #     functions["show_license"] = ("show_license", [ca_none,""], res.success_fail, None, "Prints contents of GPL license"
 #     functions["stats"] = ("stats", [ca_none,""], res.success_fail, None, "For debug purpose"
@@ -361,7 +361,7 @@ class Sender(object):
     def _validate_input(function_name, arguments):
         """
         This will check if the arguments fit the functions needed parameters.
-        Returns a tuple of cli command name and the arguments formated as unicode strings.
+        Returns a tuple of cli command name and the arguments formatted as unicode strings.
 
         :param function_name: The name of the called function.
         :type function_name: str
@@ -586,7 +586,7 @@ class Sender(object):
             if self.s:
                 # self.s.settimeout(0)
                 self.s.close()  # not let the cli end close first -> avoid bind: port already in use.
-            return  # don't abort sending, let it do stuff, it will suceed or fail soon anyway.
+            return  # don't abort sending, let it do stuff, it will succeed or fail soon anyway.
             #       # Well, hopefully. Else something like this should work:
             # if self.s:
             #     self.s.close()

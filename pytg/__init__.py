@@ -22,7 +22,7 @@ __version__ = VERSION  # PEP-0396
 class Telegram(object):
     """
     To have the sender and the receiver in one handsome object.
-    Also is able to start the CLI, and stop it respectivly.
+    Also is able to start the CLI, and stop it respectively.
     """
 
     def __init__(self, host="127.0.0.1", port=4458, telegram=None, pubkey_file=None, custom_cli_args=None,

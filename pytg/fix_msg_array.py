@@ -64,7 +64,7 @@ def fix_peer(peer):
     # remove print_name field
     # create name field
     if "print_name" in peer:
-        peer["name"] = peer["print_name"]  # just in case everything failes.
+        peer["name"] = peer["print_name"]  # just in case everything fails.
         del peer["print_name"]
         # can contain ugly print_names like "user#123", "chat#123" or "no_spaces_just_underscores"
     else:
